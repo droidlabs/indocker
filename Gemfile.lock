@@ -1,0 +1,19 @@
+PATH
+  remote: .
+  specs:
+    indocker (0.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (9.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  indocker!
+
+BUNDLED WITH
+   1.15.4
