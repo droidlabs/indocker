@@ -1,5 +1,6 @@
 class Indocker::ImageMetadata
-  attr_reader :name
+  attr_reader   :name
+  attr_accessor :id
 
   def initialize(name, &block)
     @name            = name

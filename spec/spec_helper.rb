@@ -2,6 +2,7 @@ $LOAD_PATH.unshift(File.join(__dir__, '..', 'lib'))
 $LOAD_PATH.unshift(__dir__)
 
 require 'indocker'
+require 'byebug'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
