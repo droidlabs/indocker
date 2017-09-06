@@ -1,5 +1,6 @@
 class Indocker::DockerCommands
   BUILD_IMAGE_ID = /Successfully built ([\w\d]{12})/
+  RUN_CONTAINER_ID = /([\w\d]{64})/
 
   def image_exists?(image_name)
     get_image_id(image_name) != ""
@@ -14,10 +15,30 @@ class Indocker::DockerCommands
   end
 
   def build_image(image_name)
-    Indocker::ShellCommands.new.run_command_with_result(
-      "docker build --rm=true -t #{image_name} .", with_sudo: true
-    ) do |result|
+    command = "docker build --rm=true -t #{image_name} ."
+
+    Indocker::ShellCommands.new.run_command_with_result(command, with_sudo: true) do |result|
       return BUILD_IMAGE_ID.match(result).captures.first
+    end
+  end
+
+  def container_exists?(container_name)
+    get_container_id(container_name) != ""
+  end
+
+  def get_container_id(container_name)
+    command = "docker inspect --format='{{.Id}}' #{container_name}"
+
+    Indocker::ShellCommands.new.run_command_with_result(command) do |result|
+      return result.to_s.strip
+    end
+  end
+
+  def run_container(container_name, image_name)
+    command = "docker run --name=#{container_name} --rm -d #{image_name}"
+    
+    Indocker::ShellCommands.new.run_command_with_result(command, with_sudo: true) do |result|
+      return RUN_CONTAINER_ID.match(result).captures.first
     end
   end
 end

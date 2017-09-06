@@ -14,7 +14,7 @@ class Indocker::ImageMetadata
   end
 
   def prepare
-    @before_build
+    @before_build || Proc.new {}
   end
 
   private 
