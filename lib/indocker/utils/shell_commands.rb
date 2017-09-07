@@ -1,4 +1,8 @@
 class Indocker::ShellCommands
+  include SmartIoC::Iocify
+  
+  bean :shell_commands
+  
   def run_command(command, with_sudo: false, &block)
     if $use_sudo && with_sudo
       command = "sudo #{command}"

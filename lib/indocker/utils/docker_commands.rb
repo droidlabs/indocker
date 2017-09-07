@@ -1,4 +1,9 @@
 class Indocker::DockerCommands
+  include SmartIoC::Iocify
+  
+  bean   :docker_commands
+  inject :shell_commands
+
   BUILD_IMAGE_ID = /Successfully built ([\w\d]{12})/
   RUN_CONTAINER_ID = /([\w\d]{64})/
 
@@ -9,7 +14,7 @@ class Indocker::DockerCommands
   def get_image_id(image_name)
     command = "docker images -q #{image_name}"
 
-    Indocker::ShellCommands.new.run_command_with_result(command) do |result|
+    shell_commands.run_command_with_result(command) do |result|
       return result.to_s.strip
     end
   end
@@ -17,7 +22,7 @@ class Indocker::DockerCommands
   def build_image(image_name)
     command = "docker build --rm=true -t #{image_name} ."
 
-    Indocker::ShellCommands.new.run_command_with_result(command, with_sudo: true) do |result|
+    shell_commands.run_command_with_result(command, with_sudo: true) do |result|
       return BUILD_IMAGE_ID.match(result).captures.first
     end
   end
@@ -29,7 +34,7 @@ class Indocker::DockerCommands
   def get_container_id(container_name)
     command = "docker inspect --format='{{.Id}}' #{container_name}"
 
-    Indocker::ShellCommands.new.run_command_with_result(command) do |result|
+    shell_commands.run_command_with_result(command) do |result|
       return result.to_s.strip
     end
   end
@@ -37,7 +42,7 @@ class Indocker::DockerCommands
   def run_container(container_name, image_name)
     command = "docker run --name=#{container_name} --rm -d #{image_name}"
     
-    Indocker::ShellCommands.new.run_command_with_result(command, with_sudo: true) do |result|
+    shell_commands.run_command_with_result(command, with_sudo: true) do |result|
       return RUN_CONTAINER_ID.match(result).captures.first
     end
   end

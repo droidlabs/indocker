@@ -1,5 +1,6 @@
 require 'smart_ioc'
 
+require 'indocker/utils/ioc_container'
 require 'indocker/utils/shell_commands'
 require 'indocker/utils/docker_commands'
 
@@ -14,6 +15,8 @@ require 'indocker/container_metadata'
 require 'indocker/container_runner_service'
 
 require 'indocker/errors'
+
+SmartIoC.find_package_beans(:indocker, __dir__)
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'

@@ -1,4 +1,10 @@
 class Indocker::ImageDependenciesManager
+  include SmartIoC::Iocify
+
+  bean   :image_dependencies_manager
+  inject :image_repository
+  inject :container_repository
+
   def get_image_dependencies!(image_name)
     check_circular_dependencies!(image_name)
 
@@ -20,13 +26,13 @@ class Indocker::ImageDependenciesManager
   end
 
   def get_image_dependencies(image_name)
-    image = Indocker::ImageRepository.new.get_image(image_name)
+    image = image_repository.get_image(image_name)
     @container_dependencies = []
 
     before_build = image.before_build_block
     instance_exec &before_build
 
-    @container_dependencies.map {|container_name| Indocker::ContainerRepository.new.get_container(container_name).from }
+    @container_dependencies.map {|container_name| container_repository.get_container(container_name).from }
   end
   
   def run_container(container_name)

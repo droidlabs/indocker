@@ -1,12 +1,17 @@
 class Indocker::ContainerRunnerService 
-  def run(container_name)
-    container = Indocker.containers.detect {|container| container.name == container_name}
-    raise Indocker::Errors::ContainerDoesNotDefined if container.nil?
+  include SmartIoC::Iocify
+  
+  bean   :container_runner_service
+  inject :image_repository
+  inject :container_repository
+  inject :docker_commands
 
-    image = Indocker.images.detect {|image| image.name == container.from}
-    raise Indocker::Errors::ImageForContainerDoesNotExist if image.nil?
+  def run(container_name)
+    container = container_repository.get_container(container_name)
+
+    image = image_repository.get_image(container.from)
     
-    container_id = Indocker::DockerCommands.new.run_container(container.name, image.name)
+    container_id = docker_commands.run_container(container.name, image.name)
     container.id = container_id
   end
 end
