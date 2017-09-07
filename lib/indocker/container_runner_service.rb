@@ -5,7 +5,7 @@ class Indocker::ContainerRunnerService
 
     image = Indocker.images.detect {|image| image.name == container.from}
     raise Indocker::Errors::ImageForContainerDoesNotExist if image.nil?
-    debugger
+    
     container_id = Indocker::DockerCommands.new.run_container(container.name, image.name)
     container.id = container_id
   end

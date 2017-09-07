@@ -13,7 +13,7 @@ class Indocker::ImageMetadata
     @docker_commands.join("\n")
   end
 
-  def prepare
+  def before_build_block
     @before_build || Proc.new {}
   end
 

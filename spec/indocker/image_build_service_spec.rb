@@ -40,7 +40,7 @@ describe Indocker::ImageBuildService do
     end
 
     it 'runs before_build block for image' do
-      expect(subject).to receive(:prepare_image).and_return('test')
+      expect_any_instance_of(Indocker::ImagePrepareService).to receive(:prepare).and_return('test')
 
       subject.build('image_without_dependencies')
     end
@@ -58,10 +58,10 @@ describe Indocker::ImageBuildService do
         Indocker.container 'container_with_circular_dependency', from: 'image_with_circular_dependency'
       end
 
-      it 'raises Indocker::Errors::ImageForContainerDoesNotExist' do
+      it 'raises Indocker::Errors::CircularImageDependency' do
         expect{
           subject.build('image_with_circular_dependency')
-        }.to raise_error(Indocker::Errors::ImageForContainerDoesNotExist)
+        }.to raise_error(Indocker::Errors::CircularImageDependency)
       end
     end
 

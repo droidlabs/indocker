@@ -2,11 +2,13 @@ PATH
   remote: .
   specs:
     indocker (0.0.0)
+      smart_ioc
 
 GEM
   remote: https://rubygems.org/
   specs:
     byebug (9.1.0)
+    smart_ioc (0.2.1)
 
 PLATFORMS
   ruby

@@ -15,7 +15,7 @@ describe Indocker::ImageMetadata do
   end
 
   it 'keep before_build block' do
-    expect(subject.prepare.call).to eq("I am before_build string")
+    expect(subject.before_build_block.call).to eq("I am before_build string")
   end
 
   it 'keep docker commands to dockerfile content' do
