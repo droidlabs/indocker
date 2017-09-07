@@ -2,6 +2,9 @@ class Indocker::ImageBuildService
   def build(image_name)
     image_name = image_name.to_s
 
+    image_dependencies = Indocker::ImageDependenciesManager.new.get_image_dependencies(image_name)
+    image_dependencies.each {|image_name| build(image_name) }
+
     prepare_image(image_name)
     build_image(image_name)
   end
