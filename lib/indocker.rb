@@ -1,24 +1,24 @@
 require 'smart_ioc'
 
+SmartIoC.find_package_beans(:indocker, __dir__)
+
 require 'indocker/utils/ioc_container'
 require 'indocker/utils/shell_commands'
 require 'indocker/utils/docker_commands'
 
-require 'indocker/image_repository'
 require 'indocker/image_metadata'
+require 'indocker/image_repository'
 require 'indocker/image_prepare_service'
 require 'indocker/image_build_service'
 require 'indocker/image_dependencies_manager'
 
-require 'indocker/container_repository'
 require 'indocker/container_metadata'
+require 'indocker/container_repository'
 require 'indocker/container_runner_service'
 
 require 'indocker/errors'
 
-require 'byebug'
-debugger
-SmartIoC.find_package_beans(:indocker, __dir__)
+
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'

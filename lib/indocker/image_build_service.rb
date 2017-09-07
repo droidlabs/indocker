@@ -5,6 +5,7 @@ class Indocker::ImageBuildService
   inject :image_repository
   inject :image_dependencies_manager
   inject :docker_commands
+  inject :image_prepare_service
 
   def build(image_name)
     image_name = image_name.to_s
@@ -27,7 +28,7 @@ class Indocker::ImageBuildService
     File.open(File.join(build_dir, Indocker::DOCKERFILE_NAME), 'w') {|f| f.write image.to_dockerfile}
     
     FileUtils.cd(build_dir) do
-      image.id = docker_commands.new.build_image(image_name)
+      image.id = docker_commands.build_image(image_name)
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Indocker::ContainerRunnerService do
-  subject { ioc.image_build_service }
+  subject { ioc.container_runner_service }
 
   before do
     Indocker.image 'simple_image' do
