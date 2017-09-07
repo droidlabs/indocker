@@ -1,11 +1,7 @@
 require 'spec_helper'
 
 describe Indocker::ContainerRunnerService do
-  subject { described_class.new }
-
-  let(:docker)               { Indocker::DockerCommands.new }
-  let(:container_repository) { Indocker.containers }
-  let(:container_name)       { 'simple_container' }
+  subject { ioc.image_build_service }
 
   before do
     Indocker.image 'simple_image' do
@@ -19,13 +15,13 @@ describe Indocker::ContainerRunnerService do
 
   it 'runs container' do
     expect(
-      docker.container_exists?('simple_container')
+      ioc.docker_commands.container_exists?('simple_container')
     ).to be true
   end
 
   it 'updates container metadata with container_id' do
     expect(
-      container_repository.detect { |container| container.name == container_name }.id
-    ).to eq(docker.get_container_id(container_name))
+      ioc.container_repository.get_container('simple_container').id
+    ).to eq(ioc.docker_commands.get_container_id('simple_container'))
   end
 end
