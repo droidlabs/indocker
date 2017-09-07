@@ -33,4 +33,8 @@ class Indocker::ImageBuildService
 
     image
   end
+
+  def run_container(container_name)
+    Indocker::ContainerRunnerService.new.run(container_name)
+  end
 end

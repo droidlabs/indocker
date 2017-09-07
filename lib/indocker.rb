@@ -6,6 +6,8 @@ require 'indocker/image_build_service'
 require 'indocker/container_metadata'
 require 'indocker/container_runner_service'
 
+require 'indocker/errors'
+
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
 

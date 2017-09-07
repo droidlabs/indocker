@@ -14,7 +14,7 @@ describe Indocker::ContainerRunnerService do
 
     Indocker.container 'simple_container', from: 'simple_image'
 
-    subject.run('simple_container', 'simple_image')
+    subject.run('simple_container')
   end
 
   it 'runs container' do
