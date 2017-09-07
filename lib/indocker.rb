@@ -16,6 +16,8 @@ require 'indocker/container_runner_service'
 
 require 'indocker/errors'
 
+require 'byebug'
+debugger
 SmartIoC.find_package_beans(:indocker, __dir__)
 
 module Indocker
