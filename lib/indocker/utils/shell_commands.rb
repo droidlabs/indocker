@@ -8,7 +8,8 @@ class Indocker::ShellCommands
       command = "sudo #{command}"
     end
 
-    puts command
+    Indocker.logger.info(command)
+
     system(command, out: $stdout, err: :out)
 
     exit 1 if !$?.success?
@@ -23,11 +24,11 @@ class Indocker::ShellCommands
       command = "sudo #{command}"
     end
 
-    puts command
+    Indocker.logger.info(command)
 
     IO.popen(command, err: [:child, :out]) do |io|
       result = io.read
-      puts result
+      Indocker.logger.debug(result)
 
       if block_given?
         yield result

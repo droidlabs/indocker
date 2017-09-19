@@ -1,11 +1,12 @@
 class Indocker::DockerCommands
   include SmartIoC::Iocify
   
+  BUILD_IMAGE_ID = /Successfully built ([\w\d]{12})/
+  RUN_CONTAINER_ID = /([\w\d]{64})/
+  
   bean   :docker_commands
   inject :shell_commands
 
-  BUILD_IMAGE_ID = /Successfully built ([\w\d]{12})/
-  RUN_CONTAINER_ID = /([\w\d]{64})/
 
   def image_exists?(image_name)
     get_image_id(image_name) != ""
