@@ -2,12 +2,18 @@ PATH
   remote: .
   specs:
     indocker (0.0.0)
+      docker-api
       smart_ioc
 
 GEM
   remote: https://rubygems.org/
   specs:
     byebug (9.1.0)
+    docker-api (1.33.6)
+      excon (>= 0.38.0)
+      json
+    excon (0.58.0)
+    json (2.1.0)
     smart_ioc (0.2.1)
 
 PLATFORMS

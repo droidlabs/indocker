@@ -3,25 +3,41 @@ require 'spec_helper'
 describe Indocker::ContainerRunnerService do
   subject { ioc.container_runner_service }
 
-  before do
-    Indocker.image 'simple_image' do
-      from 'hello-world'
+  context 'for existing image' do
+    before do
+      Indocker.image 'indocker_simple_image' do
+        from 'hello-world' 
+      end
+      ioc.image_build_service.build('indocker_simple_image')
+  
+      Indocker.container 'indocker_simple_container', from_repo: 'indocker_simple_image'
+      subject.run('indocker_simple_container')
+    end
+  
+    after { ioc.docker_api.find_container_by_name('indocker_simple_container').delete(force: true) }
+
+    it 'runs container' do
+      expect(
+        ioc.docker_api.container_exists_by_name?('indocker_simple_container')
+      ).to be true
     end
 
-    Indocker.container 'simple_container', from: 'simple_image'
-
-    subject.run('simple_container')
+    it 'updates container metadata with container_id' do
+      expect(
+        ioc.container_repository.get_container('indocker_simple_container').id
+      ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
+    end
   end
 
-  it 'runs container' do
-    expect(
-      ioc.docker_commands.container_exists?('simple_container')
-    ).to be true
-  end
+  context 'for non existing image' do
+    before do
+      Indocker.container 'indocker_simple_container', from_repo: 'invalid_image'
+    end
 
-  it 'updates container metadata with container_id' do
-    expect(
-      ioc.container_repository.get_container('simple_container').id
-    ).to eq(ioc.docker_commands.get_container_id('simple_container'))
+    it 'raises Indocker::Errors::ImageDoesNotDefined error' do
+      expect{
+        subject.run('indocker_simple_container')
+      }.to raise_error(Indocker::Errors::ImageDoesNotDefined)
+    end
   end
 end

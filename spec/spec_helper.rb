@@ -17,6 +17,15 @@ RSpec.configure do |config|
 
   config.mock_with :rspec
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  config.after(:each) do
+    ioc.docker_api.all_containers.each do |container|
+      container.delete(force: true) if container.info['Image'].match(/^indocker/)
+    end
+
+    Indocker.images.clear
+    Indocker.containers.clear
+  end
 end
 
 

@@ -1,12 +1,20 @@
 class Indocker::ImageMetadata
-  attr_reader   :name
+  DEFAULT_TAG = 'latest'
+
+  attr_reader   :repository, :tag
   attr_accessor :id
 
-  def initialize(name, &block)
-    @name            = name
+  def initialize(repository, &block)
+    @repository      = repository
+    @tag             = DEFAULT_TAG
+
     @docker_commands = []
 
     instance_eval &block
+  end
+
+  def full_name
+    "#{repository}:#{tag}"
   end
 
   def to_dockerfile
@@ -15,6 +23,10 @@ class Indocker::ImageMetadata
 
   def before_build_block
     @before_build || Proc.new {}
+  end
+
+  def build_dir
+    File.expand_path(File.join(Indocker::BUILD_DIR, repository))
   end
 
   private 

@@ -3,10 +3,18 @@ class Indocker::ImageRepository
   
   bean :image_repository
 
-  def get_image(image_name)
-    image = Indocker.images.detect { |image| image.name == image_name }
-    raise Indocker::Errors::ImageDoesNotDefined, image_name if image.nil?
+  def find_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+    image_metadata = Indocker.images.detect do |im| 
+      im.full_name == full_name(repo, tag: tag)
+    end
+    raise Indocker::Errors::ImageDoesNotDefined, full_name(repo, tag: tag) if image_metadata.nil?
 
-    image
+    image_metadata
+  end
+
+  private
+
+  def full_name(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+    "#{repo}:#{tag}"
   end
 end

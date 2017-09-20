@@ -1,4 +1,5 @@
 require 'smart_ioc'
+require 'docker-api'
 require 'logger'
 
 SmartIoC.find_package_beans(:indocker, __dir__)
@@ -9,6 +10,7 @@ require 'indocker/utils/docker_commands'
 require 'indocker/utils/test_logger'
 require 'indocker/utils/logger_factory'
 require 'indocker/utils/test_logger_factory'
+require 'indocker/utils/docker_api'
 
 require 'indocker/image_metadata'
 require 'indocker/image_repository'
@@ -24,6 +26,7 @@ require 'indocker/errors'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
+  BUILD_DIR       = '.indocker/tmp/build'
 
   class << self
     def images
@@ -38,12 +41,8 @@ module Indocker
       @containers ||= []
     end
 
-    def container(container_name, from:)
-      containers << Indocker::ContainerMetadata.new(container_name, from: from)
-    end
-
-    def build_dir(root)
-      File.expand_path(root, '.indocker/tmp/build')
+    def container(container_name, from_repo:, from_tag: Indocker::ImageMetadata::DEFAULT_TAG)
+      containers << Indocker::ContainerMetadata.new(container_name, from_repo: from_repo, from_tag: from_tag)
     end
 
     def logger

@@ -4,31 +4,31 @@ class Indocker::ImageBuildService
   bean   :image_build_service
   inject :image_repository
   inject :image_dependencies_manager
-  inject :docker_commands
   inject :image_prepare_service
+  inject :docker_api
 
-  def build(image_name)
-    image_name = image_name.to_s
+  def build(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+    image_metadata = image_repository.find_by_repo(repo, tag: tag)
 
-    image_dependencies = image_dependencies_manager.get_image_dependencies!(image_name)
-    image_dependencies.each {|image_name| build(image_name) }
+    image_dependencies = image_dependencies_manager.get_image_dependencies!(image_metadata)
+    image_dependencies.each {|dependency| build(dependency.repository, tag: dependency.tag) }
 
-    image_prepare_service.prepare(image_name)
-    build_image(image_name)
+    image_prepare_service.prepare(image_metadata)
+    build_image(image_metadata)
   end
 
   private
 
-  def build_image(image_name)
-    image = image_repository.get_image(image_name)
+  def build_image(image_metadata)
+    image = docker_api.find_image_by_repo(image_metadata.repository, tag: image_metadata.tag)
 
-    build_dir = File.join(Indocker.build_dir('~/dev/indocker/spec/example'), image_name)
-    FileUtils.mkdir_p(build_dir)
+    FileUtils.mkdir_p(image_metadata.build_dir)
 
-    File.open(File.join(build_dir, Indocker::DOCKERFILE_NAME), 'w') {|f| f.write image.to_dockerfile}
-    
-    FileUtils.cd(build_dir) do
-      image.id = docker_commands.build_image(image_name)
+    File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
+      f.write image_metadata.to_dockerfile
     end
+    
+    image = docker_api.build_from_dir(image_metadata)
+    image_metadata.id = docker_api.find_image_by_repo(image_metadata.repository, tag: image_metadata.tag).id
   end
 end

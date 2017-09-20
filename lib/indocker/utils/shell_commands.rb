@@ -27,6 +27,9 @@ class Indocker::ShellCommands
     Indocker.logger.info(command)
 
     IO.popen(command, err: [:child, :out]) do |io|
+      puts '========='
+      puts command
+      puts '========='
       result = io.read
       Indocker.logger.debug(result)
 

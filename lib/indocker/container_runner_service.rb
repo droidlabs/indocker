@@ -4,14 +4,15 @@ class Indocker::ContainerRunnerService
   bean   :container_runner_service
   inject :image_repository
   inject :container_repository
-  inject :docker_commands
+  inject :docker_api
 
   def run(container_name)
-    container = container_repository.get_container(container_name)
+    container_metadata = container_repository.get_container(container_name)
+        
+    image = image_repository.find_by_repo(container_metadata.from_repo, tag: container_metadata.from_tag)
+    container = docker_api.run_container(container_metadata)
+    container_metadata.id = container.id
 
-    image = image_repository.get_image(container.from)
-    
-    container_id = docker_commands.run_container(container.name, image.name)
-    container.id = container_id
+    container
   end
 end
