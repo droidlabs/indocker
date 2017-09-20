@@ -10,6 +10,8 @@ SmartIoC.set_load_proc do |location|
   require(location)
 end
 
+Indocker.root(File.expand_path(File.join(__dir__, '../tmp')))
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -17,10 +19,6 @@ RSpec.configure do |config|
 
   config.mock_with :rspec
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
-  config.before(:all) do
-    Indocker.root(File.expand_path(__dir__, 'tmp'))
-  end
 
   config.after(:each) do
     ioc.docker_api.all_containers.each do |container|
