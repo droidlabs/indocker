@@ -26,7 +26,7 @@ require 'indocker/errors'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
-  BUILD_DIR       = '.indocker/tmp/build'
+  BUILD_DIR       = 'tmp/build'
 
   class << self
     def images
@@ -47,6 +47,12 @@ module Indocker
 
     def logger
       @logger ||= ioc.logger
+    end
+
+    def root(dir = nil)
+      return @root if @root
+
+      @root = dir
     end
   end
 end

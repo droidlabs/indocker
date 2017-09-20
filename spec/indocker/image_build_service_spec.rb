@@ -3,14 +3,6 @@ require 'spec_helper'
 describe 'Indocker::ImageBuildService' do
   subject { ioc.image_build_service }
 
-  context 'for not existing image' do
-    it 'raises Indocker::Errors::ImageDoesNotDefined' do
-      expect{
-        subject.build('indocker_image_without_dependencies')
-      }.to raise_error(Indocker::Errors::ImageDoesNotDefined)
-    end
-  end
-
   context 'for image without dependencies' do
     before do
       Indocker.image('indocker_image_without_dependencies') do
@@ -38,6 +30,14 @@ describe 'Indocker::ImageBuildService' do
       expect_any_instance_of(Indocker::ImagePrepareService).to receive(:prepare).and_return('test')
 
       subject.build('indocker_image_without_dependencies')
+    end
+
+    it 'deletes build_path after image building' do
+      image_metadata = ioc.image_repository.find_by_repo('indocker_image_without_dependencies')
+
+      expect(
+        File.exists?(image_metadata.build_dir)
+      ).to be false
     end
   end
 
@@ -94,6 +94,14 @@ describe 'Indocker::ImageBuildService' do
           ioc.container_repository.get_container('indocker_simple_container').id
         ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
       end
+    end
+  end
+
+  context 'for not existing image' do
+    it 'raises Indocker::Errors::ImageDoesNotDefined' do
+      expect{
+        subject.build('indocker_image_without_dependencies')
+      }.to raise_error(Indocker::Errors::ImageDoesNotDefined)
     end
   end
 end

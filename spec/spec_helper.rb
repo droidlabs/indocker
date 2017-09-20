@@ -18,6 +18,10 @@ RSpec.configure do |config|
   config.mock_with :rspec
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
+  config.before(:all) do
+    Indocker.root(File.expand_path(__dir__, 'tmp'))
+  end
+
   config.after(:each) do
     ioc.docker_api.all_containers.each do |container|
       container.delete(force: true) if container.info['Image'].match(/^indocker/)

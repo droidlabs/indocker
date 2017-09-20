@@ -26,7 +26,7 @@ class Indocker::ImageMetadata
   end
 
   def build_dir
-    File.expand_path(File.join(Indocker::BUILD_DIR, repository))
+    File.join(Indocker.root, Indocker::BUILD_DIR, repository)
   end
 
   private 

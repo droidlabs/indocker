@@ -30,5 +30,7 @@ class Indocker::ImageBuildService
     
     image = docker_api.build_from_dir(image_metadata)
     image_metadata.id = docker_api.find_image_by_repo(image_metadata.repository, tag: image_metadata.tag).id
+
+    FileUtils.rm_rf(image_metadata.build_dir)
   end
 end
