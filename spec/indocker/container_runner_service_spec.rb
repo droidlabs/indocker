@@ -7,6 +7,7 @@ describe Indocker::ContainerRunnerService do
     before do
       Indocker.image 'indocker_simple_image' do
         from 'hello-world' 
+        workdir '.'
       end
       ioc.image_build_service.build('indocker_simple_image')
   
@@ -14,8 +15,6 @@ describe Indocker::ContainerRunnerService do
       subject.run('indocker_simple_container')
     end
   
-    after { ioc.docker_api.find_container_by_name('indocker_simple_container').delete(force: true) }
-
     it 'runs container' do
       expect(
         ioc.docker_api.container_exists_by_name?('indocker_simple_container')

@@ -5,35 +5,35 @@ describe 'Indocker::ImageBuildService' do
 
   context 'for image without dependencies' do
     before do
-      Indocker.image('indocker_image_without_dependencies') do
+      Indocker.image('indocker_image') do
         before_build { 'test' }
         
         from 'hello-world'
+        workdir '.'
       end
 
-      subject.build('indocker_image_without_dependencies')
+      subject.build('indocker_image')
     end
 
-    it 'builds image_without_dependencies' do
+    it 'builds image without dependencies' do
       expect(
-        ioc.docker_api.image_exists_by_repo?('indocker_image_without_dependencies')
+        ioc.docker_api.image_exists_by_repo?('indocker_image')
       ).to be true
     end
 
     it 'updates image_metadata with image_id' do
       expect(
-        ioc.image_repository.find_by_repo('indocker_image_without_dependencies').id
-      ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_without_dependencies').id)
+        ioc.image_repository.find_by_repo('indocker_image').id
+      ).to eq(ioc.docker_api.find_image_by_repo('indocker_image').id)
     end
 
     it 'runs before_build block for image' do
       expect_any_instance_of(Indocker::ImagePrepareService).to receive(:prepare).and_return('test')
-
-      subject.build('indocker_image_without_dependencies')
+      subject.build('indocker_image')
     end
 
     it 'deletes build_path after image building' do
-      image_metadata = ioc.image_repository.find_by_repo('indocker_image_without_dependencies')
+      image_metadata = ioc.image_repository.find_by_repo('indocker_image')
 
       expect(
         File.exists?(image_metadata.build_dir)
@@ -44,40 +44,43 @@ describe 'Indocker::ImageBuildService' do
   context 'for image with dependencies' do
     context 'circular dependencies' do
       before do
-        Indocker.image('indocker_image_with_circular_dependency') do
-          before_build { run_container 'indocker_container_with_circular_dependency' }
+        Indocker.image('indocker_circular_image') do
+          before_build { run_container 'circular_container' }
           
           from 'hello-world'
+          workdir '.'
         end
 
-        Indocker.container 'indocker_container_with_circular_dependency', from_repo: 'indocker_image_with_circular_dependency'
+        Indocker.container 'circular_container', from_repo: 'indocker_circular_image'
       end
 
       it 'raises Indocker::Errors::CircularImageDependency' do
         expect{
-          subject.build('indocker_image_with_circular_dependency')
+          subject.build('indocker_circular_image')
         }.to raise_error(Indocker::Errors::CircularImageDependency)
       end
     end
 
     context 'for non circular dependencies' do
       before do
-        Indocker.image('indocker_image_for_container') do          
+        Indocker.image('indocker_image') do          
           from 'hello-world'
+          workdir '.'
         end
 
         Indocker.image('indocker_image_with_dependency') do
-          before_build { run_container 'indocker_simple_container' }
+          before_build { run_container 'container' }
           
           from 'hello-world'
+          workdir '.'
         end
 
-        Indocker.container 'indocker_simple_container', from_repo: 'indocker_image_for_container'
+        Indocker.container 'container', from_repo: 'indocker_image'
         
         subject.build('indocker_image_with_dependency')
       end
 
-      it 'builds indocker_image_with_dependency' do
+      it 'builds image with dependency' do
         expect(
           ioc.docker_api.image_exists_by_repo?('indocker_image_with_dependency')
         ).to be true
@@ -91,8 +94,8 @@ describe 'Indocker::ImageBuildService' do
   
       it 'runs before_build block for image' do
         expect(
-          ioc.container_repository.get_container('indocker_simple_container').id
-        ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
+          ioc.container_repository.get_container('container').id
+        ).to eq(ioc.docker_api.find_container_by_name('container').id)
       end
     end
   end

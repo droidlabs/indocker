@@ -17,6 +17,7 @@ require 'indocker/image_repository'
 require 'indocker/image_prepare_service'
 require 'indocker/image_build_service'
 require 'indocker/image_dependencies_manager'
+require 'indocker/image_pusher'
 
 require 'indocker/container_metadata'
 require 'indocker/container_repository'

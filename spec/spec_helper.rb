@@ -25,6 +25,10 @@ RSpec.configure do |config|
       container.delete(force: true) if container.info['Image'].match(/^indocker/)
     end
 
+    ioc.docker_api.all_images.each do |image|
+      image.remove(force: true) if image.info['RepoTags'].find {|rt| rt =~ /^indocker/}
+    end
+
     Indocker.images.clear
     Indocker.containers.clear
   end
