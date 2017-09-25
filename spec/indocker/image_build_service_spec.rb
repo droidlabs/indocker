@@ -101,10 +101,10 @@ describe 'Indocker::ImageBuildService' do
   end
 
   context 'for not existing image' do
-    it 'raises Indocker::Errors::ImageDoesNotDefined' do
+    it 'raises Indocker::Errors::ImageIsNotDefined' do
       expect{
         subject.build('indocker_image_without_dependencies')
-      }.to raise_error(Indocker::Errors::ImageDoesNotDefined)
+      }.to raise_error(Indocker::Errors::ImageIsNotDefined)
     end
   end
 end

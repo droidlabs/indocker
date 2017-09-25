@@ -7,7 +7,7 @@ class Indocker::ImageRepository
     image_metadata = Indocker.images.detect do |im| 
       im.full_name == full_name(repo, tag: tag)
     end
-    raise Indocker::Errors::ImageDoesNotDefined, full_name(repo, tag: tag) if image_metadata.nil?
+    raise Indocker::Errors::ImageIsNotDefined, full_name(repo, tag: tag) if image_metadata.nil?
 
     image_metadata
   end

@@ -33,10 +33,10 @@ describe Indocker::ContainerRunnerService do
       Indocker.container 'indocker_simple_container', from_repo: 'invalid_image'
     end
 
-    it 'raises Indocker::Errors::ImageDoesNotDefined error' do
+    it 'raises Indocker::Errors::ImageIsNotDefined error' do
       expect{
         subject.run('indocker_simple_container')
-      }.to raise_error(Indocker::Errors::ImageDoesNotDefined)
+      }.to raise_error(Indocker::Errors::ImageIsNotDefined)
     end
   end
 end
