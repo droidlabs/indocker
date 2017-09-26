@@ -1,4 +1,4 @@
-Indocker.image 'sample_package' do
+Indocker.define_image 'sample_package' do
   before_build do
     extract 'assets_compiler', from: 'assets', to: 'assets'
   end
@@ -16,7 +16,7 @@ Indocker.container 'assets_compiler' do
   from 'assets_compiler'
 end
 
-Indocker.image 'assets_compiler' do
+Indocker.define_image 'assets_compiler' do
   from 'ubuntu'
 
   copy 'assets', 'assets'

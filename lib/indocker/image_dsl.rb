@@ -21,7 +21,7 @@ class Indocker::ImageDSL
   end
 
   def before_build(&block)
-    @commands << Indocker::Commands::BeforeBuild.new(&block)
+    # do nothing
   end
   
   def from(*args)

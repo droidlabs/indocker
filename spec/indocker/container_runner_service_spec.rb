@@ -5,13 +5,13 @@ describe Indocker::ContainerRunnerService do
 
   context 'for existing image' do
     before do
-      Indocker.image 'indocker_simple_image' do
+      Indocker.define_image 'indocker_simple_image' do
         from 'hello-world' 
         workdir '.'
       end
       ioc.image_build_service.build('indocker_simple_image')
   
-      Indocker.container 'indocker_simple_container', from_repo: 'indocker_simple_image'
+      Indocker.define_container 'indocker_simple_container', from_repo: 'indocker_simple_image'
       subject.run('indocker_simple_container')
     end
   
@@ -30,7 +30,7 @@ describe Indocker::ContainerRunnerService do
 
   context 'for non existing image' do
     before do
-      Indocker.container 'indocker_simple_container', from_repo: 'invalid_image'
+      Indocker.define_container 'indocker_simple_container', from_repo: 'invalid_image'
     end
 
     it 'raises Indocker::Errors::ImageIsNotDefined error' do

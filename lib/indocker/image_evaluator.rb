@@ -4,8 +4,7 @@ class Indocker::ImageEvaluator
   bean   :image_evaluator
   inject :partial_repository
 
-  def evaluate(context, &block)
-    
+  def evaluate(context = Indocker::ImageContext.new, &block)
     image_dsl = Indocker::ImageDSL.new(context)
     image_dsl.instance_eval(&block)
 

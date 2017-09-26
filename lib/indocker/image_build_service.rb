@@ -4,28 +4,25 @@ class Indocker::ImageBuildService
   bean   :image_build_service
   inject :image_repository
   inject :image_dependencies_manager
-  inject :image_prepare_service
+  inject :container_runner_service
+  inject :image_evaluator
   inject :docker_api
 
   def build(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     image_metadata = image_repository.find_by_repo(repo, tag: tag)
 
-    image_dependencies = image_dependencies_manager.get_image_dependencies!(image_metadata)
-    image_dependencies.each {|dependency| build(dependency.repository, tag: dependency.tag) }
+    image_definition = image_evaluator.evaluate(Indocker::ImageContext.new, &image_metadata.definition)
 
-    image_prepare_service.prepare(image_metadata)
-    build_image(image_metadata)
-  end
+    image_dependencies_manager.get_image_dependencies!(image_metadata).each do |dependency| 
+      build(dependency.repository, tag: dependency.tag)
+    end
 
-  private
-
-  def build_image(image_metadata)
-    image = docker_api.find_image_by_repo(image_metadata.repository, tag: image_metadata.tag)
-
+    commands_runner.run_all(image_definition.prepare_commands)
+    
     FileUtils.mkdir_p(image_metadata.build_dir)
-
+    
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
-      f.write image_metadata.to_dockerfile
+      f.puts image_definition.map(&:to_s)
     end
     
     image = docker_api.build_from_dir(image_metadata)

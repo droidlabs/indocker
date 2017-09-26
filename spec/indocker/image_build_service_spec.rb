@@ -5,7 +5,7 @@ describe 'Indocker::ImageBuildService' do
 
   context 'for image without dependencies' do
     before do
-      Indocker.image('indocker_image') do
+      Indocker.define_image('indocker_image') do
         before_build { 'test' }
         
         from 'hello-world'
@@ -44,14 +44,14 @@ describe 'Indocker::ImageBuildService' do
   context 'for image with dependencies' do
     context 'circular dependencies' do
       before do
-        Indocker.image('indocker_circular_image') do
+        Indocker.define_image('indocker_circular_image') do
           before_build { run_container 'circular_container' }
           
           from 'hello-world'
           workdir '.'
         end
 
-        Indocker.container 'circular_container', from_repo: 'indocker_circular_image'
+        Indocker.define_container 'circular_container', from_repo: 'indocker_circular_image'
       end
 
       it 'raises Indocker::Errors::CircularImageDependency' do
@@ -63,19 +63,19 @@ describe 'Indocker::ImageBuildService' do
 
     context 'for non circular dependencies' do
       before do
-        Indocker.image('indocker_image') do          
+        Indocker.define_image('indocker_image') do          
           from 'hello-world'
           workdir '.'
         end
 
-        Indocker.image('indocker_image_with_dependency') do
+        Indocker.define_image('indocker_image_with_dependency') do
           before_build { run_container 'container' }
           
           from 'hello-world'
           workdir '.'
         end
 
-        Indocker.container 'container', from_repo: 'indocker_image'
+        Indocker.define_container 'container', from_repo: 'indocker_image'
         
         subject.build('indocker_image_with_dependency')
       end

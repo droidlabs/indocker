@@ -4,6 +4,7 @@ class Indocker::ImageDependenciesManager
   bean   :image_dependencies_manager
   inject :image_repository
   inject :container_repository
+  inject :image_evaluator
 
   def get_image_dependencies!(image_metadata)
     check_circular_dependencies!(image_metadata)
@@ -28,8 +29,9 @@ class Indocker::ImageDependenciesManager
   def get_image_dependencies(image_metadata)
     @container_dependencies = []
 
-    before_build = image_metadata.before_build_block
-    instance_exec &before_build
+    image_evaluator.evaluate(&image_metadata.definition)
+      .select {|c| c.instance_of?(Indocker::Commands::BeforeBuild)}
+      .each   {|c| instance_exec(&c.definition)}
 
     @container_dependencies.map do |container_name| 
       container = container_repository.get_container(container_name)
