@@ -12,7 +12,7 @@ describe Indocker::ContainerRunnerService do
       ioc.image_build_service.build('indocker_simple_image')
   
       Indocker.define_container 'indocker_simple_container', from_repo: 'indocker_simple_image'
-      subject.run('indocker_simple_container')
+      subject.create('indocker_simple_container')
     end
   
     it 'runs container' do
@@ -35,7 +35,7 @@ describe Indocker::ContainerRunnerService do
 
     it 'raises Indocker::Errors::ImageIsNotDefined error' do
       expect{
-        subject.run('indocker_simple_container')
+        subject.create('indocker_simple_container')
       }.to raise_error(Indocker::Errors::ImageIsNotDefined)
     end
   end

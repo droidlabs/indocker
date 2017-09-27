@@ -27,7 +27,7 @@ class Indocker::ImageDependenciesManager
   end
 
   def get_image_dependencies(image_metadata)
-    image_evaluator.evaluate(&image_metadata.definition)
+    image_evaluator.evaluate(Indocker::ImageContext.new(build_dir: image_metadata.build_dir), &image_metadata.definition)
       .select {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}  
       .map do |c| 
         container = container_repository.get_container(c.container_name)

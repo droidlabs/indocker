@@ -13,7 +13,7 @@ class Indocker::DockerApi
     !find_image_by_repo(repo, tag: tag).nil?
   end
 
-  def run_container(container_metadata)
+  def create_container(container_metadata)
     Docker::Container.create('Image' => container_metadata.from_image, name: container_metadata.name)
   end
 

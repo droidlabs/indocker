@@ -32,11 +32,19 @@ class Indocker::ImageDSL
     @commands << Indocker::Commands::Run.new(*args)
   end
 
+  def cmd(*args)
+    @commands << Indocker::Commands::Cmd.new(*args)
+  end
+
+  def copy(*args)
+    @commands << Indocker::Commands::Copy.new(*args)
+  end
+
   def before_build(&block)
     instance_exec &block
   end
 
   def docker_cp(container_name, &block)
-    @commands << Indocker::PrepareCommands::DockerCp.new(container_name, &block)
+    @commands << Indocker::PrepareCommands::DockerCp.new(container_name, @context.build_dir, &block)
   end
 end

@@ -9,7 +9,7 @@ module Indocker::Commands
     end
   end
 
-  class From    < Indocker::Commands::Base
+  class From < Indocker::Commands::Base
     def type
       'FROM'
     end
@@ -21,9 +21,27 @@ module Indocker::Commands
     end
   end
   
-  class Run     < Indocker::Commands::Base
+  class Run < Indocker::Commands::Base
     def type
       'RUN'
+    end
+  end
+  
+  class Run < Indocker::Commands::Base
+    def type
+      'RUN'
+    end
+  end
+  
+  class Cmd < Indocker::Commands::Base
+    def type
+      'CMD'
+    end
+  end
+  
+  class Copy < Indocker::Commands::Base
+    def type
+      'COPY'
     end
   end
 end

@@ -40,7 +40,8 @@ describe 'Indocker::ImageEvaluator' do
 
   context 'commands list' do
     let(:image_metadata) { ioc.image_repository.find_by_repo('example_image') }
-    let(:commands)       { subject.evaluate(Indocker::ImageContext.new, &image_metadata.definition) }
+    let(:context)        { Indocker::ImageContext.new(build_dir: 'some/path') }
+    let(:commands)       { subject.evaluate(context, &image_metadata.definition) }
 
     it 'returns array of commands' do
       expect(commands).to be_a(Array)

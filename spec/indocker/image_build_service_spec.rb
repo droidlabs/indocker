@@ -9,7 +9,7 @@ describe 'Indocker::ImageBuildService' do
         before_build { 'test' }
         
         from 'hello-world'
-        workdir '.'
+        workdir '/'
       end
 
       subject.build('indocker_image')
@@ -41,13 +41,11 @@ describe 'Indocker::ImageBuildService' do
       before do
         Indocker.define_image('indocker_circular_image') do
           before_build do
-            docker_cp 'circular_container' do
-              copy '.', '.'
-            end
+            docker_cp 'circular_container'
           end
           
           from 'hello-world'
-          workdir '.'
+          workdir '/'
         end
 
         Indocker.define_container 'circular_container', from_repo: 'indocker_circular_image'
@@ -63,36 +61,43 @@ describe 'Indocker::ImageBuildService' do
     context 'for non circular dependencies' do
       before do
         Indocker.define_image('indocker_image') do          
-          from 'hello-world'
-          workdir '.'
+          from 'alpine:latest'
+          workdir '/'
+          run 'echo "Hello World" > test.txt'
         end
 
         Indocker.define_image('indocker_image_with_dependency') do
           before_build do
-            docker_cp 'container'
+            docker_cp 'container' do
+              copy 'test.txt', 'test.txt'
+            end
           end
           
-          from 'hello-world'
-          workdir '.'
+          from 'alpine:latest'
+          workdir '/'
+          copy 'test.txt', 'test.txt'
         end
 
         Indocker.define_container 'container', from_repo: 'indocker_image'
-        
-        subject.build('indocker_image_with_dependency')
       end
 
       it 'runs before_build block for image' do
-        expect_any_instance_of(Indocker::CommandsRunner).to receive(:run_all).at_least(:once)
+        # expect_any_instance_of(Indocker::CommandsRunner).to receive(:run_all).at_least(:once)
+
         subject.build('indocker_image_with_dependency')
       end
 
       it 'builds image with dependency' do
+        subject.build('indocker_image_with_dependency')
+        
         expect(
           ioc.docker_api.image_exists_by_repo?('indocker_image_with_dependency')
         ).to be true
       end
   
       it 'updates image_metadata with image_id' do
+        subject.build('indocker_image_with_dependency')
+
         expect(
           ioc.image_repository.find_by_repo('indocker_image_with_dependency').id
         ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_with_dependency').id)
