@@ -5,24 +5,27 @@ class Indocker::ImageBuildService
   inject :image_repository
   inject :image_dependencies_manager
   inject :container_runner_service
+  inject :commands_runner
   inject :image_evaluator
   inject :docker_api
 
   def build(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     image_metadata = image_repository.find_by_repo(repo, tag: tag)
 
-    image_definition = image_evaluator.evaluate(Indocker::ImageContext.new, &image_metadata.definition)
+    commands = image_evaluator.evaluate(Indocker::ImageContext.new, &image_metadata.definition)
 
     image_dependencies_manager.get_image_dependencies!(image_metadata).each do |dependency| 
       build(dependency.repository, tag: dependency.tag)
     end
 
-    commands_runner.run_all(image_definition.prepare_commands)
+    commands_runner.run_all(
+      commands.select {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}
+    )
     
     FileUtils.mkdir_p(image_metadata.build_dir)
     
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
-      f.puts image_definition.map(&:to_s)
+      f.puts commands.reject {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}.map(&:to_s)
     end
     
     image = docker_api.build_from_dir(image_metadata)

@@ -27,22 +27,12 @@ class Indocker::ImageDependenciesManager
   end
 
   def get_image_dependencies(image_metadata)
-    @container_dependencies = []
-
     image_evaluator.evaluate(&image_metadata.definition)
-      .select {|c| c.instance_of?(Indocker::Commands::BeforeBuild)}
-      .each   {|c| instance_exec(&c.definition)}
+      .select {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}  
+      .map do |c| 
+        container = container_repository.get_container(c.container_name)
 
-    @container_dependencies.map do |container_name| 
-      container = container_repository.get_container(container_name)
-      image_repository.find_by_repo(container.from_repo, tag: container.from_tag)
-    end
-  end
-
-
-  private
-
-  def run_container(container_name)
-    @container_dependencies.push container_name
+        image_repository.find_by_repo(container.from_repo, tag: container.from_tag)
+      end
   end
 end

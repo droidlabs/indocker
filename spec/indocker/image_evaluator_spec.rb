@@ -9,7 +9,9 @@ describe 'Indocker::ImageEvaluator' do
       set_arg(:server,      :development)
     
       before_build do
-        'Image before_build block'
+        docker_cp 'helper_container' do
+          copy '.', '.'
+        end
       end
     
       from 'ruby:2.3.1'
@@ -26,7 +28,9 @@ describe 'Indocker::ImageEvaluator' do
       set_arg(:notification_enabled, true)
     
       before_build do
-        'Partial before_build block'
+        docker_cp 'yet_anoter_helper_container' do
+          copy '.', '.'
+        end
       end
 
       run "echo '#{wait_connection}'"
@@ -47,9 +51,9 @@ describe 'Indocker::ImageEvaluator' do
     end
 
     it 'rerurns proper commands classes' do
-      expect(commands[0]).to be_a(Indocker::Commands::BeforeBuild)
+      expect(commands[0]).to be_a(Indocker::PrepareCommands::DockerCp)
       expect(commands[1]).to be_a(Indocker::Commands::From)
-      expect(commands[2]).to be_a(Indocker::Commands::BeforeBuild)
+      expect(commands[2]).to be_a(Indocker::PrepareCommands::DockerCp)
       expect(commands[3]).to be_a(Indocker::Commands::Run)
       expect(commands[4]).to be_a(Indocker::Commands::Run)
       expect(commands[5]).to be_a(Indocker::Commands::Workdir)

@@ -29,7 +29,11 @@ require 'indocker/partial'
 require 'indocker/partial_repository'
 
 require 'indocker/errors'
-require 'indocker/commands'
+
+require 'indocker/commands_runner'
+require 'indocker/commands/base'
+require 'indocker/commands/partial'
+require 'indocker/commands/prepare_commands'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'

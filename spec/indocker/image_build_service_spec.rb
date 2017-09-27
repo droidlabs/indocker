@@ -27,11 +27,6 @@ describe 'Indocker::ImageBuildService' do
       ).to eq(ioc.docker_api.find_image_by_repo('indocker_image').id)
     end
 
-    it 'runs before_build block for image' do
-      expect_any_instance_of(Indocker::ImagePrepareService).to receive(:prepare).and_return('test')
-      subject.build('indocker_image')
-    end
-
     it 'deletes build_path after image building' do
       image_metadata = ioc.image_repository.find_by_repo('indocker_image')
 
@@ -45,7 +40,11 @@ describe 'Indocker::ImageBuildService' do
     context 'circular dependencies' do
       before do
         Indocker.define_image('indocker_circular_image') do
-          before_build { run_container 'circular_container' }
+          before_build do
+            docker_cp 'circular_container' do
+              copy '.', '.'
+            end
+          end
           
           from 'hello-world'
           workdir '.'
@@ -69,7 +68,9 @@ describe 'Indocker::ImageBuildService' do
         end
 
         Indocker.define_image('indocker_image_with_dependency') do
-          before_build { run_container 'container' }
+          before_build do
+            docker_cp 'container'
+          end
           
           from 'hello-world'
           workdir '.'
@@ -77,6 +78,11 @@ describe 'Indocker::ImageBuildService' do
 
         Indocker.define_container 'container', from_repo: 'indocker_image'
         
+        subject.build('indocker_image_with_dependency')
+      end
+
+      it 'runs before_build block for image' do
+        expect_any_instance_of(Indocker::CommandsRunner).to receive(:run_all).at_least(:once)
         subject.build('indocker_image_with_dependency')
       end
 
@@ -90,12 +96,6 @@ describe 'Indocker::ImageBuildService' do
         expect(
           ioc.image_repository.find_by_repo('indocker_image_with_dependency').id
         ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_with_dependency').id)
-      end
-  
-      it 'runs before_build block for image' do
-        expect(
-          ioc.container_repository.get_container('container').id
-        ).to eq(ioc.docker_api.find_container_by_name('container').id)
       end
     end
   end

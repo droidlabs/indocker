@@ -19,10 +19,6 @@ class Indocker::ImageDSL
   def partial(name, opts = {})
     @commands << Indocker::Commands::Partial.new(name, @context, opts)
   end
-
-  def before_build(&block)
-    # do nothing
-  end
   
   def from(*args)
     @commands << Indocker::Commands::From.new(*args)
@@ -34,5 +30,13 @@ class Indocker::ImageDSL
 
   def run(*args)
     @commands << Indocker::Commands::Run.new(*args)
+  end
+
+  def before_build(&block)
+    instance_exec &block
+  end
+
+  def docker_cp(container_name, &block)
+    @commands << Indocker::PrepareCommands::DockerCp.new(container_name, &block)
   end
 end
