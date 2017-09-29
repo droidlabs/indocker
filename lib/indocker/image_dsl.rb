@@ -40,8 +40,12 @@ class Indocker::ImageDSL
     @commands << Indocker::Commands::Copy.new(*args)
   end
 
+  def entrypoint(*args)
+    @commands << Indocker::Commands::Entrypoint.new(*args)
+  end
+
   def before_build(&block)
-    instance_exec &block
+    instance_exec @context.build_dir, &block
   end
 
   def docker_cp(container_name, &block)

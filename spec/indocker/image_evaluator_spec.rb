@@ -3,26 +3,7 @@ require 'spec_helper'
 describe 'Indocker::ImageEvaluator' do
   subject { ioc.image_evaluator }
 
-  before do
-    Indocker.define_image 'example_image' do
-      set_arg(:environment, :stading)
-      set_arg(:server,      :development)
-    
-      before_build do
-        docker_cp 'helper_container' do
-          copy '.', '.'
-        end
-      end
-    
-      from 'ruby:2.3.1'
-    
-      partial 'example_partial', wait_connection: false, notification_enabled: true
-  
-      workdir '/app'
-  
-      run "echo 'Hello World'"
-    end
-    
+  before do    
     Indocker.define_partial 'example_partial' do
       set_arg(:wait_connection,      true)
       set_arg(:notification_enabled, true)
@@ -39,9 +20,29 @@ describe 'Indocker::ImageEvaluator' do
   end
 
   context 'commands list' do
-    let(:image_metadata) { ioc.image_repository.find_by_repo('example_image') }
+    let(:example_image_definition) do
+      Proc.new do
+        set_arg(:environment, :stading)
+        set_arg(:server,      :development)
+      
+        before_build do
+          docker_cp 'helper_container' do
+            copy '.', '.'
+          end
+        end
+      
+        from 'ruby:2.3.1'
+      
+        partial 'example_partial', wait_connection: false, notification_enabled: true
+    
+        workdir '/app'
+    
+        run "echo 'Hello World'"
+      end
+    end
+    
     let(:context)        { Indocker::ImageContext.new(build_dir: 'some/path') }
-    let(:commands)       { subject.evaluate(context, &image_metadata.definition) }
+    let(:commands)       { subject.evaluate(context, &example_image_definition) }
 
     it 'returns array of commands' do
       expect(commands).to be_a(Array)

@@ -1,5 +1,7 @@
 module Indocker::Commands
   class Base
+    attr_reader :args
+    
     def initialize(*args)
       @args = args
     end
@@ -10,6 +12,21 @@ module Indocker::Commands
   end
 
   class From < Indocker::Commands::Base
+    attr_reader :repo, :tag
+
+    def initialize(repo_tag, tag: nil)
+      @repo = repo_tag.split(':')[0]
+      @tag  = tag || repo_tag.split(':')[1] || Indocker::ImageMetadata::DEFAULT_TAG
+    end
+
+    def dockerhub_image?
+      repo.is_a?(String)
+    end
+
+    def to_s
+      "#{type} #{repo}:#{tag}"
+    end
+
     def type
       'FROM'
     end
@@ -42,6 +59,12 @@ module Indocker::Commands
   class Copy < Indocker::Commands::Base
     def type
       'COPY'
+    end
+  end
+  
+  class Entrypoint < Indocker::Commands::Base
+    def type
+      'ENTRYPOINT'
     end
   end
 end

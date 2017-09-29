@@ -6,10 +6,10 @@ class Indocker::ImageDependenciesManager
   inject :container_repository
   inject :image_evaluator
 
-  def get_image_dependencies!(image_metadata)
+  def get_dependencies!(image_metadata)
     check_circular_dependencies!(image_metadata)
 
-    get_image_dependencies(image_metadata)
+    get_dependencies(image_metadata)
   end
 
   private
@@ -19,20 +19,24 @@ class Indocker::ImageDependenciesManager
 
     used_images.push(image_metadata.full_name)
 
-    get_image_dependencies(image_metadata).each do |dependency|
+    get_dependencies(image_metadata).each do |dependency|
       check_circular_dependencies!(dependency, used_images)
     end
 
     nil
   end
 
-  def get_image_dependencies(image_metadata)
-    image_evaluator.evaluate(Indocker::ImageContext.new(build_dir: image_metadata.build_dir), &image_metadata.definition)
-      .select {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}  
-      .map do |c| 
-        container = container_repository.get_container(c.container_name)
+  def get_dependencies(image_metadata)
+    container_dependencies = image_metadata.prepare_commands.map do |c|
+      container = container_repository.get_container(c.container_name)
+      
+      image_repository.find_by_repo(container.from_repo, tag: container.from_tag)
+    end
+    
+    return container_dependencies if image_metadata.dockerhub_image?
+    
+    from_image_dependency = image_repository.find_by_repo(image_metadata.from_image) # TODO: add tags
 
-        image_repository.find_by_repo(container.from_repo, tag: container.from_tag)
-      end
+    container_dependencies.push from_image_dependency
   end
 end

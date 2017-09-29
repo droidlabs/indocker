@@ -14,12 +14,17 @@ class Indocker::DockerApi
   end
 
   def create_container(container_metadata)
-    Docker::Container.create('Image' => container_metadata.from_image, name: container_metadata.name)
+    Docker::Container.create('Image' => container_metadata.from_image, 'name' => container_metadata.name)
   end
 
-  def build_from_dir(image_metadata)
+  def build_from_dir(image_metadata, skip_tag: false, skip_push: false)
     image = Docker::Image.build_from_dir(image_metadata.build_dir)
-    image.tag(repo: image_metadata.repository, tag: image_metadata.tag, force: true)
+
+    image.tag(
+      repo:  image_metadata.repo, 
+      tag:   image_metadata.tag, 
+      force: true
+    ) unless skip_tag
 
     image
   end

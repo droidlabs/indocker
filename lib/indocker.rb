@@ -13,6 +13,7 @@ require 'indocker/utils/test_logger_factory'
 require 'indocker/utils/docker_api'
 
 require 'indocker/image_metadata'
+require 'indocker/image_metadata_factory'
 require 'indocker/image_dsl'
 require 'indocker/image_context'
 require 'indocker/image_repository'
@@ -29,6 +30,7 @@ require 'indocker/partial'
 require 'indocker/partial_repository'
 
 require 'indocker/errors'
+require 'indocker/cli'
 
 require 'indocker/commands_runner'
 require 'indocker/commands/base'
@@ -45,7 +47,7 @@ module Indocker
     end
 
     def define_image(name, &definition)
-      images << Indocker::ImageMetadata.new(name, &definition) 
+      images << ioc.image_metadata_factory.create(name, &definition)
     end
 
     def containers
@@ -66,6 +68,10 @@ module Indocker
 
     def logger
       @logger ||= ioc.logger
+    end
+
+    def setup(&block)
+      instance_exec &block
     end
 
     def root(dir = nil)

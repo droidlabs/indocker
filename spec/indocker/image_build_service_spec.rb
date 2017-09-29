@@ -23,7 +23,7 @@ describe 'Indocker::ImageBuildService' do
 
     it 'updates image_metadata with image_id' do
       expect(
-        ioc.image_repository.find_by_repo('indocker_image').id
+        ioc.image_repository.find_by_repo('indocker_image').image_id
       ).to eq(ioc.docker_api.find_image_by_repo('indocker_image').id)
     end
 
@@ -99,7 +99,7 @@ describe 'Indocker::ImageBuildService' do
         subject.build('indocker_image_with_dependency')
 
         expect(
-          ioc.image_repository.find_by_repo('indocker_image_with_dependency').id
+          ioc.image_repository.find_by_repo('indocker_image_with_dependency').image_id
         ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_with_dependency').id)
       end
     end
