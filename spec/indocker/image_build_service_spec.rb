@@ -81,12 +81,6 @@ describe 'Indocker::ImageBuildService' do
         Indocker.define_container 'container', from_repo: 'indocker_image'
       end
 
-      it 'runs before_build block for image' do
-        # expect_any_instance_of(Indocker::CommandsRunner).to receive(:run_all).at_least(:once)
-
-        subject.build('indocker_image_with_dependency')
-      end
-
       it 'builds image with dependency' do
         subject.build('indocker_image_with_dependency')
         

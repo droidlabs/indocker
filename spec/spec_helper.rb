@@ -5,7 +5,6 @@ require 'indocker'
 require 'fileutils'
 require 'byebug'
 
-SmartIoC::Container.get_instance.set_extra_context_for_package(:indocker, :test)
 SmartIoC.set_load_proc do |location|
   require(location)
 end

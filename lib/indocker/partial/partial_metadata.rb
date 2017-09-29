@@ -1,4 +1,4 @@
-class Indocker::Partial
+class Indocker::PartialMetadata
   attr_reader :name, :definition
 
   def initialize(name, &definition)

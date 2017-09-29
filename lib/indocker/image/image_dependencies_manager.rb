@@ -35,7 +35,7 @@ class Indocker::ImageDependenciesManager
     
     return container_dependencies if image_metadata.dockerhub_image?
     
-    from_image_dependency = image_repository.find_by_repo(image_metadata.from_image) # TODO: add tags
+    from_image_dependency = image_repository.find_by_repo(image_metadata.from_repo, tag: image_metadata.from_tag)
 
     container_dependencies.push from_image_dependency
   end

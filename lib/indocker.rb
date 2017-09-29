@@ -4,38 +4,43 @@ require 'logger'
 
 SmartIoC.find_package_beans(:indocker, __dir__)
 
-require 'indocker/utils/ioc_container'
-require 'indocker/utils/shell_commands'
-require 'indocker/utils/docker_commands'
-require 'indocker/utils/test_logger'
-require 'indocker/utils/logger_factory'
-require 'indocker/utils/test_logger_factory'
-require 'indocker/utils/docker_api'
-
-require 'indocker/image_metadata'
-require 'indocker/image_metadata_factory'
-require 'indocker/image_dsl'
-require 'indocker/image_context'
-require 'indocker/image_repository'
-require 'indocker/image_prepare_service'
-require 'indocker/image_build_service'
-require 'indocker/image_dependencies_manager'
-require 'indocker/image_evaluator'
-
-require 'indocker/container_metadata'
-require 'indocker/container_repository'
-require 'indocker/container_runner_service'
-
-require 'indocker/partial'
-require 'indocker/partial_repository'
-
 require 'indocker/errors'
 require 'indocker/cli'
+require 'indocker/docker_api'
 
-require 'indocker/commands_runner'
-require 'indocker/commands/base'
-require 'indocker/commands/partial'
-require 'indocker/commands/prepare_commands'
+require 'indocker/utils/ioc_container'
+
+require 'indocker/image/image_metadata'
+require 'indocker/image/image_metadata_factory'
+require 'indocker/image/image_dsl'
+require 'indocker/image/image_context'
+require 'indocker/image/image_repository'
+require 'indocker/image/image_build_service'
+require 'indocker/image/image_dependencies_manager'
+require 'indocker/image/image_evaluator'
+
+require 'indocker/container/container_metadata'
+require 'indocker/container/container_repository'
+require 'indocker/container/container_runner_service'
+
+require 'indocker/partial/partial_metadata'
+require 'indocker/partial/partial_repository'
+
+require 'indocker/directives/directives_runner'
+require 'indocker/directives/base'
+require 'indocker/directives/partial'
+require 'indocker/directives/docker_directives/base'
+require 'indocker/directives/docker_directives/cmd'
+require 'indocker/directives/docker_directives/entrypoint'
+require 'indocker/directives/docker_directives/env'
+require 'indocker/directives/docker_directives/copy'
+require 'indocker/directives/docker_directives/from'
+require 'indocker/directives/docker_directives/run'
+require 'indocker/directives/docker_directives/workdir'
+require 'indocker/directives/prepare_directives/base'
+require 'indocker/directives/prepare_directives/docker_cp'
+require 'indocker/directives/prepare_directives/copy'
+
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
@@ -63,7 +68,7 @@ module Indocker
     end
 
     def define_partial(name, &definition)
-      partials << Indocker::Partial.new(name, &definition)
+      partials << Indocker::PartialMetadata.new(name, &definition)
     end
 
     def logger

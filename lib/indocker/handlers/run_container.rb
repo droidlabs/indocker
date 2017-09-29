@@ -6,8 +6,10 @@ module Indocker::Handlers
     inject :container_runner_service
     inject :container_repository
     inject :image_build_service
+    inject :application_initializer
 
     def handle(name)
+      application_initializer.init_app
       container_runner_service.create(name)
     rescue Docker::Error::NotFoundError
       container_metadata = container_repository.get_container(name)

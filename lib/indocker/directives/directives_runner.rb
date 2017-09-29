@@ -1,7 +1,7 @@
-class Indocker::CommandsRunner
+class Indocker::DirectivesRunner
   include SmartIoC::Iocify
 
-  bean   :commands_runner
+  bean   :directives_runner
   inject :container_runner_service
 
   def run_all(commands)
@@ -10,7 +10,7 @@ class Indocker::CommandsRunner
 
   def run(command)
     case command
-    when Indocker::PrepareCommands::DockerCp
+    when Indocker::PrepareDirectives::DockerCp
       run_docker_cp(command)
     end
   end

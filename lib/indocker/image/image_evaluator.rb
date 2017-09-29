@@ -10,7 +10,7 @@ class Indocker::ImageEvaluator
 
     image_dsl.commands
       .map do |command|
-        next command if !command.instance_of?(Indocker::Commands::Partial)
+        next command if !command.partial?
 
         partial = partial_repository.find_by_name(command.name)
         evaluate(command.context, &partial.definition)

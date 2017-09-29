@@ -4,7 +4,7 @@ class Indocker::ImageBuildService
   bean   :image_build_service
   inject :image_repository
   inject :image_dependencies_manager
-  inject :commands_runner
+  inject :directives_runner
   inject :image_evaluator
   inject :docker_api
 
@@ -12,12 +12,12 @@ class Indocker::ImageBuildService
     image_metadata = image_repository.find_by_repo(repo, tag: tag)
     
     FileUtils.mkdir_p(image_metadata.build_dir)
-
+    
     image_dependencies_manager.get_dependencies!(image_metadata).each do |dependency_metadata| 
       build(dependency_metadata.repo, tag: dependency_metadata.tag)
     end
 
-    commands_runner.run_all(image_metadata.prepare_commands)
+    directives_runner.run_all(image_metadata.prepare_commands)
 
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
       f.puts image_metadata.build_commands.map(&:to_s)

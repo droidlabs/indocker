@@ -21,22 +21,28 @@ class Indocker::ImageMetadata
   end
 
   def prepare_commands
-    @commands.select {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}
+    @commands.select {|c| c.instance_of?(Indocker::PrepareDirectives::DockerCp)}
   end
 
   def build_commands
-    @commands.reject {|c| c.instance_of?(Indocker::PrepareCommands::DockerCp)}
+    @commands.reject {|c| c.instance_of?(Indocker::PrepareDirectives::DockerCp)}
   end
 
-  def from_image
-    @commands
-      .detect {|c| c.instance_of?(Indocker::Commands::From)}
-      .full_name
+  def from_repo
+    from_command.repo
+  end
+
+  def from_tag
+    from_command.tag
   end
 
   def dockerhub_image?
-    @commands
-      .detect {|c| c.instance_of?(Indocker::Commands::From)}
-      .dockerhub_image?
+    from_command.dockerhub_image?
+  end
+
+  private
+
+  def from_command
+    @commands.detect {|c| c.instance_of?(Indocker::DockerDirectives::From)}
   end
 end
