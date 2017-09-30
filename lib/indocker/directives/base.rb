@@ -5,11 +5,11 @@ module Indocker
         self.is_a?(Indocker::Directives::Partial)
       end
 
-      def prepare_command?
+      def prepare_directive?
         self.is_a?(Indocker::PrepareDirectives::Base)
       end
 
-      def build_command?
+      def build_directive?
         self.is_a?(Indocker::DockerDirectives::Base)
       end
     end

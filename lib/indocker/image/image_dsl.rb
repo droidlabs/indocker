@@ -55,4 +55,8 @@ class Indocker::ImageDSL
   def docker_cp(container_name, &block)
     @commands << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
   end
+
+  def cp_r(copy_hash)
+    @commands << Indocker::PrepareDirectives::Copy.new(@context.build_dir, copy_hash)
+  end
 end

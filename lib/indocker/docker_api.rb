@@ -14,7 +14,7 @@ class Indocker::DockerApi
   end
 
   def create_container(container_metadata)
-    Docker::Container.create('Image' => container_metadata.from_image, 'name' => container_metadata.name)
+    Docker::Container.create('Image' => container_metadata.image, 'name' => container_metadata.name)
   end
 
   def build_from_dir(image_metadata, skip_tag: false, skip_push: false)

@@ -21,6 +21,7 @@ require 'indocker/image/image_evaluator'
 
 require 'indocker/container/container_metadata'
 require 'indocker/container/container_repository'
+require 'indocker/container/container_metadata_factory'
 require 'indocker/container/container_runner_service'
 
 require 'indocker/partial/partial_metadata'
@@ -59,8 +60,8 @@ module Indocker
       @containers ||= []
     end
 
-    def define_container(name, from_repo:, from_tag: Indocker::ImageMetadata::DEFAULT_TAG)
-      containers << Indocker::ContainerMetadata.new(name, from_repo: from_repo, from_tag: from_tag)
+    def define_container(name, repo:, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+      containers << ioc.container_metadata_factory.create(name, repo: repo, tag: tag)
     end
 
     def partials

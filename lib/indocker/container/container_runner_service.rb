@@ -8,12 +8,12 @@ class Indocker::ContainerRunnerService
 
   def create(container_name)
     container_metadata = container_repository.get_container(container_name)
-        
+    
     # check image exists
-    image_repository.find_by_repo(container_metadata.from_repo, tag: container_metadata.from_tag)
+    image_repository.find_by_repo(container_metadata.repo, tag: container_metadata.tag)
 
     container = docker_api.create_container(container_metadata)
-    container_metadata.id = container.id
+    container_metadata.container_id = container.id
 
     container
   end

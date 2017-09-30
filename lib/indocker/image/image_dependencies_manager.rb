@@ -27,10 +27,10 @@ class Indocker::ImageDependenciesManager
   end
 
   def get_dependencies(image_metadata)
-    container_dependencies = image_metadata.prepare_commands.map do |c|
+    container_dependencies = image_metadata.docker_cp_directives.map do |c|
       container = container_repository.get_container(c.container_name)
       
-      image_repository.find_by_repo(container.from_repo, tag: container.from_tag)
+      image_repository.find_by_repo(container.repo, tag: container.tag)
     end
     
     return container_dependencies if image_metadata.dockerhub_image?

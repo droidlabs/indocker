@@ -17,10 +17,11 @@ class Indocker::ImageBuildService
       build(dependency_metadata.repo, tag: dependency_metadata.tag)
     end
 
-    directives_runner.run_all(image_metadata.prepare_commands)
+    directives_runner.run_all(image_metadata.prepare_directives)
 
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
-      f.puts image_metadata.build_commands.map(&:to_s)
+      f.puts image_metadata.build_directives.map(&:to_s)
+      puts image_metadata.build_directives.map(&:to_s)
     end
 
     docker_api.build_from_dir(image_metadata)

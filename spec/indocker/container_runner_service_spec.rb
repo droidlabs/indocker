@@ -11,7 +11,7 @@ describe Indocker::ContainerRunnerService do
       end
       ioc.image_build_service.build('indocker_simple_image')
   
-      Indocker.define_container 'indocker_simple_container', from_repo: 'indocker_simple_image'
+      Indocker.define_container 'indocker_simple_container', repo: 'indocker_simple_image'
       subject.create('indocker_simple_container')
     end
   
@@ -23,14 +23,14 @@ describe Indocker::ContainerRunnerService do
 
     it 'updates container metadata with container_id' do
       expect(
-        ioc.container_repository.get_container('indocker_simple_container').id
+        ioc.container_repository.get_container('indocker_simple_container').container_id
       ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
     end
   end
 
   context 'for non existing image' do
     before do
-      Indocker.define_container 'indocker_simple_container', from_repo: 'invalid_image'
+      Indocker.define_container 'indocker_simple_container', repo: 'invalid_image'
     end
 
     it 'raises Indocker::Errors::ImageIsNotDefined error' do

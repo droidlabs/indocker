@@ -1,5 +1,5 @@
 class Indocker::PrepareDirectives::Copy < Indocker::PrepareDirectives::Base
-  attr_reader :container_name, :copy_actions, :build_dir
+  attr_reader :copy_actions, :build_dir
 
   def initialize(build_dir, copy_hash = {})
     @build_dir    = build_dir
