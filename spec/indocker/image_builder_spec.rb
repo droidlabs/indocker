@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe 'Indocker::ImageBuildService' do
-  subject { ioc.image_build_service }
+describe 'Indocker::ImageBuilder' do
+  subject { ioc.image_builder }
 
   context 'for image without dependencies' do
     before do
@@ -23,12 +23,12 @@ describe 'Indocker::ImageBuildService' do
 
     it 'updates image_metadata with image_id' do
       expect(
-        ioc.image_repository.find_by_repo('indocker_image').image_id
+        ioc.image_metadata_repository.find_by_repo('indocker_image').image_id
       ).to eq(ioc.docker_api.find_image_by_repo('indocker_image').id)
     end
 
     it 'deletes build_path after image building' do
-      image_metadata = ioc.image_repository.find_by_repo('indocker_image')
+      image_metadata = ioc.image_metadata_repository.find_by_repo('indocker_image')
 
       expect(
         File.exists?(image_metadata.build_dir)
@@ -93,7 +93,7 @@ describe 'Indocker::ImageBuildService' do
         subject.build('indocker_image_with_dependency')
 
         expect(
-          ioc.image_repository.find_by_repo('indocker_image_with_dependency').image_id
+          ioc.image_metadata_repository.find_by_repo('indocker_image_with_dependency').image_id
         ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_with_dependency').id)
       end
     end

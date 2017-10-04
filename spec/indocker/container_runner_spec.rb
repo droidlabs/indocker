@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Indocker::ContainerRunnerService do
-  subject { ioc.container_runner_service }
+describe Indocker::ContainerRunner do
+  subject { ioc.container_runner }
 
   context 'for existing image' do
     before do
@@ -9,7 +9,7 @@ describe Indocker::ContainerRunnerService do
         from 'hello-world' 
         workdir '.'
       end
-      ioc.image_build_service.build('indocker_simple_image')
+      ioc.image_builder.build('indocker_simple_image')
   
       Indocker.define_container 'indocker_simple_container', repo: 'indocker_simple_image'
       subject.create('indocker_simple_container')
@@ -23,7 +23,7 @@ describe Indocker::ContainerRunnerService do
 
     it 'updates container metadata with container_id' do
       expect(
-        ioc.container_repository.get_container('indocker_simple_container').container_id
+        ioc.container_metadata_repository.get_container('indocker_simple_container').container_id
       ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
     end
   end

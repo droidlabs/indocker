@@ -6,9 +6,9 @@ class Indocker::ImageMetadataFactory
   inject :docker_api
 
   def create(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG, &definition)
-    context  = Indocker::ImageContext.new( { build_dir: build_dir(repo) } )
+    context    = Indocker::ImageContext.new( { build_dir: build_dir(repo) } )
     directives = image_evaluator.evaluate(context, &definition)
-    image_id = docker_api.find_image_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+    image_id   = docker_api.find_image_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
 
     Indocker::ImageMetadata.new(
       repo:       repo,

@@ -1,7 +1,7 @@
 class Indocker::ContainerRepository
   include SmartIoC::Iocify
   
-  bean :container_repository
+  bean :container_metadata_repository
 
   def get_container(container_name)
     container = Indocker.containers.detect {|container| container.name == container_name}

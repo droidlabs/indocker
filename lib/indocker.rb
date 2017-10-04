@@ -3,6 +3,7 @@ require 'docker-api'
 require 'logger'
 
 SmartIoC.find_package_beans(:indocker, __dir__)
+Docker.options = { read_timeout: 600, write_timeout: 600 }
 
 require 'indocker/errors'
 require 'indocker/cli'
@@ -14,15 +15,15 @@ require 'indocker/image/image_metadata'
 require 'indocker/image/image_metadata_factory'
 require 'indocker/image/image_dsl'
 require 'indocker/image/image_context'
-require 'indocker/image/image_repository'
-require 'indocker/image/image_build_service'
+require 'indocker/image/image_metadata_repository'
+require 'indocker/image/image_builder'
 require 'indocker/image/image_dependencies_manager'
 require 'indocker/image/image_evaluator'
 
 require 'indocker/container/container_metadata'
-require 'indocker/container/container_repository'
+require 'indocker/container/container_metadata_repository'
 require 'indocker/container/container_metadata_factory'
-require 'indocker/container/container_runner_service'
+require 'indocker/container/container_runner'
 
 require 'indocker/partial/partial_metadata'
 require 'indocker/partial/partial_repository'
@@ -41,7 +42,6 @@ require 'indocker/directives/docker_directives/workdir'
 require 'indocker/directives/prepare_directives/base'
 require 'indocker/directives/prepare_directives/docker_cp'
 require 'indocker/directives/prepare_directives/copy'
-
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'

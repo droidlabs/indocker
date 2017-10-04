@@ -3,23 +3,21 @@ module Indocker::Handlers
     include SmartIoC::Iocify
 
     bean   :run_container_handler
-    inject :container_runner_service
-    inject :container_repository
-    inject :image_build_service
+    
+    inject :container_runner
+    inject :container_metadata_repository
+    inject :image_builder
     inject :application_initializer
+    inject :docker_api
 
     def handle(name)
       application_initializer.init_app
-      container = container_runner_service.create(name)
+
+      container_metadata = container_metadata_repository.get_container(name)
+      container          = docker_api.find_container_by_name(name) || 
+                           container_runner.create(name)
+
       container.start
-    rescue Docker::Error::NotFoundError
-      container_metadata = container_repository.get_container(name)
-      image_build_service.build(container_metadata.repo)
-      container_runner_service.create(name)
-    ensure
-      container = docker_api.get_container(name)
-      container.stop
-      container.delete
     end
   end
 end

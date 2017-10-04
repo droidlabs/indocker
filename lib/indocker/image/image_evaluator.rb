@@ -6,8 +6,9 @@ class Indocker::ImageEvaluator
 
   def evaluate(context = Indocker::ImageContext.new, &block)
     image_dsl = Indocker::ImageDSL.new(context)
+    
     image_dsl.instance_eval(&block)
-
+    
     image_dsl.commands
       .map do |command|
         next command if !command.partial?

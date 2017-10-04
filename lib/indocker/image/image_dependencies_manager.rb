@@ -2,8 +2,9 @@ class Indocker::ImageDependenciesManager
   include SmartIoC::Iocify
 
   bean   :image_dependencies_manager
-  inject :image_repository
-  inject :container_repository
+
+  inject :image_metadata_repository
+  inject :container_metadata_repository
   inject :image_evaluator
 
   def get_dependencies!(image_metadata)
@@ -28,14 +29,14 @@ class Indocker::ImageDependenciesManager
 
   def get_dependencies(image_metadata)
     container_dependencies = image_metadata.docker_cp_directives.map do |c|
-      container = container_repository.get_container(c.container_name)
+      container = container_metadata_repository.get_container(c.container_name)
       
-      image_repository.find_by_repo(container.repo, tag: container.tag)
+      image_metadata_repository.find_by_repo(container.repo, tag: container.tag)
     end
     
     return container_dependencies if image_metadata.dockerhub_image?
     
-    from_image_dependency = image_repository.find_by_repo(image_metadata.from_repo, tag: image_metadata.from_tag)
+    from_image_dependency = image_metadata_repository.find_by_repo(image_metadata.from_repo, tag: image_metadata.from_tag)
 
     container_dependencies.push from_image_dependency
   end

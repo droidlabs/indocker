@@ -1,7 +1,7 @@
-class Indocker::ImageRepository
+class Indocker::ImageMetadataRepository
   include SmartIoC::Iocify
   
-  bean :image_repository
+  bean :image_metadata_repository
 
   def find_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     image_metadata = Indocker.images.detect do |im| 
