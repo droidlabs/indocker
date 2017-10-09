@@ -1,9 +1,16 @@
 require 'thor'
 
-class Indocker::CLI < Thor
-  desc "run_container CONTAINER_NAME", "runs specified container"
-  def run_container(name)
-    ioc.application_initializer.init_app
-    ioc.run_container_handler.handle(name)
+module Indocker
+  module CLI
+    class Application < Thor
+      desc          "container:run CONTAINER_NAME", "runs specified container"
+      method_option :rebuild, type: :boolean, aliases: '-r'
+      define_method('container:run') do |name|
+        ioc.run_container_handler.perform(
+          name:    name,
+          rebuild: options[:rebuild]
+        )
+      end
+    end
   end
 end

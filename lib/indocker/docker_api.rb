@@ -3,6 +3,8 @@ class Indocker::DockerApi
 
   bean :docker_api
 
+  inject :logger
+
   def find_image_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     all_images.detect do |image|
       image.info['RepoTags'].include?(full_name(repo, tag))
@@ -17,8 +19,7 @@ class Indocker::DockerApi
     Docker::Container.create(
       'Image'        => container_metadata.image, 
       'name'         => container_metadata.name, 
-      'Tty'          => true, 
-      'AttachStdout' => true
+      'Tty'          => true
     )
   end
 
@@ -26,7 +27,7 @@ class Indocker::DockerApi
     image = Docker::Image.build_from_dir(image_metadata.build_dir) do |x|
       x.split("\r\n").each do |y|
         if (log = JSON.parse(y)) && log.has_key?("stream")
-          $stdout.print log["stream"]
+          logger.info(log["stream"].strip)
         end
       end
     end

@@ -8,6 +8,12 @@ Docker.options = { read_timeout: 600, write_timeout: 600 }
 require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'
+require 'indocker/utils/logger'
+require 'indocker/logger_factory'
+require 'indocker/test_logger_factory'
+
+require 'indocker/handlers/base'
+require 'indocker/handlers/run_container'
 
 require 'indocker/utils/ioc_container'
 

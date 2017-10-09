@@ -5,4 +5,5 @@ require 'rubygems'
 require 'bundler/setup'
 require 'indocker'
 
-Indocker::CLI.start( ARGV )
+# $thor_runner = true
+Indocker::CLI::Application.start( ARGV )

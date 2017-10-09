@@ -4,15 +4,14 @@ class Indocker::ContainerRunner
   bean   :container_runner
 
   inject :container_metadata_repository
-  inject :image_builder
+  inject :image_metadata_repository
   inject :docker_api
 
   def create(container_name)
     container_metadata = container_metadata_repository.get_container(container_name)
     
-    if !docker_api.image_exists_by_repo?(container_metadata.repo, tag: container_metadata.tag)
-      image_builder.build(container_metadata.repo, tag: container_metadata.tag)
-    end
+    # check image defined
+    image_metadata_repository.find_by_repo(container_metadata.repo, tag: container_metadata.tag)
 
     container = docker_api.create_container(container_metadata)
     

@@ -8,13 +8,16 @@ class Indocker::ImageBuilder
   inject :directives_runner
   inject :image_evaluator
   inject :docker_api
+  inject :logger
 
   def build(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     image_metadata = image_metadata_repository.find_by_repo(repo, tag: tag)
     
     FileUtils.mkdir_p(image_metadata.build_dir)
     
-    image_dependencies_manager.get_dependencies!(image_metadata)
+    image_dependencies_manager.get_dependencies!(image_metadata).each do |dependency_metadata| 
+      build(dependency_metadata.repo, tag: dependency_metadata.tag)
+    end
 
     directives_runner.run_all(image_metadata.prepare_directives)
 
