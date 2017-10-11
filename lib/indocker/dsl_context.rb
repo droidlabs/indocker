@@ -1,4 +1,4 @@
-class Indocker::ImageContext
+class Indocker::DSLContext
   def initialize(storage = {})
     @storage = storage
   end

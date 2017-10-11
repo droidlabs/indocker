@@ -51,8 +51,10 @@ describe Indocker::DockerApi do
     end
 
     context 'if container does not present' do
-      it 'returns nil' do
-        expect(subject.find_container_by_id('invalid-container-name')).to be_nil
+      it 'raises Docker::Error::NotFoundError error' do
+        expect{
+          subject.find_container_by_id('invalid-container-name')
+        }.to raise_error(Docker::Error::NotFoundError)
       end
     end
   end

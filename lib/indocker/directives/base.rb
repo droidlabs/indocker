@@ -12,6 +12,10 @@ module Indocker
       def build_directive?
         self.is_a?(Indocker::DockerDirectives::Base)
       end
+
+      def container_directive?
+        self.is_a?(Indocker::ContainerDirectives::Base)
+      end
     end
   end
 end

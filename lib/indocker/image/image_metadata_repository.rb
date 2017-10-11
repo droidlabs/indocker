@@ -3,18 +3,28 @@ class Indocker::ImageMetadataRepository
   
   bean :image_metadata_repository
 
+  def method_missing(method, *args)
+    find_by_repo(method)
+  rescue
+    nil
+  end
+
+  def put(image_metadata)
+    all.push(image_metadata)
+  end
+
   def find_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
-    image_metadata = Indocker.images.detect do |im| 
-      im.full_name == full_name(repo, tag: tag)
-    end
-    raise Indocker::Errors::ImageIsNotDefined, full_name(repo, tag: tag) if image_metadata.nil?
+    image_metadata = all.detect { |im| im.repo == repo.intern and im.tag == tag.intern }
+    raise Indocker::Errors::ImageIsNotDefined, "#{repo}:#{tag}" if image_metadata.nil?
 
     image_metadata
   end
 
-  private
+  def clear
+    @all = []
+  end
 
-  def full_name(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
-    "#{repo}:#{tag}"
+  def all
+    @all ||= []
   end
 end

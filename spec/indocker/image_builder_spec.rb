@@ -48,7 +48,9 @@ describe 'Indocker::ImageBuilder' do
           workdir '/'
         end
 
-        Indocker.define_container 'circular_container', repo: 'indocker_circular_image'
+        Indocker.define_container 'circular_container' do
+          use images.indocker_circular_image
+        end
       end
 
       it 'raises Indocker::Errors::CircularImageDependency' do
@@ -78,7 +80,9 @@ describe 'Indocker::ImageBuilder' do
           copy 'test.txt', 'test.txt'
         end
 
-        Indocker.define_container 'container', repo: 'indocker_image'
+        Indocker.define_container 'container' do
+          use images.indocker_image
+        end
       end
 
       it 'builds image with dependency' do

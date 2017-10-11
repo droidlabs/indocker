@@ -6,10 +6,16 @@ class Indocker::Logger < Logger
     super
     @formatter = IndockerLoggerFormatter.new
   end
+
+  def clear
+    # do nothing
+  end
 end
 
 
 class Indocker::TestLogger < Indocker::Logger
+  attr_reader :strio
+
   def initialize
     @strio = StringIO.new
     super(@strio)
@@ -17,6 +23,10 @@ class Indocker::TestLogger < Indocker::Logger
 
   def messages
     @strio.string.split("\n")
+  end
+
+  def clear
+    @strio.string.clear
   end
 end
 
@@ -26,7 +36,7 @@ class IndockerLoggerFormatter
   FATAL = 'FATAL'
   WARN  = 'WARN'
   INFO  = 'INFO'
-  
+
   def call(severity, datetime, progname, msg)
     "#{colorize_log_level(severity)}: #{msg}\n"
   end

@@ -1,9 +1,9 @@
 class Indocker::ImageDSL
-  attr_reader :commands
+  attr_reader :directives
 
   def initialize(context)
     @context  = context
-    @commands = []
+    @directives = []
   end
 
   def method_missing(method, *args)
@@ -17,35 +17,35 @@ class Indocker::ImageDSL
   end
 
   def partial(name, opts = {})
-    @commands << Indocker::Directives::Partial.new(name, @context, opts)
+    @directives << Indocker::Directives::Partial.new(name, @context, opts)
   end
   
   def from(*args)
-    @commands << Indocker::DockerDirectives::From.new(*args)
+    @directives << Indocker::DockerDirectives::From.new(*args)
   end
   
   def workdir(*args)
-    @commands << Indocker::DockerDirectives::Workdir.new(*args)
+    @directives << Indocker::DockerDirectives::Workdir.new(*args)
   end
 
   def run(*args)
-    @commands << Indocker::DockerDirectives::Run.new(*args)
+    @directives << Indocker::DockerDirectives::Run.new(*args)
   end
 
   def cmd(*args)
-    @commands << Indocker::DockerDirectives::Cmd.new(*args)
+    @directives << Indocker::DockerDirectives::Cmd.new(*args)
   end
 
   def copy(*args)
-    @commands << Indocker::DockerDirectives::Copy.new(*args)
+    @directives << Indocker::DockerDirectives::Copy.new(*args)
   end
 
   def entrypoint(*args)
-    @commands << Indocker::DockerDirectives::Entrypoint.new(*args)
+    @directives << Indocker::DockerDirectives::Entrypoint.new(*args)
   end
 
   def env(*args)
-    @commands << Indocker::DockerDirectives::Env.new(args)
+    @directives << Indocker::DockerDirectives::Env.new(args)
   end
 
   def before_build(&block)
@@ -53,10 +53,10 @@ class Indocker::ImageDSL
   end
 
   def docker_cp(container_name, &block)
-    @commands << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
+    @directives << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
   end
 
   def cp_r(copy_hash)
-    @commands << Indocker::PrepareDirectives::Copy.new(@context.build_dir, copy_hash)
+    @directives << Indocker::PrepareDirectives::Copy.new(@context.build_dir, copy_hash)
   end
 end

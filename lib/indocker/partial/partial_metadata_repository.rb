@@ -1,7 +1,11 @@
-class PartialRepository
+class Indocker::PartialMetadataRepository
   include SmartIoC::Iocify
   
-  bean :partial_repository
+  bean :partial_metadata_repository
+
+  def put(partial_metadata)
+    all.push(partial_metadata)
+  end
 
   def find_by_name(name)
     partial = all.detect do |p| 
@@ -12,7 +16,11 @@ class PartialRepository
     partial
   end
 
+  def clear
+    @all = []
+  end
+
   def all
-    Indocker.partials
+    @all ||= []
   end
 end

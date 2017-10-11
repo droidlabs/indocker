@@ -11,6 +11,8 @@ class Indocker::Handlers::RunContainer < Indocker::Handlers::Base
   def handle(name:, rebuild: false)
     application_initializer.init_app
 
+    name = name.intern
+
     container_metadata = container_metadata_repository.get_container(name)
     container          = docker_api.find_container_by_name(name)
 
@@ -24,12 +26,14 @@ class Indocker::Handlers::RunContainer < Indocker::Handlers::Base
       container.stop
     end
 
+    container.start! && sleep(1)
     
-
-    if container.start.wait(10)["StatusCode"] == 1
-      logger.error container.logs(:stdout => true)
+    if container.refresh!.info["State"]["Running"]
+      logger.info "Successfully started container :#{name}"
     else
-      logger.info "Successfully started container #{name}"
+      logger.error container.logs(:stdout => true)
     end
+
+    container.id
   end
 end

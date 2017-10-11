@@ -19,7 +19,7 @@ describe 'Indocker::ImageEvaluator' do
     end
   end
 
-  context 'commands list' do
+  context 'directives list' do
     let(:example_image_definition) do
       Proc.new do
         set_arg(:environment, :stading)
@@ -41,25 +41,25 @@ describe 'Indocker::ImageEvaluator' do
       end
     end
     
-    let(:context)        { Indocker::ImageContext.new(build_dir: 'some/path') }
-    let(:commands)       { subject.evaluate(context, &example_image_definition) }
+    let(:context)        { Indocker::DSLContext.new(build_dir: 'some/path') }
+    let(:directives)       { subject.evaluate(context, &example_image_definition) }
 
-    it 'returns array of commands' do
-      expect(commands).to be_a(Array)
+    it 'returns array of directives' do
+      expect(directives).to be_a(Array)
     end
 
-    it 'returns valid count of commands' do
-      expect(commands.size).to eq(7)
+    it 'returns valid count of directives' do
+      expect(directives.size).to eq(7)
     end
 
-    it 'rerurns proper commands classes' do
-      expect(commands[0]).to be_a(Indocker::PrepareDirectives::DockerCp)
-      expect(commands[1]).to be_a(Indocker::DockerDirectives::From)
-      expect(commands[2]).to be_a(Indocker::PrepareDirectives::DockerCp)
-      expect(commands[3]).to be_a(Indocker::DockerDirectives::Run)
-      expect(commands[4]).to be_a(Indocker::DockerDirectives::Run)
-      expect(commands[5]).to be_a(Indocker::DockerDirectives::Workdir)
-      expect(commands[6]).to be_a(Indocker::DockerDirectives::Run)
+    it 'rerurns proper directives classes' do
+      expect(directives[0]).to be_a(Indocker::PrepareDirectives::DockerCp)
+      expect(directives[1]).to be_a(Indocker::DockerDirectives::From)
+      expect(directives[2]).to be_a(Indocker::PrepareDirectives::DockerCp)
+      expect(directives[3]).to be_a(Indocker::DockerDirectives::Run)
+      expect(directives[4]).to be_a(Indocker::DockerDirectives::Run)
+      expect(directives[5]).to be_a(Indocker::DockerDirectives::Workdir)
+      expect(directives[6]).to be_a(Indocker::DockerDirectives::Run)
     end
   end
 end

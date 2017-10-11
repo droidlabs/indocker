@@ -2,19 +2,19 @@ class Indocker::ImageEvaluator
   include SmartIoC::Iocify
 
   bean   :image_evaluator
-  inject :partial_repository
+  inject :partial_metadata_repository
 
-  def evaluate(context = Indocker::ImageContext.new, &block)
+  def evaluate(context, &block)
     image_dsl = Indocker::ImageDSL.new(context)
     
     image_dsl.instance_eval(&block)
     
-    image_dsl.commands
-      .map do |command|
-        next command if !command.partial?
+    image_dsl.directives
+      .map do |directive|
+        next directive if !directive.partial?
 
-        partial = partial_repository.find_by_name(command.name)
-        evaluate(command.context, &partial.definition)
+        partial = partial_metadata_repository.find_by_name(directive.name)
+        evaluate(directive.context, &partial.definition)
       end
       .flatten
   end

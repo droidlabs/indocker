@@ -4,34 +4,34 @@ class Indocker::DirectivesRunner
   bean   :directives_runner
   inject :container_runner
 
-  def run_all(commands)
-    commands.each {|c| run(c)}
+  def run_all(directives)
+    directives.each {|c| run(c)}
   end
 
-  def run(command)
-    case command
+  def run(directive)
+    case directive
     when Indocker::PrepareDirectives::DockerCp
-      run_docker_cp(command)
+      run_docker_cp(directive)
     when Indocker::PrepareDirectives::Copy
-      run_copy(command)
+      run_copy(directive)
     end
   end
 
-  def run_docker_cp(command)
-    container = container_runner.create(command.container_name)
+  def run_docker_cp(directive)
+    container = container_runner.create(directive.container_name)
 
-    command.copy_actions.each do |copy_action|
-      File.open(File.join(command.build_dir, copy_action[:to]), 'w') do |f|
+    directive.copy_actions.each do |copy_action|
+      File.open(File.join(directive.build_dir, copy_action[:to]), 'w') do |f|
         container.copy(copy_action[:from]) { |chunk| f.write(chunk) }
       end
     end
   end
 
-  def run_copy(command)
-    command.copy_actions.each do |copy_action|
+  def run_copy(directive)
+    directive.copy_actions.each do |copy_action|
       FileUtils.cp_r(
         File.join(Indocker.root, copy_action[:from]), 
-        File.join(command.build_dir, copy_action[:to]), 
+        File.join(directive.build_dir, copy_action[:to]), 
         preserve: true
       )
     end

@@ -11,6 +11,10 @@ class Indocker::DockerApi
     end
   end
 
+  def find_image_by_id(id)
+    Docker::Image.get(id)
+  end
+
   def image_exists_by_repo?(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     !find_image_by_repo(repo, tag: tag).nil?
   end
@@ -60,9 +64,7 @@ class Indocker::DockerApi
   end
 
   def find_container_by_id(id)
-    all_containers.detect do |container|
-      container.id == id
-    end
+    Docker::Container.get(id)
   end
 
   def container_exists_by_name?(name)
