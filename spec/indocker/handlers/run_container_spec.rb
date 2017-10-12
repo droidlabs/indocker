@@ -5,13 +5,13 @@ describe 'Indocker::Handlers::RunContainer' do
 
   describe '#handle' do
     context 'for valid cmd process in container' do
-      let(:container) { ioc.container_metadata_repository.get_container(:indocker_correct_container) }
+      let(:container) { ioc.container_metadata_repository.get_by_name(:indocker_correct_container) }
     
       before do
         Indocker.define_image :indocker_correct_image do
           from 'alpine:latest'
           
-          cmd  '/bin/sh'
+          cmd  ['/bin/sh']
         end
 
         Indocker.define_container :indocker_correct_container do
@@ -24,16 +24,16 @@ describe 'Indocker::Handlers::RunContainer' do
           subject.handle(name: :indocker_correct_container)
         end
         
-        it 'creates new container' do
+        it 'creates container' do
           expect(
-            ioc.docker_api.container_exists_by_name?(:indocker_correct_container)
+            ioc.docker_api.container_exists?(:indocker_correct_container)
           ).to be true
         end
 
-        it 'runs new container' do
+        it 'runs container' do
           expect(
-            ioc.docker_api.find_container_by_id(container.container_id).info["State"]["Running"]
-          ).to be true
+            ioc.docker_api.get_container_state(:indocker_correct_container)
+          ).to eq(Indocker::ContainerMetadata::States::RUNNING)
         end
 
         it 'logs successfull result' do
@@ -48,42 +48,22 @@ describe 'Indocker::Handlers::RunContainer' do
           subject.handle(name: :indocker_correct_container)
         end
 
-        it 'stops container' do
-          expect_any_instance_of(Docker::Container).to receive(:stop)
+        it 'stops, destroy and create container again' do
+          old_container_id = ioc.docker_api.get_container_id(:indocker_correct_container)
           
           subject.handle(name: :indocker_correct_container)
+
+          new_container_id = ioc.docker_api.get_container_id(:indocker_correct_container)
+
+          expect(new_container_id).not_to eq(old_container_id)
         end
 
         it 'runs container again' do
           subject.handle(name: :indocker_correct_container)
 
           expect(
-            ioc.docker_api.find_container_by_id(container.container_id).info["State"]["Running"]
-          ).to be true
-        end
-
-        it 'logs successfull result' do
-          expect(
-            ioc.logger.messages.last
-          ).to eq("INFO".colorize(:green) + ": Successfully started container :indocker_correct_container")
-        end
-      end
-
-      context 'with --rebuild option' do
-        before do
-          subject.handle(name: :indocker_correct_container, rebuild: true)
-        end
-        
-        it 'builds image again' do
-          expect(
-            ioc.docker_api.image_exists_by_repo?(:indocker_correct_image)
-          ).to be true
-        end
-
-        it 'runs container' do
-          expect(
-            ioc.docker_api.find_container_by_id(container.container_id).info["State"]["Running"]
-          ).to be true
+            ioc.docker_api.get_container_state(:indocker_correct_container)
+          ).to eq(Indocker::ContainerMetadata::States::RUNNING)
         end
 
         it 'logs successfull result' do
@@ -95,32 +75,32 @@ describe 'Indocker::Handlers::RunContainer' do
     end
     
     context 'for falling cmd process in container' do
-      let(:container) { ioc.container_metadata_repository.get_container(:container_with_cmd_error) }
+      let(:container) { ioc.container_metadata_repository.get_by_name(:container_with_falling_cmd) }
 
       before do
-        Indocker.define_image :indocker_image_with_cmd_error do
+        Indocker.define_image :indocker_image_with_falling_cmd do
           from 'alpine:latest'
           
-          cmd  'invalid/process'
+          cmd  ['invalid/process']
         end
 
-        Indocker.define_container :container_with_cmd_error do
-          use images.indocker_image_with_cmd_error
+        Indocker.define_container :container_with_falling_cmd do
+          use images.indocker_image_with_falling_cmd
         end
-
-        subject.handle(name: :container_with_cmd_error)
+        
+        subject.handle(name: :container_with_falling_cmd)
       end
       
       it 'logs error text' do
         expect(
           ioc.logger.messages.last
-        ).to eq("ERROR".colorize(:red) + ": /bin/sh: invalid/process: not found\r")
+        ).to eq("ERROR".colorize(:red) + ": oci runtime error: container_linux.go:265: starting container process caused \"exec: \\\"invalid/process\\\": stat invalid/process: no such file or directory\"")
       end
 
       it 'does not run container' do
         expect(
-          ioc.docker_api.find_container_by_id(container.container_id).info["State"]["Running"]
-        ).to be false
+          ioc.docker_api.get_container_state(:container_with_falling_cmd)
+        ).to eq(Indocker::ContainerMetadata::States::CREATED)
       end
     end
   end

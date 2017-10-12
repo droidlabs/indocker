@@ -12,7 +12,7 @@ Indocker.define_image 'sample_package' do
   cmd 'pwd'
 end
 
-Indocker.container 'assets_compiler' do
+Indocker.define_container 'assets_compiler' do
   from 'assets_compiler'
 end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Indocker::ContainerRunner do
-  subject { ioc.container_runner }
+  subject { ioc.container_manager }
 
   context 'for existing image' do
     before do
@@ -21,13 +21,13 @@ describe Indocker::ContainerRunner do
   
     it 'runs container' do
       expect(
-        ioc.docker_api.container_exists_by_name?('indocker_simple_container')
+        ioc.docker_api.container_exists?('indocker_simple_container')
       ).to be true
     end
 
     it 'updates container metadata with container_id' do
       expect(
-        ioc.container_metadata_repository.get_container('indocker_simple_container').container_id
+        ioc.container_metadata_repository.get_by_name('indocker_simple_container').container_id
       ).to eq(ioc.docker_api.find_container_by_name('indocker_simple_container').id)
     end
   end

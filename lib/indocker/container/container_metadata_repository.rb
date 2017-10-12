@@ -1,15 +1,18 @@
-class Indocker::ContainerRepository
+class Indocker::ContainerMetadataRepository
   include SmartIoC::Iocify
   
   bean :container_metadata_repository
 
-  def put(container_metadata)
-    all.push(container_metadata)
+  def put(metadata)
+    if get_by_name(metadata.name)
+      raise Indocker::Errors::InvalidParams, "Container name '#{metadata.name}' already in use"
+    end
+    
+    all.push(metadata)
   end
 
-  def get_container(container_name)
-    container = all.detect {|container| container.name == container_name.to_sym}
-    raise Indocker::Errors::ContainerIsNotDefined if container.nil?
+  def get_by_name(container_name)
+    container = all.detect {|container| container.name == container_name.to_s}
 
     container
   end

@@ -1,4 +1,4 @@
-class Indocker::ContainerMetadataRepository
+class Indocker::ContainerMetadataFactory
   include SmartIoC::Iocify
 
   bean   :container_metadata_factory
@@ -10,13 +10,12 @@ class Indocker::ContainerMetadataRepository
     context      = Indocker::DSLContext.new(
       images: image_metadata_repository
     )
-    container_id = docker_api.find_container_by_name(name)
+
     directives   = container_evaluator.evaluate(context, &definition)
     
     Indocker::ContainerMetadata.new(
-      name:         name.intern,
-      directives:   directives,         
-      container_id: container_id
+      name:         name.to_s,
+      directives:   directives     
     )
   end
 end

@@ -1,11 +1,20 @@
 class Indocker::ContainerMetadata
   attr_reader :name
-  attr_accessor :container_id
 
-  def initialize(name:, directives:, container_id:)
+  module States
+    CREATED    = 'created'
+    RESTARTING = 'restarting'
+    RUNNING    = 'running'
+    PAUSED     = 'paused'
+    EXITED     = 'exited'
+    DEAD       = 'dead'
+
+    ALL = [CREATED, RESTARTING, RUNNING, PAUSED, EXITED, DEAD]
+  end
+
+  def initialize(name:, directives:)
     @name         = name
     @directives   = directives
-    @container_id = container_id
   end
 
   def repo

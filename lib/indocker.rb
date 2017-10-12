@@ -32,7 +32,7 @@ require 'indocker/image/image_evaluator'
 require 'indocker/container/container_metadata'
 require 'indocker/container/container_metadata_repository'
 require 'indocker/container/container_metadata_factory'
-require 'indocker/container/container_runner'
+require 'indocker/container/container_manager'
 require 'indocker/container/container_evaluator'
 require 'indocker/container/container_dsl'
 

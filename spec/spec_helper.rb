@@ -20,22 +20,15 @@ RSpec.configure do |config|
   config.mock_with :rspec
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  config.before(:each) do
-    ioc.logger.clear
-  end
-
   config.after(:each) do
-    ioc.docker_api.all_containers.each do |container|
-      container.delete(force: true) if container.info['Image'].match(/^indocker/)
-    end
-
-    ioc.docker_api.all_images.each do |image|
-      image.remove(force: true) if image.info['RepoTags'].find {|rt| rt =~ /^indocker/}
-    end
+    ioc.docker_api.delete_containers_where { |container| container.info['Image'] =~ /^indocker/ }
+    ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags']  =~ /^indocker/ }
 
     ioc.image_metadata_repository.clear
     ioc.container_metadata_repository.clear
     ioc.partial_metadata_repository.clear
+
+    ioc.logger.clear
   end
 end
 

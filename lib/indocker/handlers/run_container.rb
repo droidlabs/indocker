@@ -1,39 +1,29 @@
 class Indocker::Handlers::RunContainer < Indocker::Handlers::Base
+  include SmartIoC::Iocify
+
   bean   :run_container_handler
   
-  inject :container_runner
+  inject :container_manager
   inject :container_metadata_repository
   inject :image_builder
   inject :application_initializer
   inject :docker_api
   inject :logger
 
-  def handle(name:, rebuild: false)
-    application_initializer.init_app
+  def handle(name:)
+    name = name.to_s
 
-    name = name.intern
+    container_metadata = container_metadata_repository.get_by_name(name)
 
-    container_metadata = container_metadata_repository.get_container(name)
-    container          = docker_api.find_container_by_name(name)
-
-    if (container.nil? || rebuild)
-      container.delete(force: true) if container
-
-      image_builder.build(container_metadata.repo, tag: container_metadata.tag)
-
-      container = container_runner.create(name)
-    else
-      container.stop
+    if docker_api.container_exists?(name)
+      container_manager.stop(name)
+      container_manager.delete(name)
     end
-
-    container.start! && sleep(1)
     
-    if container.refresh!.info["State"]["Running"]
-      logger.info "Successfully started container :#{name}"
-    else
-      logger.error container.logs(:stdout => true)
-    end
+    image_builder.build(container_metadata.repo, tag: container_metadata.tag)
+    
+    container_manager.create(name)
 
-    container.id
+    container_manager.start(name)
   end
 end

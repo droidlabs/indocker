@@ -17,14 +17,14 @@ describe 'Indocker::ImageBuilder' do
 
     it 'builds image without dependencies' do
       expect(
-        ioc.docker_api.image_exists_by_repo?('indocker_image')
+        ioc.docker_api.image_exists?('indocker_image')
       ).to be true
     end
 
     it 'updates image_metadata with image_id' do
       expect(
         ioc.image_metadata_repository.find_by_repo('indocker_image').image_id
-      ).to eq(ioc.docker_api.find_image_by_repo('indocker_image').id)
+      ).to eq(ioc.docker_api.get_image_id('indocker_image'))
     end
 
     it 'deletes build_path after image building' do
@@ -89,7 +89,7 @@ describe 'Indocker::ImageBuilder' do
         subject.build('indocker_image_with_dependency')
         
         expect(
-          ioc.docker_api.image_exists_by_repo?('indocker_image_with_dependency')
+          ioc.docker_api.image_exists?('indocker_image_with_dependency')
         ).to be true
       end
   
@@ -98,7 +98,7 @@ describe 'Indocker::ImageBuilder' do
 
         expect(
           ioc.image_metadata_repository.find_by_repo('indocker_image_with_dependency').image_id
-        ).to eq(ioc.docker_api.find_image_by_repo('indocker_image_with_dependency').id)
+        ).to eq(ioc.docker_api.get_image_id('indocker_image_with_dependency'))
       end
     end
   end

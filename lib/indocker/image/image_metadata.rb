@@ -2,14 +2,12 @@ class Indocker::ImageMetadata
   DEFAULT_TAG = 'latest'
 
   attr_reader   :repo, :tag, :directives, :build_dir
-  attr_accessor :image_id
 
-  def initialize(repo:, tag:, directives:, build_dir:, image_id:)
+  def initialize(repo:, tag:, directives:, build_dir:)
     @repo       = repo
     @tag        = tag
     @directives = directives
     @build_dir  = build_dir
-    @image_id   = image_id
   end
 
   def full_name
