@@ -11,10 +11,11 @@ Docker.options = { read_timeout: 600, write_timeout: 600 }
 require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'
-require 'indocker/utils/logger'
-require 'indocker/logger_factory'
-require 'indocker/test_logger_factory'
 require 'indocker/dsl_context'
+
+require 'indocker/utils/logger'
+require 'indocker/utils/logger_factory'
+require 'indocker/utils/test_logger_factory'
 require 'indocker/utils/tar_helper'
 
 require 'indocker/handlers/base'
@@ -43,17 +44,20 @@ require 'indocker/partial/partial_metadata_repository'
 require 'indocker/directives/directives_runner'
 require 'indocker/directives/base'
 require 'indocker/directives/partial'
+
 require 'indocker/directives/docker_directives/base'
 require 'indocker/directives/docker_directives/cmd'
 require 'indocker/directives/docker_directives/entrypoint'
 require 'indocker/directives/docker_directives/env'
 require 'indocker/directives/docker_directives/copy'
+require 'indocker/directives/docker_directives/copy_root'
 require 'indocker/directives/docker_directives/from'
 require 'indocker/directives/docker_directives/run'
 require 'indocker/directives/docker_directives/workdir'
+
 require 'indocker/directives/prepare_directives/base'
 require 'indocker/directives/prepare_directives/docker_cp'
-require 'indocker/directives/prepare_directives/copy'
+
 require 'indocker/directives/container_directives/base'
 require 'indocker/directives/container_directives/from'
 
@@ -87,7 +91,7 @@ module Indocker
     def root(dir = nil)
       return @root if @root
 
-      @root = dir
+      @root = Pathname.new(dir)
     end
   end
 end

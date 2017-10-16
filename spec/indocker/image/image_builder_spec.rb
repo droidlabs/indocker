@@ -65,13 +65,13 @@ describe 'Indocker::ImageBuilder' do
         Indocker.define_image('indocker_image_with_dependency') do
           before_build do
             docker_cp 'indocker_container' do
-              copy 'test.txt', build_dir
+              copy 'test.txt' => build_dir
             end
           end
           
           from 'alpine:latest'
           workdir '/'
-          copy 'test.txt', '/'
+          copy 'test.txt' => '/'
         end
 
         Indocker.define_container 'indocker_container' do
@@ -94,6 +94,22 @@ describe 'Indocker::ImageBuilder' do
       expect{
         subject.build('indocker_image_without_dependencies')
       }.to raise_error(Indocker::Errors::ImageIsNotDefined)
+    end
+  end
+
+  context 'with coping files from project_root' do
+    before do
+      Indocker.define_image('indocker_copy_root_image') do          
+        from 'alpine:latest'
+
+        copy_root 'assets/.' => 'assets'
+      end
+    end
+
+    it 'does not raise error' do
+      expect{
+        subject.build('indocker_copy_root_image')
+      }.to_not raise_error
     end
   end
 end

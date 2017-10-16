@@ -3,12 +3,6 @@ class Indocker::ImageMetadataRepository
   
   bean :image_metadata_repository
 
-  def method_missing(method, *args)
-    find_by_repo(method)
-  rescue
-    nil
-  end
-
   def put(image_metadata)
     all.push(image_metadata)
   end
@@ -26,5 +20,11 @@ class Indocker::ImageMetadataRepository
 
   def all
     @all ||= []
+  end
+
+  def method_missing(method, **args)
+    tag = args[:tag] || Indocker::ImageMetadata::DEFAULT_TAG
+
+    find_by_repo(method, tag: tag)
   end
 end

@@ -7,7 +7,7 @@ class Indocker::ContainerMetadataFactory
   inject :image_metadata_repository
 
   def create(name, &definition)
-    context      = Indocker::DSLContext.new(
+    context = Indocker::DSLContext.new(
       images: image_metadata_repository
     )
 

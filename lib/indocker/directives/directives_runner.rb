@@ -12,28 +12,29 @@ class Indocker::DirectivesRunner
     case directive
     when Indocker::PrepareDirectives::DockerCp
       run_docker_cp(directive)
-    when Indocker::PrepareDirectives::Copy
-      run_copy(directive)
+    when Indocker::DockerDirectives::CopyRoot
+      run_copy_root(directive)
     end
   end
 
   def run_docker_cp(directive)
-    directive.copy_actions.each do |copy_action|
+    directive.copy_actions.each do |from, to|
       container_manager.copy(
-        name: directive.container_name,
-        copy_from: copy_action[:from],
-        copy_to:   copy_action[:to]
+        name:      directive.container_name,
+        copy_from: from,
+        copy_to:   to
       )
     end
   end
 
-  def run_copy(directive)
-    directive.copy_actions.each do |copy_action|
-      FileUtils.cp_r(
-        File.join(Indocker.root, copy_action[:from]), 
-        File.join(directive.build_dir, copy_action[:to]), 
-        preserve: true
-      )
+  def run_copy_root(directive)
+    directive.copy_actions.each do |from, to|
+      source_dir      = File.join(Indocker.root, from)
+      destination_dir = File.join(directive.build_dir, to)
+      
+      FileUtils.mkdir_p(destination_dir)
+
+      FileUtils.cp_r(source_dir, destination_dir, preserve: true)
     end
   end
 end

@@ -7,7 +7,10 @@ class Indocker::ImageMetadataFactory
   inject :docker_api
 
   def create(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG, &definition)
-    context    = Indocker::DSLContext.new( { build_dir: build_dir(repo) } )
+    context = Indocker::DSLContext.new(
+      build_dir: build_dir(repo),
+      root_dir:  Indocker.root
+    )
     directives = image_evaluator.evaluate(context, &definition)
 
     Indocker::ImageMetadata.new(
@@ -21,6 +24,6 @@ class Indocker::ImageMetadataFactory
   private
 
   def build_dir(name)
-    File.join(Indocker.root, Indocker::BUILD_DIR, name.to_s)
+    Pathname.new File.join(Indocker.root, Indocker::BUILD_DIR, name.to_s)
   end
 end

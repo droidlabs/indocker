@@ -40,6 +40,10 @@ class Indocker::ImageDSL
     @directives << Indocker::DockerDirectives::Copy.new(*args)
   end
 
+  def copy_root(copy_actions)
+    @directives << Indocker::DockerDirectives::CopyRoot.new(@context.build_dir, copy_actions)
+  end
+
   def entrypoint(*args)
     @directives << Indocker::DockerDirectives::Entrypoint.new(*args)
   end
@@ -49,14 +53,10 @@ class Indocker::ImageDSL
   end
 
   def before_build(&block)
-    instance_exec @context.build_dir, &block
+    instance_exec &block
   end
 
   def docker_cp(container_name, &block)
     @directives << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
-  end
-
-  def cp_r(copy_hash)
-    @directives << Indocker::PrepareDirectives::Copy.new(@context.build_dir, copy_hash)
   end
 end

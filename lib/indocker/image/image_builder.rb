@@ -29,7 +29,7 @@ class Indocker::ImageBuilder
     docker_api.build_from_dir(
       repo:      image_metadata.repo,
       tag:       image_metadata.tag,
-      build_dir: image_metadata.build_dir
+      build_dir: image_metadata.build_dir.to_s
     ) { |log| logger.info(log) }
 
     FileUtils.rm_rf(image_metadata.build_dir)

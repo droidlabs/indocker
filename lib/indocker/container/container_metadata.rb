@@ -26,7 +26,7 @@ class Indocker::ContainerMetadata
   end
 
   def image
-    "#{repo}:#{tag}"
+    from_directive.image
   end
 
   private

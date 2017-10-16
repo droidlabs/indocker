@@ -10,7 +10,7 @@ describe 'Indocker::ImageEvaluator' do
     
       before_build do
         docker_cp 'yet_anoter_helper_container' do
-          copy '.', '.'
+          copy '.' => '.'
         end
       end
 
@@ -27,7 +27,7 @@ describe 'Indocker::ImageEvaluator' do
       
         before_build do
           docker_cp 'helper_container' do
-            copy '.', '.'
+            copy '.' => '.'
           end
         end
       
@@ -41,8 +41,8 @@ describe 'Indocker::ImageEvaluator' do
       end
     end
     
-    let(:context)        { Indocker::DSLContext.new(build_dir: 'some/path') }
-    let(:directives)       { subject.evaluate(context, &example_image_definition) }
+    let(:context)    { Indocker::DSLContext.new(build_dir: 'some/path') }
+    let(:directives) { subject.evaluate(context, &example_image_definition) }
 
     it 'returns array of directives' do
       expect(directives).to be_a(Array)

@@ -4,4 +4,5 @@ module Indocker::Errors
   class ContainerIsNotDefined         < StandardError; end
   class CircularImageDependency       < StandardError; end
   class ImageForContainerDoesNotExist < StandardError; end
+  class ContainerImageAlreadyDefined  < StandardError; end
 end

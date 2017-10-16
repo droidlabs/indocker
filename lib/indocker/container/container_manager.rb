@@ -17,7 +17,7 @@ class Indocker::ContainerManager
     container_id = docker_api.create_container(
       name: name, 
       repo: container_metadata.repo, 
-      tag: container_metadata.tag
+      tag:  container_metadata.tag
     )
 
     logger.info "Successfully created container :#{name}"

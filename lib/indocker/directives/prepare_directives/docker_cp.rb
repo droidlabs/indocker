@@ -4,14 +4,13 @@ class Indocker::PrepareDirectives::DockerCp < Indocker::PrepareDirectives::Base
   def initialize(container_name, build_dir, &block)
     @container_name = container_name
     @build_dir      = build_dir
-    @copy_actions   = []
 
     instance_exec &block if block_given?
   end
 
   private
 
-  def copy(from, to)
-    copy_actions.push({ from: from, to: to })
+  def copy(copy_actions)
+    @copy_actions = copy_actions
   end
 end

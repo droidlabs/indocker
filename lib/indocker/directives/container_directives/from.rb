@@ -5,4 +5,8 @@ class Indocker::ContainerDirectives::From < Indocker::ContainerDirectives::Base
     @repo = repo
     @tag  = tag
   end
+
+  def image
+    "#{@repo}:#{@tag}"
+  end
 end
