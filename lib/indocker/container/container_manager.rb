@@ -1,4 +1,6 @@
 class Indocker::ContainerManager
+  KEEP_CONTAINER_RUNNING_COMMAND = 'tail -F -n0 /etc/hosts'
+
   include SmartIoC::Iocify
   
   bean   :container_manager
@@ -7,6 +9,7 @@ class Indocker::ContainerManager
   inject :image_metadata_repository
   inject :docker_api
   inject :logger
+  inject :tar_helper
 
   def create(name)
     container_metadata = container_metadata_repository.get_by_name(name)
@@ -47,5 +50,34 @@ class Indocker::ContainerManager
     logger.info "Successfully deleted container :#{name}"
 
     container_id
+  end
+
+  def copy(name:, copy_from:, copy_to:)
+    container_metadata = container_metadata_repository.get_by_name(name)
+    
+    container_id = docker_api.create_container(
+      repo:    container_metadata.repo, 
+      tag:     container_metadata.tag,
+      command: KEEP_CONTAINER_RUNNING_COMMAND
+    ) if !docker_api.container_exists?(name)
+      
+    tar_snapshot    = File.join(Indocker.root, 'tmp', "#{name.to_s}.tar")
+
+    docker_api.copy_from_container(name: container_id, path: copy_from) do |tar_archive|
+      File.open(tar_snapshot, 'w') {|f| f.write(tar_archive)}
+    end
+    
+    files_list = tar_helper.untar(
+      io:                    File.open(tar_snapshot, 'r'),
+      destination:           copy_to,
+      ignore_wrap_directory: File.basename(copy_from) == '.'
+    )
+
+    FileUtils.rm_rf(tar_snapshot)
+
+    docker_api.stop_container(container_id)
+    docker_api.delete_container(container_id)
+
+    files_list
   end
 end

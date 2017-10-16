@@ -11,8 +11,8 @@ class Indocker::ContainerMetadataFactory
       images: image_metadata_repository
     )
 
-    directives   = container_evaluator.evaluate(context, &definition)
-    
+    directives = container_evaluator.evaluate(context, &definition)
+
     Indocker::ContainerMetadata.new(
       name:         name.to_s,
       directives:   directives     

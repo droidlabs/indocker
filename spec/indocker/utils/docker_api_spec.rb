@@ -12,24 +12,29 @@ describe Indocker::DockerApi do
 
     context 'if image does not present' do
       it 'returns nil ' do
-        expect(subject.get_image_id('some-invalid-image')).to be_nil
+        expect{
+          subject.get_image_id('some-invalid-image')
+        }.to raise_error(Docker::Error::NotFoundError)
       end
     end
   end
 
-  describe '#find_container_by_name' do
+  describe '#get_container_id' do
     context 'if container presents' do
       let!(:container) { Docker::Container.create('Image' => 'alpine:latest', 'name': 'alpine') }
       after { container.delete(force: true) }
 
-      it 'returns instance of Docker::Container class' do
-        expect(subject.find_container_by_name('alpine')).to be_a(Docker::Container)
+      it 'returns container_id string' do
+        expect(subject.get_container_id('alpine')).to be_a(String)
+        expect(subject.get_container_id('alpine').size).to eq(64)
       end
     end
 
     context 'if container does not present' do
       it 'returns nil' do
-        expect(subject.find_container_by_name('invalid-container-name')).to be_nil
+        expect{
+          subject.get_container_id('invalid-container-name')
+        }.to raise_error(Docker::Error::NotFoundError)
       end
     end
   end

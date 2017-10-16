@@ -18,12 +18,12 @@ class Indocker::DirectivesRunner
   end
 
   def run_docker_cp(directive)
-    container = container_manager.create(directive.container_name)
-
     directive.copy_actions.each do |copy_action|
-      File.open(File.join(directive.build_dir, copy_action[:to]), 'w') do |f|
-        container.copy(copy_action[:from]) { |chunk| f.write(chunk) }
-      end
+      container_manager.copy(
+        name: directive.container_name,
+        copy_from: copy_action[:from],
+        copy_to:   copy_action[:to]
+      )
     end
   end
 

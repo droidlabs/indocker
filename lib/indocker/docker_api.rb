@@ -15,6 +15,10 @@ class Indocker::DockerApi
     Docker::Image.exist?(full_name(repo, tag))
   end
 
+  def delete_image(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+    Docker::Image.get(full_name(repo, tag)).remove(force: true)
+  end
+
   def build_from_dir(repo:, tag:, build_dir:)
     image = Docker::Image.build_from_dir(build_dir) do |x|
       x.split("\r\n").each do |y|
@@ -40,7 +44,9 @@ class Indocker::DockerApi
   end
 
   def delete_images_where(&condition)
-    Docker::Image.all.select(&condition).map(&:remove)
+    Docker::Image.all.select(&condition).map do |image|
+      image.remove(force: true)
+    end
   end
 
 
@@ -66,11 +72,24 @@ class Indocker::DockerApi
     Docker::Container.get(name.to_s).stop
   end
 
-  def create_container(name:, repo:, tag:)
-    Docker::Container.create(
-      'Image'        => full_name(repo, tag), 
-      'name'         => name.to_s
-    ).id
+  def copy_from_container(name:, path:)
+    Docker::Container.get(name.to_s).copy(path) { |chunk| yield chunk }
+  end
+
+  def create_container(repo:, tag:, name: nil, command: nil)
+    params = {
+      'Image' => full_name(repo, tag), 
+      'name'  => name.to_s,
+      'Cmd'   => command
+    }.delete_if { |_, value| value.to_s.empty? }
+
+    Docker::Container.create(params).id
+  end
+
+  def exec_container(name:, command:)
+    Docker::Container.get(name.to_s).exec(command) do |stream, chunk|
+      yield stream, chunk
+    end
   end
 
   def delete_container(name)
@@ -78,10 +97,17 @@ class Indocker::DockerApi
   end
 
   def delete_containers_where(&condition)
-    Docker::Container.all.select(&condition).map do |container|
+    Docker::Container.all(all: true).select(&condition).map do |container|
       container.stop
       container.delete(force: true)
     end
+  end
+
+  def container_run(repo:, tag:, command:)
+    container = Docker::Container.create(
+      'Image'        => full_name(repo, tag), 
+      'Cmd'          => command
+    ).id
   end
 
   private

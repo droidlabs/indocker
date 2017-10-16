@@ -21,16 +21,25 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.after(:each) do
-    ioc.docker_api.delete_containers_where { |container| container.info['Image'] =~ /^indocker/ }
-    ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags']  =~ /^indocker/ }
+    ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Config']['Image'] =~ /^indocker/ }
+    ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags'].grep(/^indocker/).any? }
 
     ioc.image_metadata_repository.clear
     ioc.container_metadata_repository.clear
     ioc.partial_metadata_repository.clear
 
     ioc.logger.clear
+
+    FileUtils.rm_rf(Dir.glob(File.join(__dir__, '../tmp/*')))
   end
 end
 
+def ensure_exists(file)
+  expect(File.exists?(file)).to be true
+end
+
+def ensure_content(file, content)
+  expect(File.read(file)).to match(content)
+end
 
 

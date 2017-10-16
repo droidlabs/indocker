@@ -21,12 +21,6 @@ describe 'Indocker::ImageBuilder' do
       ).to be true
     end
 
-    it 'updates image_metadata with image_id' do
-      expect(
-        ioc.image_metadata_repository.find_by_repo('indocker_image').image_id
-      ).to eq(ioc.docker_api.get_image_id('indocker_image'))
-    end
-
     it 'deletes build_path after image building' do
       image_metadata = ioc.image_metadata_repository.find_by_repo('indocker_image')
 
@@ -70,17 +64,17 @@ describe 'Indocker::ImageBuilder' do
 
         Indocker.define_image('indocker_image_with_dependency') do
           before_build do
-            docker_cp 'container' do
-              copy 'test.txt', 'test.txt'
+            docker_cp 'indocker_container' do
+              copy 'test.txt', build_dir
             end
           end
           
           from 'alpine:latest'
           workdir '/'
-          copy 'test.txt', 'test.txt'
+          copy 'test.txt', '/'
         end
 
-        Indocker.define_container 'container' do
+        Indocker.define_container 'indocker_container' do
           use images.indocker_image
         end
       end
@@ -91,14 +85,6 @@ describe 'Indocker::ImageBuilder' do
         expect(
           ioc.docker_api.image_exists?('indocker_image_with_dependency')
         ).to be true
-      end
-  
-      it 'updates image_metadata with image_id' do
-        subject.build('indocker_image_with_dependency')
-
-        expect(
-          ioc.image_metadata_repository.find_by_repo('indocker_image_with_dependency').image_id
-        ).to eq(ioc.docker_api.get_image_id('indocker_image_with_dependency'))
       end
     end
   end

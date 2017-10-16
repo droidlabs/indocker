@@ -15,6 +15,7 @@ require 'indocker/utils/logger'
 require 'indocker/logger_factory'
 require 'indocker/test_logger_factory'
 require 'indocker/dsl_context'
+require 'indocker/utils/tar_helper'
 
 require 'indocker/handlers/base'
 require 'indocker/handlers/run_container'
