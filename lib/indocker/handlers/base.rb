@@ -1,7 +1,9 @@
 module Indocker::Handlers
   class Base 
     def perform(options)
-      application_initializer.init_app
+      env = options.delete(:env)
+
+      application_initializer.init_app(options[:current_path], env: env)
 
       self.method(:handle).call(options)
     rescue Docker::Error::ClientError => e

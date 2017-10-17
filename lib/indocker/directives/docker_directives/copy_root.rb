@@ -10,7 +10,7 @@ class Indocker::DockerDirectives::CopyRoot < Indocker::DockerDirectives::Copy
     result = []
     
     copy_actions.each do |from, to|
-      result.push "#{type} #{from} #{to}"
+      result.push "#{type} #{File.join(to, File.basename(from))} #{to}"
     end
 
     result.join("\n")

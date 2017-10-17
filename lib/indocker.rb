@@ -13,6 +13,7 @@ require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'
 require 'indocker/dsl_context'
+require 'indocker/env_files_loader'
 
 require 'indocker/configs/config'
 require 'indocker/configs/config_factory'
@@ -96,9 +97,7 @@ module Indocker
     end
 
     def root(dir = nil)
-      return @root if @root
-
-      @root = Pathname.new(dir)
+      ioc.config.root(dir)
     end
   end
 end

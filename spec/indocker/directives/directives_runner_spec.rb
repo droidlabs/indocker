@@ -5,7 +5,7 @@ describe Indocker::DirectivesRunner do
 
   describe "#run" do
     context "for 'copy_root' command" do
-      let(:build_dir) { Indocker.root.join('../../tmp/build_dir') }
+      let(:build_dir) { ioc.config.root.join('../../tmp/build_dir') }
       let(:from_path) { 'assets/.' }
       let(:to_path)   { '/assets' }
       let(:directive) { 

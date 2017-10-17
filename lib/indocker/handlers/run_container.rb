@@ -10,7 +10,7 @@ class Indocker::Handlers::RunContainer < Indocker::Handlers::Base
   inject :docker_api
   inject :logger
 
-  def handle(name:)
+  def handle(name:, current_path:)
     name = name.to_s
 
     container_metadata = container_metadata_repository.get_by_name(name)

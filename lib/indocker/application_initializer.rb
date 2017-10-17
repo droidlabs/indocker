@@ -6,18 +6,25 @@ class Indocker::ApplicationInitializer
   inject :config_locator
   inject :docker_api
   inject :registry_authenticator
-  # inject :env_files_loader
+  inject :env_files_loader
+  inject :config
 
 
-  def init_app(current_path)
+  def init_app(current_path, env: :development)
     docker_api.check_docker_installed!
 
-    load config_locator.locate(config_path)
+    config.root(
+      Pathname.new(
+        File.expand_path(
+          File.join(config_locator.locate(current_path), '../..')
+        )
+      )
+    )
+
+    load(config_locator.locate(current_path))
 
     registry_authenticator.authenticate!
 
-    # env_files_loader.load
-
-    # load partials, images and containers configurations
+    env_files_loader.load!(env)
   end
 end

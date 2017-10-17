@@ -1,8 +1,10 @@
 class Indocker::DirectivesRunner
   include SmartIoC::Iocify
 
-  bean   :directives_runner
+  bean :directives_runner
+
   inject :container_manager
+  inject :config
 
   def run_all(directives)
     directives.each {|c| run(c)}
@@ -29,7 +31,7 @@ class Indocker::DirectivesRunner
 
   def run_copy_root(directive)
     directive.copy_actions.each do |from, to|
-      source_dir      = File.join(Indocker.root, from)
+      source_dir      = File.join(config.root, from)
       destination_dir = File.join(directive.build_dir, to)
       
       FileUtils.mkdir_p(destination_dir)

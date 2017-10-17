@@ -21,7 +21,7 @@ describe 'Indocker::Handlers::RunContainer' do
 
       context 'for new container' do
         before do
-          subject.handle(name: :indocker_correct_container)
+          subject.handle(name: :indocker_correct_container, current_path: nil)
         end
         
         it 'creates container' do
@@ -45,13 +45,13 @@ describe 'Indocker::Handlers::RunContainer' do
 
       context 'for existing container' do
         before do
-          subject.handle(name: :indocker_correct_container)
+          subject.handle(name: :indocker_correct_container, current_path: nil)
         end
 
         it 'stops, destroy and create container again' do
           old_container_id = ioc.docker_api.get_container_id(:indocker_correct_container)
           
-          subject.handle(name: :indocker_correct_container)
+          subject.handle(name: :indocker_correct_container, current_path: nil)
 
           new_container_id = ioc.docker_api.get_container_id(:indocker_correct_container)
 
@@ -59,7 +59,7 @@ describe 'Indocker::Handlers::RunContainer' do
         end
 
         it 'runs container again' do
-          subject.handle(name: :indocker_correct_container)
+          subject.handle(name: :indocker_correct_container, current_path: nil)
 
           expect(
             ioc.docker_api.get_container_state(:indocker_correct_container)
@@ -88,7 +88,7 @@ describe 'Indocker::Handlers::RunContainer' do
           use images.indocker_image_with_falling_cmd
         end
         
-        subject.handle(name: :container_with_falling_cmd)
+        subject.handle(name: :container_with_falling_cmd, current_path: nil)
       end
       
       it 'logs error text' do

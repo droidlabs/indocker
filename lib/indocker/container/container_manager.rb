@@ -10,6 +10,7 @@ class Indocker::ContainerManager
   inject :docker_api
   inject :logger
   inject :tar_helper
+  inject :config
 
   def create(name)
     container_metadata = container_metadata_repository.get_by_name(name)
@@ -61,7 +62,7 @@ class Indocker::ContainerManager
       command: KEEP_CONTAINER_RUNNING_COMMAND
     ) if !docker_api.container_exists?(name)
       
-    tar_snapshot    = File.join(Indocker.root, 'tmp', "#{name.to_s}.tar")
+    tar_snapshot    = File.join(config.root, 'tmp', "#{name.to_s}.tar")
 
     docker_api.copy_from_container(name: container_id, path: copy_from) do |tar_archive|
       File.open(tar_snapshot, 'w') {|f| f.write(tar_archive)}
@@ -74,7 +75,7 @@ class Indocker::ContainerManager
     )
 
     FileUtils.rm_rf(tar_snapshot)
-
+    
     docker_api.stop_container(container_id)
     docker_api.delete_container(container_id)
 
