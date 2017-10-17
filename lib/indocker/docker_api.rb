@@ -5,6 +5,24 @@ class Indocker::DockerApi
 
   inject :logger
 
+  def check_docker_installed!
+    Docker.info
+    nil
+  rescue Excon::Error::Socket
+    raise Indocker::Errors::DockerDoesNotInstalled
+  end
+
+  def authenticate!(serveraddress:, email:, password:, username:)
+    params = {
+      'serveraddress' => serveraddress,
+      'email'         => email,
+      'password'      => password,
+      'username'      => username
+    }.delete_if {|_, value| value.to_s.empty?}
+
+    Docker.authenticate!(params)
+  end
+
   # Images
 
   def get_image_id(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)

@@ -6,6 +6,7 @@ SmartIoC.find_package_beans(:indocker, __dir__)
 SmartIoC.set_load_proc do |location|
   require(location)
 end
+
 Docker.options = { read_timeout: 600, write_timeout: 600 }
 
 require 'indocker/errors'
@@ -13,10 +14,16 @@ require 'indocker/cli'
 require 'indocker/docker_api'
 require 'indocker/dsl_context'
 
+require 'indocker/configs/config'
+require 'indocker/configs/config_factory'
+require 'indocker/configs/locator'
+
 require 'indocker/utils/logger'
 require 'indocker/utils/logger_factory'
 require 'indocker/utils/test_logger_factory'
 require 'indocker/utils/tar_helper'
+require 'indocker/utils/string_utils'
+require 'indocker/utils/registry_authenticator'
 
 require 'indocker/handlers/base'
 require 'indocker/handlers/run_container'
@@ -85,7 +92,7 @@ module Indocker
     end
 
     def setup(&block)
-      instance_exec &block
+      ioc.config(&block)
     end
 
     def root(dir = nil)

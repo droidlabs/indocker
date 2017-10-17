@@ -1,4 +1,4 @@
-Idocker.setup do |containers|
+Idocker.setup do
   namespace     'indocker_example'
   root          File.dirname(__dir__)
 
@@ -19,5 +19,5 @@ Idocker.setup do |containers|
     skip_push  true
   end
 
-  build_server servers.build_server
+  build_server :build_server
 end
