@@ -22,11 +22,14 @@ RSpec.configure do |config|
 
   config.after(:each) do
     ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Config']['Image'] =~ /^indocker/ }
+    ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Names'].grep(/^\/indocker/).any? }
     ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags'].grep(/^indocker/).any? }
+    ioc.docker_api.delete_networks_where   { |network|   network.info['Name'] =~ /^indocker/ }
 
     ioc.image_metadata_repository.clear
     ioc.container_metadata_repository.clear
     ioc.partial_metadata_repository.clear
+    ioc.network_metadata_repository.clear
 
     ioc.logger.clear
 

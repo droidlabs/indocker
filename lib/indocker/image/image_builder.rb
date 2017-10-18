@@ -5,7 +5,7 @@ class Indocker::ImageBuilder
   
   inject :image_metadata_repository
   inject :image_dependencies_manager
-  inject :directives_runner
+  inject :image_directives_runner
   inject :image_evaluator
   inject :docker_api
   inject :logger
@@ -19,7 +19,7 @@ class Indocker::ImageBuilder
       build(dependency_metadata.repo, tag: dependency_metadata.tag)
     end
     
-    directives_runner.run_all(image_metadata.prepare_directives)
+    image_directives_runner.run_all(image_metadata.prepare_directives)
 
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
       f.puts       image_metadata.build_directives.map(&:to_s)

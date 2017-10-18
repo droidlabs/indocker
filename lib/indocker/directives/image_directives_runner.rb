@@ -1,7 +1,7 @@
-class Indocker::DirectivesRunner
+class Indocker::ImageDirectivesRunner
   include SmartIoC::Iocify
 
-  bean :directives_runner
+  bean :image_directives_runner
 
   inject :container_manager
   inject :config
@@ -16,6 +16,8 @@ class Indocker::DirectivesRunner
       run_docker_cp(directive)
     when Indocker::DockerDirectives::CopyRoot
       run_copy_root(directive)
+    else
+      # do nothing
     end
   end
 

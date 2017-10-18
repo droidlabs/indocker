@@ -4,9 +4,11 @@ module Indocker::Errors
   class ContainerIsNotDefined             < StandardError; end
   class CircularImageDependency           < StandardError; end
   class ImageForContainerDoesNotExist     < StandardError; end
-  class ContainerImageAlreadyDefined      < StandardError; end
   class DockerDoesNotInstalled            < StandardError; end
   class ConfigFilesDoesNotFound           < StandardError; end
   class ConfigOptionTypeMismatch          < StandardError; end
   class DockerRegistryAuthenticationError < StandardError; end
+
+  class ContainerImageAlreadyDefined      < StandardError; end
+  class NetworkAlreadyDefined             < StandardError; end
 end

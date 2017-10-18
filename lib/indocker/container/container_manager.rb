@@ -1,5 +1,5 @@
 class Indocker::ContainerManager
-  KEEP_CONTAINER_RUNNING_COMMAND = 'tail -F -n0 /etc/hosts'
+  KEEP_CONTAINER_RUNNING_COMMAND = %w(tail -F -n0 /etc/hosts)
 
   include SmartIoC::Iocify
   
@@ -7,6 +7,7 @@ class Indocker::ContainerManager
 
   inject :container_metadata_repository
   inject :image_metadata_repository
+  inject :container_directives_runner
   inject :docker_api
   inject :logger
   inject :tar_helper
@@ -27,6 +28,12 @@ class Indocker::ContainerManager
   end
 
   def start(name)
+    container_metadata = container_metadata_repository.get_by_name(name)
+    
+    container_directives_runner.run_all(
+      container_metadata.before_start_directives
+    )
+
     container_id = docker_api.start_container(name)
 
     logger.info "Successfully started container :#{name}"

@@ -21,6 +21,12 @@ class Indocker::ContainerDSL
       raise Indocker::Errors::ContainerImageAlreadyDefined, from_directive.image if from_directive
         
       @directives << Indocker::ContainerDirectives::From.new(item.repo, tag: item.tag)
+
+    when Indocker::Networks::NetworkMetadata
+      @directives << Indocker::ContainerDirectives::Network.new(
+        container_name: @context.container_name,
+        network_name:   item.name
+      )
     end
   end
 end

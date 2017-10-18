@@ -49,9 +49,14 @@ require 'indocker/container/container_dsl'
 require 'indocker/partial/partial_metadata'
 require 'indocker/partial/partial_metadata_repository'
 
-require 'indocker/directives/directives_runner'
+require 'indocker/directives/image_directives_runner'
+require 'indocker/directives/container_directives_runner'
 require 'indocker/directives/base'
 require 'indocker/directives/partial'
+
+require 'indocker/networks/network_metadata'
+require 'indocker/networks/network_metadata_factory'
+require 'indocker/networks/network_metadata_repository'
 
 require 'indocker/directives/docker_directives/base'
 require 'indocker/directives/docker_directives/cmd'
@@ -68,6 +73,7 @@ require 'indocker/directives/prepare_directives/docker_cp'
 
 require 'indocker/directives/container_directives/base'
 require 'indocker/directives/container_directives/from'
+require 'indocker/directives/container_directives/network'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
@@ -89,6 +95,12 @@ module Indocker
     def define_partial(name, &definition)
       ioc.partial_metadata_repository.put(
         Indocker::PartialMetadata.new(name, &definition)
+      )
+    end
+
+    def define_network(name)
+      ioc.network_metadata_repository.put(
+        ioc.network_metadata_factory.create(name)
       )
     end
 

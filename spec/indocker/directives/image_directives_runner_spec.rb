@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Indocker::DirectivesRunner do
-  subject { ioc.directives_runner }
+describe Indocker::ImageDirectivesRunner do
+  let(:image_directives_runner) { ioc.image_directives_runner }
 
   describe "#run" do
     context "for 'copy_root' command" do
@@ -13,7 +13,7 @@ describe Indocker::DirectivesRunner do
       }
 
       it 'copy files from root to build directory' do
-        subject.run(directive)
+        image_directives_runner.run(directive)
 
         ensure_exists(build_dir.join('assets', 'index.css'))
         ensure_exists(build_dir.join('assets', 'index.js'))

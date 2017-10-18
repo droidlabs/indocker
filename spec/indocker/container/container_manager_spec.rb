@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Indocker::ContainerManager do
-  subject { ioc.container_manager }
+  let(:container_manager) { ioc.container_manager }
+  let(:docker_api)        { ioc.docker_api }
 
   describe '#create' do
     context 'for existing image' do
@@ -20,11 +21,71 @@ describe Indocker::ContainerManager do
       end
     
       it 'runs container' do
-        subject.create('indocker_simple_container')
+        container_manager.create('indocker_simple_container')
         
         expect(
           ioc.docker_api.container_exists?('indocker_simple_container')
         ).to be true
+      end
+    end
+  end
+
+  describe '#start' do
+    context 'with specified network' do
+      let(:container_id) { docker_api.get_container_id('indocker_simple_container') }
+      let(:network_id)   { docker_api.get_network_id('indocker_network') }
+
+      before do
+        Indocker.define_image 'indocker_simple_image' do
+          from 'hello-world' 
+          
+          workdir '.'
+        end
+
+        Indocker.define_network 'indocker_network'
+
+        Indocker.define_container 'indocker_simple_container' do
+          use images.indocker_simple_image
+          use networks.indocker_network
+        end
+
+        ioc.image_builder.build('indocker_simple_image')
+        ioc.container_manager.create('indocker_simple_container')
+
+        container_manager.start('indocker_simple_container')
+      end
+
+      after do
+        container_manager.stop('indocker_simple_container')
+        container_manager.delete('indocker_simple_container')
+        docker_api.remove_network('indocker_network')
+      end
+      
+      context 'creates network before start' do
+        it 'for new network' do
+          expect(network_id).to match(/[\w\d]{64}/)
+          expect(docker_api.network_exists?('indocker_network')).to be true
+        end
+
+        it 'if network already exists' do
+          container_manager.stop('indocker_simple_container')
+          container_manager.start('indocker_simple_container')
+
+          expect(network_id).to match(/[\w\d]{64}/)
+          expect(docker_api.network_exists?('indocker_network')).to be true
+        end
+      end
+
+      it 'connect container to specified network' do
+        expect(
+          docker_api.inspect_network(network_id)['Containers'].keys
+        ).to include(container_id)
+      end
+
+      it 'starts container' do
+        expect(
+          docker_api.get_container_state(container_id)
+        ).to eq(Indocker::ContainerMetadata::States::RUNNING)
       end
     end
   end
@@ -54,7 +115,7 @@ describe Indocker::ContainerManager do
 
     it 'returns files list' do
       expect(
-        subject.copy(
+        container_manager.copy(
           name:      :indocker_copy_container, 
           copy_from: '/sample/deeper',
           copy_to:   copy_to_path
@@ -68,7 +129,7 @@ describe Indocker::ContainerManager do
     end
 
     it 'copies files to output path' do
-      subject.copy(
+      container_manager.copy(
         name:      :indocker_copy_container, 
         copy_from: '/sample/.',
         copy_to:   copy_to_path

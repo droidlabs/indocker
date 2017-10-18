@@ -23,6 +23,40 @@ class Indocker::DockerApi
     Docker.authenticate!(params)
   end
 
+  # Networks
+
+  def create_network(name)
+    Docker::Network.create(name.to_s).id
+  end
+
+  def add_container_to_network(network_name:, container_name:)
+    container_id = get_container_id(container_name.to_s)
+
+    Docker::Network.get(network_name.to_s).connect(container_id.to_s)
+  end
+
+  def remove_network(name)
+    Docker::Network.get(name.to_s).remove
+  end
+
+  def network_exists?(name)
+    !Docker::Network.get(name.to_s).nil? rescue false
+  end
+
+  def get_network_id(name)
+    Docker::Network.get(name.to_s).id
+  end
+
+  def inspect_network(name)
+    Docker::Network.get(name.to_s).info
+  end
+
+  def delete_networks_where(&condition)
+    Docker::Network.all.select(&condition).map do |network|
+      network.remove
+    end
+  end
+
   # Images
 
   def get_image_id(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
@@ -70,6 +104,10 @@ class Indocker::DockerApi
 
   # Containers
 
+  def inspect_container(name)
+    Docker::Container.get(name.to_s).info
+  end
+
   def get_container_id(name)
     Docker::Container.get(name.to_s).id
   end
@@ -96,9 +134,9 @@ class Indocker::DockerApi
 
   def create_container(repo:, tag:, name: nil, command: nil)
     params = {
-      'Image' => full_name(repo, tag), 
-      'name'  => name.to_s,
-      'Cmd'   => command
+      'Image'   => full_name(repo, tag), 
+      'name'    => name.to_s,
+      'Cmd'     => command
     }.delete_if { |_, value| value.to_s.empty? }
 
     Docker::Container.create(params).id
