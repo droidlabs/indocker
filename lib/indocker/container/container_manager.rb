@@ -42,6 +42,14 @@ class Indocker::ContainerManager
       container_metadata.before_start_directives
     )
 
+    container_metadata.container_dependencies.each do |dependency|
+      create(dependency) unless docker_api.container_exists?(dependency)
+      
+      unless docker_api.get_container_state(dependency) == Indocker::ContainerMetadata::States::RUNNING
+        start(dependency)  
+      end
+    end
+
     container_id = docker_api.start_container(name)
 
     logger.info "Successfully started container :#{name}"

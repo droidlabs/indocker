@@ -45,4 +45,8 @@ class Indocker::ContainerDSL
       host_port:   host_port
     )
   end
+
+  def depends_on(container_metadata)
+    @directives << Indocker::ContainerDirectives::DependsOn.new(container_metadata.name)
+  end
 end

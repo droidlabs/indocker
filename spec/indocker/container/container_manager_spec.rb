@@ -31,6 +31,55 @@ describe Indocker::ContainerManager do
   end
 
   describe '#start' do
+    context 'with container dependencies' do
+      let(:main_container_id)      { docker_api.get_container_id('indocker_main_container') }
+      let(:dependecy_container_id) { docker_api.get_container_id('indocker_dependency_container') }
+
+      before do
+        Indocker.define_image 'indocker_main_container' do
+          from 'alpine:latest' 
+          workdir '.'
+          cmd ['/bin/sh']
+        end
+
+        Indocker.define_image 'indocker_dependency_container' do
+          from 'alpine:latest' 
+          workdir '.'
+          cmd ['/bin/sh']
+        end
+
+        Indocker.define_container 'indocker_dependency_container' do
+          use images.indocker_dependency_container
+        end
+
+        Indocker.define_container 'indocker_main_container' do
+          use images.indocker_main_container
+          
+          depends_on containers.get_by_name('indocker_dependency_container')
+        end
+
+
+        ioc.image_builder.build('indocker_main_container')
+        ioc.image_builder.build('indocker_dependency_container')
+        ioc.container_manager.create('indocker_main_container')
+
+        container_manager.start('indocker_main_container')
+      end
+
+      after do
+        container_manager.stop('indocker_main_container')
+        container_manager.delete('indocker_main_container')
+        container_manager.stop('indocker_dependency_container')
+        container_manager.delete('indocker_dependency_container')
+      end
+
+      it 'runs dependency container before' do
+        expect(
+          docker_api.get_container_state('indocker_dependency_container')
+        ).to eq(Indocker::ContainerMetadata::States::EXITED)
+      end
+    end
+
     context 'with specified network' do
       let(:container_id) { docker_api.get_container_id('indocker_simple_container') }
       let(:network_id)   { docker_api.get_network_id('indocker_network') }

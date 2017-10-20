@@ -67,6 +67,10 @@ class Indocker::ContainerMetadata
     result
   end
 
+  def container_dependencies
+    depends_on_directives.map(&:container_name)
+  end
+
   def before_start_directives
     @directives.select(&:before_start?)
   end
@@ -91,5 +95,9 @@ class Indocker::ContainerMetadata
 
   def ports_directives
     @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::Ports)}
+  end
+
+  def depends_on_directives
+    @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::DependsOn)}
   end
 end

@@ -14,6 +14,8 @@ class Indocker::ContainerDirectivesRunner
     case directive
     when Indocker::ContainerDirectives::Network
       run_network(directive)
+    when Indocker::ContainerDirectives::DependsOn
+      run_dependent_containers(directive)
     else
       # do nothing
     end

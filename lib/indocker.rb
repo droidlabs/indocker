@@ -81,6 +81,7 @@ require 'indocker/directives/container_directives/network'
 require 'indocker/directives/container_directives/env_file'
 require 'indocker/directives/container_directives/ports'
 require 'indocker/directives/container_directives/expose'
+require 'indocker/directives/container_directives/depends_on'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
