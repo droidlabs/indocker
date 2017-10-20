@@ -9,6 +9,9 @@ end
 
 Docker.options = { read_timeout: 600, write_timeout: 600 }
 
+module Indocker
+end
+
 require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'
