@@ -53,6 +53,10 @@ class Indocker::ContainerManager
     container_id = docker_api.start_container(name)
 
     logger.info "Successfully started container :#{name}"
+    
+    container_directives_runner.run_all(
+      container_metadata.after_start_directives
+    )
 
     container_id
   rescue Docker::Error::ClientError => e

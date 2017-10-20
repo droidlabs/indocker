@@ -75,6 +75,10 @@ class Indocker::ContainerMetadata
     @directives.select(&:before_start?)
   end
 
+  def after_start_directives
+    @directives.select(&:after_start?)
+  end
+
   private
 
   def from_directive

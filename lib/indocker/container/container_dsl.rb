@@ -49,4 +49,12 @@ class Indocker::ContainerDSL
   def depends_on(container_metadata)
     @directives << Indocker::ContainerDirectives::DependsOn.new(container_metadata.name)
   end
+
+  def ready(sleep:, timeout:, &ready_block)
+    @directives << Indocker::ContainerDirectives::Ready.new(
+      sleep:       sleep,
+      timeout:     timeout,
+      ready_block: ready_block
+    )
+  end
 end

@@ -1,3 +1,5 @@
+require 'timeout'
+
 class Indocker::ContainerDirectivesRunner
   include SmartIoC::Iocify
 
@@ -14,8 +16,8 @@ class Indocker::ContainerDirectivesRunner
     case directive
     when Indocker::ContainerDirectives::Network
       run_network(directive)
-    when Indocker::ContainerDirectives::DependsOn
-      run_dependent_containers(directive)
+    when Indocker::ContainerDirectives::Ready
+      run_ready(directive)
     else
       # do nothing
     end
@@ -30,5 +32,15 @@ class Indocker::ContainerDirectivesRunner
       container_name: directive.container_name,
       network_name:   directive.network_name
     )
+  end
+
+  def run_ready(directive)
+    Timeout::timeout(directive.timeout) do
+      while (!directive.ready_block.call)
+        sleep directive.sleep
+      end
+    end
+  rescue Timeout::Error
+    raise Indocker::Errors::ContainerTimeoutError
   end
 end

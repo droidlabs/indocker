@@ -5,24 +5,26 @@ describe Indocker::ContainerManager do
   let(:docker_api)        { ioc.docker_api }
 
   describe '#create' do
+    before do
+      Indocker.define_image 'indocker_image' do
+        from 'alpine:latest'
+        workdir '.'
+        cmd %w(tail -F -n0 /etc/hosts)
+      end
+
+      ioc.image_builder.build('indocker_image')
+    end
+
     context 'for existing image' do
       before do
-        Indocker.define_image 'indocker_simple_image' do
-          from 'hello-world' 
-          
-          workdir '.'
-        end
-
         Indocker.define_container 'indocker_simple_container' do
-          use images.indocker_simple_image
+          use images.indocker_image
         end
-
-        ioc.image_builder.build('indocker_simple_image')
       end
-    
+
       it 'runs container' do
         container_manager.create('indocker_simple_container')
-        
+
         expect(
           ioc.docker_api.container_exists?('indocker_simple_container')
         ).to be true
@@ -31,37 +33,79 @@ describe Indocker::ContainerManager do
   end
 
   describe '#start' do
+    before do
+      Indocker.define_image 'indocker_image' do
+        from 'alpine:latest'
+        workdir '.'
+        cmd %w(tail -F -n0 /etc/hosts)
+      end
+
+      ioc.image_builder.build('indocker_image')
+    end
+    
+    context 'with ready timeout' do
+      before do
+        Indocker.define_container 'indocker_timeout_container' do
+          use images.indocker_image
+
+          ready sleep: 0.1, timeout: 1 do
+            sleep 0.5
+            true
+          end
+        end
+
+        Indocker.define_container 'indocker_timeout_error_container' do
+          use images.indocker_image
+
+          ready sleep: 0.1, timeout: 1 do
+            false
+          end
+        end
+
+
+        ioc.container_manager.create('indocker_timeout_container')
+        ioc.container_manager.create('indocker_timeout_error_container')
+      end
+
+      after do
+        container_manager.stop('indocker_timeout_container')
+        container_manager.delete('indocker_timeout_container')
+        container_manager.stop('indocker_timeout_error_container')
+        container_manager.delete('indocker_timeout_error_container')
+      end
+
+      it 'starts container if ready_block returns true' do
+        container_manager.start('indocker_timeout_container')
+
+        expect(
+          docker_api.get_container_state('indocker_timeout_container')
+        ).to eq(Indocker::ContainerMetadata::States::RUNNING)
+      end
+
+      it 'raises Indocker::Errors::ContainerTimeoutError error if ready_block returns false' do
+        expect{
+          container_manager.start('indocker_timeout_error_container')
+        }.to raise_error(Indocker::Errors::ContainerTimeoutError)
+      end
+    end
+
     context 'with container dependencies' do
       let(:main_container_id)      { docker_api.get_container_id('indocker_main_container') }
       let(:dependecy_container_id) { docker_api.get_container_id('indocker_dependency_container') }
 
       before do
-        Indocker.define_image 'indocker_main_container' do
-          from 'alpine:latest' 
-          workdir '.'
-          cmd ['/bin/sh']
-        end
-
-        Indocker.define_image 'indocker_dependency_container' do
-          from 'alpine:latest' 
-          workdir '.'
-          cmd ['/bin/sh']
-        end
-
         Indocker.define_container 'indocker_dependency_container' do
-          use images.indocker_dependency_container
+          use images.indocker_image
         end
 
         Indocker.define_container 'indocker_main_container' do
-          use images.indocker_main_container
-          
+          use images.indocker_image
+
           depends_on containers.get_by_name('indocker_dependency_container')
         end
 
-
-        ioc.image_builder.build('indocker_main_container')
-        ioc.image_builder.build('indocker_dependency_container')
         ioc.container_manager.create('indocker_main_container')
+        ioc.container_manager.create('indocker_dependency_container')
 
         container_manager.start('indocker_main_container')
       end
@@ -76,7 +120,7 @@ describe Indocker::ContainerManager do
       it 'runs dependency container before' do
         expect(
           docker_api.get_container_state('indocker_dependency_container')
-        ).to eq(Indocker::ContainerMetadata::States::EXITED)
+        ).to eq(Indocker::ContainerMetadata::States::RUNNING)
       end
     end
 
@@ -85,20 +129,13 @@ describe Indocker::ContainerManager do
       let(:network_id)   { docker_api.get_network_id('indocker_network') }
 
       before do
-        Indocker.define_image 'indocker_simple_image' do
-          from 'hello-world' 
-          
-          workdir '.'
-        end
-
         Indocker.define_network 'indocker_network'
 
         Indocker.define_container 'indocker_simple_container' do
-          use images.indocker_simple_image
+          use images.indocker_image
           use networks.indocker_network
         end
 
-        ioc.image_builder.build('indocker_simple_image')
         ioc.container_manager.create('indocker_simple_container')
 
         container_manager.start('indocker_simple_container')
@@ -109,7 +146,7 @@ describe Indocker::ContainerManager do
         container_manager.delete('indocker_simple_container')
         docker_api.remove_network('indocker_network')
       end
-      
+
       context 'creates network before start' do
         it 'for new network' do
           expect(network_id).to match(/[\w\d]{64}/)
@@ -165,7 +202,7 @@ describe Indocker::ContainerManager do
     it 'returns files list' do
       expect(
         container_manager.copy(
-          name:      :indocker_copy_container, 
+          name:      :indocker_copy_container,
           copy_from: '/sample/deeper',
           copy_to:   copy_to_path
         )
@@ -179,7 +216,7 @@ describe Indocker::ContainerManager do
 
     it 'copies files to output path' do
       container_manager.copy(
-        name:      :indocker_copy_container, 
+        name:      :indocker_copy_container,
         copy_from: '/sample/.',
         copy_to:   copy_to_path
       )

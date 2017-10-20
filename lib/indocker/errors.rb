@@ -10,6 +10,7 @@ module Indocker::Errors
   class DockerRegistryAuthenticationError < StandardError; end
   class FileDoesNotExists                 < StandardError; end
   class EnvFileDoesNotExist               < StandardError; end
+  class ContainerTimeoutError             < StandardError; end
 
   class ContainerImageAlreadyDefined      < StandardError; end
   class NetworkAlreadyDefined             < StandardError; end
