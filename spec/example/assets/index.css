@@ -1,1 +1,1 @@
-* { disply: none; }
+* { display: <%= display %>; }

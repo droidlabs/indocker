@@ -25,7 +25,7 @@ class Indocker::ImageBuilder
       f.puts       image_metadata.build_directives.map(&:to_s)
       image_metadata.build_directives.map(&:to_s).each {|d| logger.debug d}
     end
-
+    
     docker_api.build_from_dir(
       repo:      image_metadata.repo,
       tag:       image_metadata.tag,

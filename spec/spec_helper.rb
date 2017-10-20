@@ -44,5 +44,3 @@ end
 def ensure_content(file, content)
   expect(File.read(file)).to match(content)
 end
-
-

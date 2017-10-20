@@ -132,11 +132,17 @@ class Indocker::DockerApi
     Docker::Container.get(name.to_s).copy(path) { |chunk| yield chunk }
   end
 
-  def create_container(repo:, tag:, name: nil, command: nil)
+  def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
+                        exposed_ports: nil, port_bindings: nil)
     params = {
-      'Image'   => full_name(repo, tag), 
-      'name'    => name.to_s,
-      'Cmd'     => command
+      'Image'          => full_name(repo, tag), 
+      'name'           => name.to_s,
+      'Cmd'            => command,
+      'Env'            => env,
+      'ExposedPorts'   => exposed_ports,
+      'HostConfig' => {
+        'PortBindings' => port_bindings
+      }
     }.delete_if { |_, value| value.to_s.empty? }
 
     Docker::Container.create(params).id

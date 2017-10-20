@@ -4,6 +4,10 @@ module Indocker::Configs
       @scope ||= Hash.new({})
     end
 
+    def set(&block)
+      instance_exec(&block)
+    end
+
     def option(name, group: :default, type: :string)
       define_singleton_method(name) do |value = nil, &block|
         write_value = block || value

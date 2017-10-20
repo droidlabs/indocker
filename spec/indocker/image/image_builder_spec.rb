@@ -99,16 +99,16 @@ describe 'Indocker::ImageBuilder' do
 
   context 'with coping files from project_root' do
     before do
-      Indocker.define_image('indocker_copy_root_image') do          
+      Indocker.define_image('indocker_copy_image') do          
         from 'alpine:latest'
 
-        copy_root 'assets/.' => 'assets'
+        copy 'assets/.' => 'assets'
       end
     end
 
     it 'does not raise error' do
       expect{
-        subject.build('indocker_copy_root_image')
+        subject.build('indocker_copy_image')
       }.to_not raise_error
     end
   end

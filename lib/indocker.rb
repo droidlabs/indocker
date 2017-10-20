@@ -13,7 +13,6 @@ require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'
 require 'indocker/dsl_context'
-require 'indocker/env_files_loader'
 
 require 'indocker/configs/config'
 require 'indocker/configs/config_factory'
@@ -25,11 +24,17 @@ require 'indocker/utils/test_logger_factory'
 require 'indocker/utils/tar_helper'
 require 'indocker/utils/string_utils'
 require 'indocker/utils/registry_authenticator'
+require 'indocker/utils/render_util'
+require 'indocker/utils/render_namespace'
 
 require 'indocker/handlers/base'
 require 'indocker/handlers/run_container'
 
 require 'indocker/utils/ioc_container'
+
+require 'indocker/envs/env_metadata'
+require 'indocker/envs/manager'
+require 'indocker/envs/loader'
 
 require 'indocker/image/image_metadata'
 require 'indocker/image/image_metadata_factory'
@@ -63,7 +68,6 @@ require 'indocker/directives/docker_directives/cmd'
 require 'indocker/directives/docker_directives/entrypoint'
 require 'indocker/directives/docker_directives/env'
 require 'indocker/directives/docker_directives/copy'
-require 'indocker/directives/docker_directives/copy_root'
 require 'indocker/directives/docker_directives/from'
 require 'indocker/directives/docker_directives/run'
 require 'indocker/directives/docker_directives/workdir'
@@ -74,6 +78,9 @@ require 'indocker/directives/prepare_directives/docker_cp'
 require 'indocker/directives/container_directives/base'
 require 'indocker/directives/container_directives/from'
 require 'indocker/directives/container_directives/network'
+require 'indocker/directives/container_directives/env_file'
+require 'indocker/directives/container_directives/ports'
+require 'indocker/directives/container_directives/expose'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
@@ -105,7 +112,7 @@ module Indocker
     end
 
     def setup(&block)
-      ioc.config(&block)
+      ioc.config.set(&block)
     end
 
     def root(dir = nil)

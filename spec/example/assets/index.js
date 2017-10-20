@@ -1,1 +1,1 @@
-'use strict';
+<% if use_strict %>'use strict';<% end %>

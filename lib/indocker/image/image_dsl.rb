@@ -36,12 +36,19 @@ class Indocker::ImageDSL
     @directives << Indocker::DockerDirectives::Cmd.new(*args)
   end
 
-  def copy(*args)
-    @directives << Indocker::DockerDirectives::Copy.new(*args)
+  def copy(copy_actions)
+    @directives << Indocker::DockerDirectives::Copy.new(
+      context:      @context, 
+      copy_actions: copy_actions
+    )
   end
 
-  def copy_root(copy_actions)
-    @directives << Indocker::DockerDirectives::CopyRoot.new(@context.build_dir, copy_actions)
+  def copy_compile(copy_actions)
+    @directives << Indocker::DockerDirectives::Copy.new(
+      context:      @context, 
+      copy_actions: copy_actions,
+      compile:      true
+    )
   end
 
   def entrypoint(*args)

@@ -1,4 +1,6 @@
 class Indocker::DSLContext
+  attr_reader :storage
+
   def initialize(storage = {})
     @storage = storage
   end

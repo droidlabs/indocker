@@ -7,7 +7,7 @@ class Indocker::Configs::ConfigFactory
     option :namespace, group: :common
     option :root,      group: :common, type: :pathname
 
-    option :load_env_file,      group: :load
+    option :load_env_file,      group: :load, type: :array
     option :load_docker_items,  group: :load, type: :array
 
     config :git, group: :git do
@@ -26,15 +26,11 @@ class Indocker::Configs::ConfigFactory
     end
   end
 
-  def build(&block)
-    configuration.instance_exec(&CONFIG_STRUCTURE)
+  def build(&block)    
+    return @configuration if @configuration
 
-    configuration.instance_exec(&block) if block_given?
-
-    configuration
-  end
-
-  def configuration
-    @configuration ||= Indocker::Configs::Config.new
+    @configuration = Indocker::Configs::Config.new
+    @configuration.instance_exec(&CONFIG_STRUCTURE)
+    @configuration
   end
 end

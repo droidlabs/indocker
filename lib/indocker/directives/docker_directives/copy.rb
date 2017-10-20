@@ -1,8 +1,10 @@
 class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
-  attr_reader :copy_actions
+  attr_reader :copy_actions, :context, :compile
 
-  def initialize(copy_actions)
+  def initialize(context:, copy_actions:, compile: false)
     @copy_actions = copy_actions
+    @context      = context
+    @compile      = compile
   end
 
   def type
@@ -17,5 +19,9 @@ class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
     end
 
     result.join("\n")
+  end
+
+  def prepare_directive?
+    true
   end
 end
