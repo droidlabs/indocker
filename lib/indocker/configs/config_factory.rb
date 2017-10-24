@@ -11,10 +11,12 @@ class Indocker::Configs::ConfigFactory
     option :load_docker_items,  group: :load, type: :array
 
     config :git, group: :git do
-      option :repository
-      option :tag
-      option :branch
-      option :workdir 
+      hash_config :repo do
+        option :repository
+        option :tag
+        option :branch
+        option :workdir 
+      end
     end
 
     config :docker, group: :docker do

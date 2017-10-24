@@ -11,6 +11,7 @@ module Indocker::Errors
   class FileDoesNotExists                 < StandardError; end
   class EnvFileDoesNotExist               < StandardError; end
   class ContainerTimeoutError             < StandardError; end
+  class ReservedKeywordUsed               < StandardError; end
 
   class ContainerImageAlreadyDefined      < StandardError; end
   class NetworkAlreadyDefined             < StandardError; end

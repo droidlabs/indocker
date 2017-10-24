@@ -9,6 +9,8 @@ module Indocker::Configs
     end
 
     def option(name, group: :default, type: :string)
+      raise Indocker::Errors::ReservedKeywordUsed, name if respond_to?(name.to_sym)
+
       define_singleton_method(name) do |value = nil, &block|
         write_value = block || value
 
@@ -23,12 +25,29 @@ module Indocker::Configs
     end
 
     def config(name, group: :default, &block)
+      raise Indocker::Errors::ReservedKeywordUsed, name if respond_to?(name.to_sym)
+
       subconfiguration = Indocker::Configs::Config.new
       subconfiguration.instance_exec(&block)
   
       option(name, group: group, type: :config)
       send(name, subconfiguration)
+
+      subconfiguration
     end
+
+    def hash_config(hash_config_name, group: :default, &hash_config_block)
+      raise Indocker::Errors::ReservedKeywordUsed, hash_config_name if respond_to?(hash_config_name.to_sym)
+
+      define_singleton_method(hash_config_name) do |name, &self_block|
+        config = config(name, &hash_config_block)
+        config.set(&self_block)
+        
+        config
+      end
+    end
+
+    private
 
     def read_setting(key)
       read_value = scope[key.to_s][:value]
