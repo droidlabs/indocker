@@ -226,5 +226,15 @@ describe Indocker::ContainerManager do
       ensure_content(File.join(copy_to_path, 'deeper/example3.txt'), 'example3.txt')
       ensure_content(File.join(copy_to_path, 'deeper/example4.txt'), 'example4.txt')
     end
+
+    it 'copies single file' do
+      container_manager.copy(
+        name:      :indocker_copy_container,
+        copy_from: '/sample/example1.txt',
+        copy_to:   copy_to_path
+      )
+
+      ensure_content(File.join(copy_to_path, 'example1.txt'), 'example1.txt')
+    end
   end
 end

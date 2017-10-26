@@ -114,9 +114,9 @@ class Indocker::ContainerManager
     tar_snapshot    = File.join(config.root, 'tmp', "#{name.to_s}.tar")
 
     docker_api.copy_from_container(name: container_id, path: copy_from) do |tar_archive|
-      File.open(tar_snapshot, 'w') {|f| f.write(tar_archive)}
+      File.open(tar_snapshot, 'a+') {|f| f.write(tar_archive)}
     end
-    
+
     files_list = tar_helper.untar(
       io:                    File.open(tar_snapshot, 'r'),
       destination:           copy_to,

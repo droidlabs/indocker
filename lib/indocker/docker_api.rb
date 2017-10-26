@@ -3,6 +3,8 @@ class Indocker::DockerApi
 
   bean :docker_api
 
+  inject :logger
+
   def check_docker_installed!
     Docker.info
     nil
@@ -130,8 +132,8 @@ class Indocker::DockerApi
     Docker::Container.get(name.to_s).stop rescue nil
   end
 
-  def copy_from_container(name, &block)
-    Docker::Container.get(name.to_s).copy('/', &block)
+  def copy_from_container(name:, path:, &block)
+    Docker::Container.get(name.to_s).copy(path, &block)
   end
 
   def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
