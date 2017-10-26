@@ -177,7 +177,7 @@ describe Indocker::ContainerManager do
   end
 
   describe '#copy' do
-    let(:copy_to_path) { File.expand_path File.join(__dir__, '../../tmp/indocker_list_container_files') }
+    let(:copy_to_path) { ioc.config.build_dir.join('indocker_list_container_files') }
 
     before do
       Indocker.define_image 'indocker_copy_image' do

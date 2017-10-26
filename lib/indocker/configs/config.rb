@@ -6,6 +6,8 @@ module Indocker::Configs
 
     def set(&block)
       instance_exec(&block)
+
+      self
     end
 
     def option(name, group: :default, type: :string)

@@ -35,6 +35,28 @@ class Indocker::ContainerManager
     container_id
   end
 
+  def run(name)
+    container_metadata = container_metadata_repository.get_by_name(name)
+
+    container_image_id = docker_api.get_container_image_id(name)
+    image_id           = docker_api.get_image_id(container_metadata.repo, tag: container_metadata.tag)
+
+    raise Indocker::Errors::ImageIsNotBuilded, container_metadata.image if image_id.nil?
+
+    if docker_api.container_exists?(name)
+      if image_id != container_image_id
+        stop(name)
+        delete(name)
+        create(name) 
+      end
+    else
+      create(name)
+    end
+
+    stop(name)
+    start(name)
+  end
+
   def start(name)
     container_metadata = container_metadata_repository.get_by_name(name)
     

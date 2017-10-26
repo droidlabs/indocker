@@ -1,5 +1,6 @@
 module Indocker::Errors         
   class ImageIsNotDefined                 < StandardError; end 
+  class ImageIsNotBuilded                 < StandardError; end 
   class PartialIsNotDefined               < StandardError; end 
   class ContainerIsNotDefined             < StandardError; end
   class CircularImageDependency           < StandardError; end

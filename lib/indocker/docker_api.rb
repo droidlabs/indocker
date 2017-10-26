@@ -3,8 +3,6 @@ class Indocker::DockerApi
 
   bean :docker_api
 
-  inject :logger
-
   def check_docker_installed!
     Docker.info
     nil
@@ -60,7 +58,7 @@ class Indocker::DockerApi
   # Images
 
   def get_image_id(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
-    Docker::Image.get(full_name(repo, tag)).id
+    Docker::Image.get(full_name(repo, tag)).id rescue nil
   end
 
   def image_exists?(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
@@ -109,7 +107,11 @@ class Indocker::DockerApi
   end
 
   def get_container_id(name)
-    Docker::Container.get(name.to_s).id
+    Docker::Container.get(name.to_s).id rescue nil
+  end
+
+  def get_container_image_id(name)
+    Docker::Container.get(name.to_s).info['Image'] rescue nil
   end
 
   def get_container_state(name)
@@ -125,11 +127,11 @@ class Indocker::DockerApi
   end
 
   def stop_container(name)
-    Docker::Container.get(name.to_s).stop
+    Docker::Container.get(name.to_s).stop rescue nil
   end
 
-  def copy_from_container(name:, path:)
-    Docker::Container.get(name.to_s).copy(path) { |chunk| yield chunk }
+  def copy_from_container(name, &block)
+    Docker::Container.get(name.to_s).copy('/', &block)
   end
 
   def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
@@ -140,6 +142,11 @@ class Indocker::DockerApi
       'Cmd'            => command,
       'Env'            => env,
       'ExposedPorts'   => exposed_ports,
+      'Tty'            => true,
+      'OpenStdin'      => true,
+      'StdinOnce'      => true,
+      'AttachStdin'    => true,
+      'AttachStdout'   => true,
       'HostConfig' => {
         'PortBindings' => port_bindings
       }
@@ -163,13 +170,6 @@ class Indocker::DockerApi
       container.stop
       container.delete(force: true)
     end
-  end
-
-  def container_run(repo:, tag:, command:)
-    container = Docker::Container.create(
-      'Image'        => full_name(repo, tag), 
-      'Cmd'          => command
-    ).id
   end
 
   private

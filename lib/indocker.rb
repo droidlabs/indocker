@@ -7,7 +7,7 @@ SmartIoC.set_load_proc do |location|
   require(location)
 end
 
-Docker.options = { read_timeout: 600, write_timeout: 600 }
+Docker.options = { read_timeout: 600, write_timeout: 600, chunk_size: 1 }
 
 require 'indocker/version'
 
@@ -29,8 +29,9 @@ require 'indocker/utils/registry_authenticator'
 require 'indocker/utils/render_util'
 require 'indocker/utils/render_namespace'
 
-require 'indocker/handlers/base'
-require 'indocker/handlers/run_container'
+require 'indocker/handlers/performable'
+require 'indocker/handlers/container_run'
+require 'indocker/handlers/container_stop'
 
 require 'indocker/utils/ioc_container'
 
@@ -88,7 +89,6 @@ require 'indocker/directives/container_directives/ready'
 
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
-  BUILD_DIR       = 'tmp/build'
 
   class << self
     def define_image(name, &definition)
@@ -121,6 +121,10 @@ module Indocker
 
     def root(dir = nil)
       ioc.config.root(dir)
+    end
+
+    def build_dir(dir = nil)
+      ioc.config.build_dir(dir)
     end
   end
 end

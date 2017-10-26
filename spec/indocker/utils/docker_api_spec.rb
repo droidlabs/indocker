@@ -58,9 +58,7 @@ describe Indocker::DockerApi do
 
     context 'if image does not present' do
       it 'returns nil ' do
-        expect{
-          docker_api.get_image_id('some-invalid-image')
-        }.to raise_error(Docker::Error::NotFoundError)
+        expect(docker_api.get_image_id('some-invalid-image')).to eq(nil)
       end
     end
   end
@@ -78,9 +76,7 @@ describe Indocker::DockerApi do
 
     context 'if container does not present' do
       it 'returns nil' do
-        expect{
-          docker_api.get_container_id('invalid-container-name')
-        }.to raise_error(Docker::Error::NotFoundError)
+        expect(docker_api.get_container_id('invalid-container-name')).to eq(nil)
       end
     end
   end

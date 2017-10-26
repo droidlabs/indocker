@@ -60,6 +60,7 @@ describe 'Indocker::ImageBuilder' do
           from 'alpine:latest'
           workdir '/'
           run 'echo "Hello World" > test.txt'
+          cmd '/bin/bash'
         end
 
         Indocker.define_image('indocker_image_with_dependency') do

@@ -9,8 +9,7 @@ class Indocker::ImageMetadataFactory
 
   def create(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG, &definition)
     context = Indocker::DSLContext.new(
-      build_dir: build_dir(repo),
-      root_dir:  config.root
+      build_dir: config.build_dir.join(repo.to_s)
     )
     directives = image_evaluator.evaluate(context, &definition)
 
@@ -18,13 +17,7 @@ class Indocker::ImageMetadataFactory
       repo:       repo.intern,
       tag:        tag.intern,
       directives: directives,
-      build_dir:  build_dir(repo)
+      build_dir:  config.build_dir.join(repo.to_s)
     )
-  end
-
-  private
-
-  def build_dir(name)
-    Pathname.new File.join(config.root, Indocker::BUILD_DIR, name.to_s)
   end
 end
