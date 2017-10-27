@@ -101,6 +101,31 @@ class Indocker::DockerApi
     end
   end
 
+  #Volumes
+
+  def create_volume(name)
+    Docker::Volume.create(name.to_s).id
+  end
+
+  def get_volume_id(name)
+    Docker::Volume.get(name.to_s).id
+  end
+
+  def all_volumes(name)
+    Docker::Volume.all
+  end
+
+  def remove_volume(name)
+    Docker::Volume.get(name.to_s).remove
+  end
+
+  def volume_exists?(name)
+    !Docker::Volume.get(name.to_s).nil? rescue false
+  end
+
+  def inspect_volume(name)
+    Docker::Volume.get(name.to_s).info
+  end
 
   # Containers
 
@@ -133,9 +158,10 @@ class Indocker::DockerApi
   end
 
   def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
-                        exposed_ports: nil, port_bindings: nil)
+                        volumes: nil, exposed_ports: nil, port_bindings: nil)
     params = {
-      'Image'          => full_name(repo, tag), 
+      'Image'          => full_name(repo, tag),
+      'Volumes'        => volumes
       'name'           => name.to_s,
       'Cmd'            => command,
       'Env'            => env,
