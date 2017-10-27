@@ -77,6 +77,21 @@ describe Indocker::DockerAPI do
     end
   end
 
+  describe '#create_volume' do
+    context 'simple volume' do
+      let!(:id) { docker_api.create_volume('volume') }
+      
+      after { docker_api.remove_volume(id) }
+      
+      it 'creates volume' do
+          expect(
+              docker_api.get_volume_id('volume')
+            ).to eq(id)
+        end
+
+    end
+  end
+
   describe '#get_container_id' do
     context 'if container presents' do
       let!(:container) { Docker::Container.create('Image' => 'alpine:latest', 'name': 'alpine') }

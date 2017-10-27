@@ -13,13 +13,15 @@ describe Indocker::ContainerBuilder do
       end
 
       Indocker.define_network :indocker_network
+      Indocker.define_volume  :indocker_volume
 
       Indocker.define_container :indocker_container do
         use images.find_by_repo(:indocker_image, tag: :latest)
         use networks.find_by_name(:indocker_network)
+        
+        mount volumes.find_by_name(:indocker_volume), to: '/tmp'
 
         env_file File.join(__dir__, '../../fixtures/spec.env')
-        mount 'tmp', to: '/tmp'
         ports '2000:3000'
         cmd  '/bin/bash'
       end
@@ -53,13 +55,13 @@ describe Indocker::ContainerBuilder do
       ])
       expect(result.host_config.binds).to match([
         {
-          name: 'tmp',
+          name: 'indocker_volume',
           to:   '/tmp'
         }
       ])
 
       expect(result.volumes_config).to be_a(Indocker::DockerAPI::ContainerConfig::VolumesConfig)
-      expect(result.volumes_config.volumes).to eq(['tmp'])
+      expect(result.volumes_config.volumes).to eq(['indocker_volume'])
     end
   end
 end

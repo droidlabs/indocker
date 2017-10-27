@@ -8,12 +8,14 @@ class Indocker::ContainerMetadataFactory
   inject :image_metadata_repository
   inject :network_metadata_repository
   inject :container_metadata_repository
+  inject :volume_metadata_repository
 
   def create(name, attach: false, &definition)
     context = Indocker::DSLContext.new(
       images:         image_metadata_repository,
       networks:       network_metadata_repository,
       containers:     container_metadata_repository,
+      volumes:        volume_metadata_repository,
       container_name: name
     )
 

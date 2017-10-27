@@ -71,8 +71,4 @@ class Indocker::ImageDSL
   def docker_cp(container_name, &block)
     @directives << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
   end
-
-  def git
-    @context.git
-  end
 end
