@@ -13,7 +13,9 @@ describe Indocker::ImageDirectivesRunner do
 
   let(:directive) { 
     Indocker::DockerDirectives::Copy.new(
+      root:    ioc.config.root,
       context: context, 
+      compile: false,
       copy_actions: { 
         from_path => to_path 
       }
@@ -24,25 +26,10 @@ describe Indocker::ImageDirectivesRunner do
   let(:to_path)   { '/assets' }
 
   describe "#run_copy" do
-    let(:build_dir) { ioc.config.root.join('../../tmp/build_dir') }
+    let(:build_dir) { ioc.config.build_dir }
     
     context 'for :from as directory path' do
-      context "when directory exists in build directory" do
-        before do
-          FileUtils.mkdir_p(File.join(build_dir, 'assets'))
-          File.open(build_dir.join('assets', 'index.css'), 'w') {|f| f.write("/* located at build directory */")}
-          File.open(build_dir.join('assets', 'index.js'), 'w')  {|f| f.write("// located at build directory")}
-        end
-
-        it 'copy files from root to build directory' do
-          image_directives_runner.run(directive)
-
-          ensure_content(build_dir.join('assets', 'index.css'), "/* located at build directory */")
-          ensure_content(build_dir.join('assets', 'index.js'), "// located at build directory")
-        end
-      end
-
-      context "when directory exists in project root directory" do
+      context "when directory exists" do
         it 'copy files from root to build directory' do
           image_directives_runner.run(directive)
 
@@ -55,21 +42,22 @@ describe Indocker::ImageDirectivesRunner do
         let(:from_path) { 'invalid/dir/.' }
         let(:to_path)   { '/invalid/dir' }
 
-        it "raises error Indocker::Errors::FileDoesNotExists" do
+        it "raises error Indocker::Errors::FileNotExists" do
           expect{
             image_directives_runner.run(directive)
-          }.to raise_error(Indocker::Errors::FileDoesNotExists)
+          }.to raise_error(Indocker::Errors::FileNotExists)
         end
       end
 
       context 'with compile: true option' do
         let(:directive) { 
           Indocker::DockerDirectives::Copy.new(
+            root:    ioc.config.root,
             context: context, 
+            compile: true,
             copy_actions: { 
               from_path => to_path 
-            },
-            compile: true
+            }
           ) 
         }
 
@@ -97,11 +85,12 @@ describe Indocker::ImageDirectivesRunner do
       context 'with compilaton' do
         let(:directive) { 
           Indocker::DockerDirectives::Copy.new(
+            root:    build_dir,
             context: context, 
+            compile: true,
             copy_actions: { 
               from_path => to_path 
-            },
-            compile: true
+            }
           ) 
         }
         

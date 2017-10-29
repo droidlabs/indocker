@@ -1,9 +1,10 @@
 class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
-  attr_reader :copy_actions, :context, :compile
+  attr_reader :copy_actions, :root, :context, :compile
 
-  def initialize(context:, copy_actions:, compile: false)
-    @copy_actions = copy_actions
+  def initialize(root:, context:, copy_actions:, compile:)
+    @root         = root
     @context      = context
+    @copy_actions = copy_actions
     @compile      = compile
   end
 

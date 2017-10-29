@@ -6,6 +6,7 @@ class Indocker::Configs::ConfigFactory
   CONFIG_STRUCTURE = Proc.new do
     option :namespace, group: :common
     option :root,      group: :common, type: :pathname
+    option :cache_dir, group: :common, type: :pathname
     option :build_dir, group: :common, type: :pathname
 
     option :load_env_file,      group: :load, type: :array

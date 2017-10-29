@@ -72,7 +72,9 @@ describe 'Indocker::ImageBuilder' do
           
           from 'alpine:latest'
           workdir '/'
-          copy 'test.txt' => '/'
+          copy do
+            { 'test.txt' => '/' }
+          end
         end
 
         Indocker.define_container 'indocker_container' do
@@ -103,7 +105,9 @@ describe 'Indocker::ImageBuilder' do
       Indocker.define_image('indocker_copy_image') do          
         from 'alpine:latest'
 
-        copy 'assets/.' => 'assets'
+        copy root: ioc.config.root do
+          { 'assets/.' => 'assets' }
+        end
       end
     end
 

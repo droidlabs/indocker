@@ -33,88 +33,50 @@ class Indocker::ImageDirectivesRunner
   end
 
   def run_copy(directive)
-    directive.copy_actions.each do |from, to|
-      build_dir_file = File.join(directive.context.build_dir, from)
+    directive.copy_actions.each do |source, dest|
+      absolute_source = directive.root.join(source)
+      absolute_dest   = directive.context.build_dir.join(source)
 
-      source_dir = File.join(config.root, from)
-      
-      if File.directory?(from)
-        dest_dir = File.join(directive.context.build_dir, from)
-      else
-        dest_dir = File.join(directive.context.build_dir, File.dirname(from))
-      end
+      raise Indocker::Errors::FileNotExists, absolute_source unless File.exists?(absolute_source)
 
-      if File.exists?(build_dir_file) && File.file?(build_dir_file)
-        copy_compile_file(
-          from:    build_dir_file, 
-          to:      build_dir_file, 
-          locals:  directive.context.storage, 
-          compile: directive.compile
-        )
-
-        return
-      end
-      
-      if File.exist?(build_dir_file) && File.directory?(build_dir_file)
-        files_list = Dir.glob(File.join(build_dir_file, '**', '*'), File::FNM_DOTMATCH)
-
-        files_list.each do |from|
-          copy_compile_file(
-            from:    from, 
-            to:      from, 
-            locals:  directive.context.storage, 
-            compile: directive.compile
-          )
-        end
-
-        return
-      end
-
-      if File.exists?(source_dir) && File.file?(source_dir)
-        copy_compile_file(
-          from:    source_dir, 
-          to:      File.join(dest_dir, File.basename(source_dir)), 
-          locals:  directive.context.storage, 
-          compile: directive.compile
-        )
-
-        return
-      end
-
-      if Dir.exist?(source_dir) && File.directory?(source_dir)
-        files_list = Dir.glob(File.join(source_dir, '**', '*'), File::FNM_DOTMATCH)
-
-        files_list.each do |from|
-          relative_to = Pathname.new(from).relative_path_from( Pathname.new(source_dir) ).to_s
-          absolute_to = File.join(dest_dir, relative_to)
-
-          copy_compile_file(
-            from:    from, 
-            to:      absolute_to, 
-            locals:  directive.context.storage, 
-            compile: directive.compile
-          )
-        end
-
-        return
-      end
-
-      raise Indocker::Errors::FileDoesNotExists
+      copy_compile_file(
+        from:    absolute_source, 
+        to:      absolute_dest, 
+        locals:  directive.context.storage, 
+        compile: directive.compile
+      )
     end
   end
 
   private
-
+  
   def copy_compile_file(from:, to:, locals: {}, compile: false)
-    return if !File.exists?(from) || File.directory?(from)
-    
-    FileUtils.mkdir_p(File.dirname(to)) unless Dir.exist?(File.dirname(to))
+    if File.directory?(from)
+      Dir.glob(File.join(from, '**', '*'), File::FNM_DOTMATCH).each do |file_source_path|
+        next if File.directory?(file_source_path)
 
+        file_relative_path = Pathname.new(file_source_path).relative_path_from( Pathname.new(from) ).to_s
+        file_destination_path = File.join(to, file_relative_path)
+      
+        copy_compile_file(
+          from: file_source_path, 
+          to:   file_destination_path,
+          locals: locals,
+          compile: compile
+        )
+      end
+
+      return
+    end
+
+    if !Dir.exist?(File.dirname(to))
+      FileUtils.mkdir_p(File.dirname(to)) 
+    end
+    
     write_content = compile ? render_util.render( File.read(from), locals ) : 
                               File.read(from)
-
     File.write(to, write_content)
-
+    
     File.chmod(File.stat(from).mode, to)
   end
 end

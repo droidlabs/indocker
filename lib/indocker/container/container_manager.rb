@@ -81,9 +81,6 @@ class Indocker::ContainerManager
     )
 
     container_id
-  rescue Docker::Error::ClientError => e
-    logger.error "The following error occured when starting :#{name} container"
-    logger.error e.message
   end
 
   def stop(name)
@@ -95,6 +92,8 @@ class Indocker::ContainerManager
   end
 
   def delete(name)
+    stop(name)
+
     container_id = docker_api.delete_container(name)
 
     logger.info "Successfully deleted container :#{name}"
@@ -111,8 +110,9 @@ class Indocker::ContainerManager
       command: KEEP_CONTAINER_RUNNING_COMMAND
     ) if !docker_api.container_exists?(name)
       
-    tar_snapshot    = File.join(config.root, 'tmp', "#{name.to_s}.tar")
-
+    tar_snapshot = config.build_dir.join('snapshots', "#{name.to_s}.tar")
+    
+    FileUtils.mkdir_p(File.dirname(tar_snapshot))
     docker_api.copy_from_container(name: container_id, path: copy_from) do |tar_archive|
       File.open(tar_snapshot, 'a+') {|f| f.write(tar_archive)}
     end

@@ -87,6 +87,8 @@ require 'indocker/directives/container_directives/expose'
 require 'indocker/directives/container_directives/depends_on'
 require 'indocker/directives/container_directives/ready'
 
+require 'indocker/git/git_helper'
+
 module Indocker
   DOCKERFILE_NAME = 'Dockerfile'
 
@@ -121,6 +123,10 @@ module Indocker
 
     def root(dir = nil)
       ioc.config.root(dir)
+    end
+
+    def cache_dir(dir = nil)
+      ioc.config.cache_dir(dir)
     end
 
     def build_dir(dir = nil)

@@ -6,10 +6,12 @@ class Indocker::ImageMetadataFactory
   inject :image_evaluator
   inject :docker_api
   inject :config
+  inject :git_helper
 
   def create(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG, &definition)
     context = Indocker::DSLContext.new(
-      build_dir: config.build_dir.join(repo.to_s)
+      build_dir: config.build_dir.join(repo.to_s),
+      git:       git_helper
     )
     directives = image_evaluator.evaluate(context, &definition)
 

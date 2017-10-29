@@ -51,7 +51,7 @@ describe 'Indocker::Handlers::ContainerRun' do
         Indocker.define_image :indocker_image_with_falling_cmd do
           from 'alpine:latest'
           
-          cmd  ['invalid/process']
+          cmd  ['error command']
         end
 
         Indocker.define_container :container_with_falling_cmd do
@@ -60,9 +60,9 @@ describe 'Indocker::Handlers::ContainerRun' do
       end
       
       it 'raises Docker::Error::ClientError error' do
-        expect(
+        expect{
           subject.handle(name: :container_with_falling_cmd, current_path: nil)
-        ).to raise_error(Docker::Error::ClientError)
+        }.to raise_error(Docker::Error::ClientError)
       end
     end
   end

@@ -1,6 +1,7 @@
 Idocker.setup do
   namespace     'indocker_example'
-  root          File.dirname(__dir__)
+  root          Pathname.new File.dirname(__dir__)
+  cache_dir     Pathname.new '/tmp/indocker'
 
   load_env_file '.indocker/env_files'
   load_docker_items [

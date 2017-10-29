@@ -36,18 +36,15 @@ class Indocker::ImageDSL
     @directives << Indocker::DockerDirectives::Cmd.new(*args)
   end
 
-  def copy(copy_actions)
+  def copy(root: nil, compile: false, &block)
+    root         ||= @context.build_dir
+    copy_actions ||= block.call || {}
+    
     @directives << Indocker::DockerDirectives::Copy.new(
-      context:      @context, 
+      root:         root,
+      compile:      compile,
+      context:      @context,
       copy_actions: copy_actions
-    )
-  end
-
-  def copy_compile(copy_actions)
-    @directives << Indocker::DockerDirectives::Copy.new(
-      context:      @context, 
-      copy_actions: copy_actions,
-      compile:      true
     )
   end
 
@@ -65,5 +62,9 @@ class Indocker::ImageDSL
 
   def docker_cp(container_name, &block)
     @directives << Indocker::PrepareDirectives::DockerCp.new(container_name, @context.build_dir, &block)
+  end
+
+  def git
+    context.git
   end
 end
