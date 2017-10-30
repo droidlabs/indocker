@@ -1,3 +1,5 @@
+require 'docker-api'
+
 class Indocker::DockerApi
   include SmartIoC::Iocify
 

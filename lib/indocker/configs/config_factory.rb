@@ -4,7 +4,7 @@ class Indocker::Configs::ConfigFactory
   bean :config, factory_method: :build
 
   CONFIG_STRUCTURE = Proc.new do
-    option :namespace, group: :common
+    option :namespace, group: :common, type: :symbol
     option :root,      group: :common, type: :pathname
     option :cache_dir, group: :common, type: :pathname
     option :build_dir, group: :common, type: :pathname
@@ -17,7 +17,6 @@ class Indocker::Configs::ConfigFactory
         option :repository
         option :tag
         option :branch
-        option :workdir 
       end
     end
 

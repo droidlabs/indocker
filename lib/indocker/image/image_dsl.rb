@@ -39,7 +39,7 @@ class Indocker::ImageDSL
   def copy(root: nil, compile: false, &block)
     root         ||= @context.build_dir
     copy_actions ||= block.call || {}
-    
+
     @directives << Indocker::DockerDirectives::Copy.new(
       root:         root,
       compile:      compile,
@@ -65,6 +65,6 @@ class Indocker::ImageDSL
   end
 
   def git
-    context.git
+    @context.git
   end
 end

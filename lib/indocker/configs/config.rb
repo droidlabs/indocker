@@ -14,8 +14,12 @@ module Indocker::Configs
       raise Indocker::Errors::ReservedKeywordUsed, name if respond_to?(name.to_sym)
 
       define_singleton_method(name) do |value = nil, &block|
-        write_value = block || value
+        if type == :config and read_setting(name) and block
+          return read_setting(name).set(&block)
+        end
 
+        write_value = block || value
+        
         if write_value
           validate!(name, write_value, type)
 

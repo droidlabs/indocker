@@ -1,6 +1,7 @@
 require 'smart_ioc'
 require 'docker-api'
-require 'logger'
+
+require 'byebug' # TODO: remove after release
 
 SmartIoC.find_package_beans(:indocker, __dir__)
 SmartIoC.set_load_proc do |location|

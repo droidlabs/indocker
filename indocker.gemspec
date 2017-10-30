@@ -19,7 +19,8 @@ Gem::Specification.new do |s|
   s.add_dependency "docker-api"
   s.add_dependency "thor"
   s.add_dependency "colorize"
-  s.add_dependency "ruby-git"
+  s.add_dependency "git"
+  s.add_dependency "byebug" # TODO: remove after release
 
   s.homepage    = 'https://github.com/droidlabs/indocker'
   s.license     = 'MIT'
