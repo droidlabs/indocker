@@ -3,7 +3,7 @@ class Indocker::ContainerManager
 
   include SmartIoC::Iocify
   
-  bean   :container_manager
+  bean :container_manager
 
   inject :container_metadata_repository
   inject :image_metadata_repository

@@ -74,19 +74,13 @@ class Indocker::DockerApi
   end
 
   def build_from_dir(repo:, tag:, build_dir:)
-    image = Docker::Image.build_from_dir(build_dir) do |x|
+    image = Docker::Image.build_from_dir(build_dir, { 't' => "#{repo}:#{tag}" }) do |x|
       x.split("\r\n").each do |y|
         if (log = JSON.parse(y)) && log.has_key?("stream")
           yield log["stream"].strip
         end
       end
     end
-
-    image.tag(
-      repo:  repo, 
-      tag:   tag, 
-      force: true
-    )
 
     image.id
   end
