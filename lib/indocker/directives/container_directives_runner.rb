@@ -18,6 +18,8 @@ class Indocker::ContainerDirectivesRunner
       run_network(directive)
     when Indocker::ContainerDirectives::Ready
       run_ready(directive)
+    when Indocker::ContainerDirectives::Volume
+      run_volume(directive)  
     else
       # do nothing
     end
@@ -42,5 +44,12 @@ class Indocker::ContainerDirectivesRunner
     end
   rescue Timeout::Error
     raise Indocker::Errors::ContainerTimeoutError
+  end
+
+  def run_volume(directive)
+    if !docker_api.volume_exist?(directive.volume_name)
+      docker_api.create_volume(directive.volume_name)
+    end
+    
   end
 end

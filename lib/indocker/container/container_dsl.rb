@@ -26,6 +26,10 @@ class Indocker::ContainerDSL
         container_name: @context.container_name,
         network_name:   item.name
       )
+    when Indocker::Volumes::VolumeMetadata
+      @directives << Indocker::ContainerDirectives::Volume.new(
+        volume_name: item.name
+      ) 
     end
   end
 
