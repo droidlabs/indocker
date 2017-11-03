@@ -33,15 +33,12 @@ class Indocker::ImageDirectivesRunner
   end
 
   def run_copy(directive)
-    directive.copy_actions.each do |source, dest|
-      absolute_source = directive.root.join(source)
-      absolute_dest   = directive.context.build_dir.join(source)
-
-      raise Indocker::Errors::FileNotExists, absolute_source unless File.exists?(absolute_source)
-
+    directive.copy_actions.each do |from, _|
+      build_dir_dest = File.join(directive.context.build_dir.to_s, from.to_s)
+      
       copy_compile_file(
-        from:    absolute_source, 
-        to:      absolute_dest, 
+        from:    from, 
+        to:      build_dir_dest, 
         locals:  directive.context.storage, 
         compile: directive.compile
       )
@@ -59,9 +56,9 @@ class Indocker::ImageDirectivesRunner
         file_destination_path = File.join(to, file_relative_path)
       
         copy_compile_file(
-          from: file_source_path, 
-          to:   file_destination_path,
-          locals: locals,
+          from:    file_source_path, 
+          to:      file_destination_path,
+          locals:  locals,
           compile: compile
         )
       end

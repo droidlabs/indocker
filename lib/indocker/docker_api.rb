@@ -161,7 +161,6 @@ class Indocker::DockerApi
                         volumes: nil, exposed_ports: nil, port_bindings: nil)
     params = {
       'Image'          => full_name(repo, tag),
-      'Volumes'        => volumes
       'name'           => name.to_s,
       'Cmd'            => command,
       'Env'            => env,
@@ -173,8 +172,11 @@ class Indocker::DockerApi
       'AttachStdout'   => true,
       'HostConfig' => {
         'PortBindings' => port_bindings
-      }
+      },
+      'Volumes' => {'/bundle_path' => {}}
     }.delete_if { |_, value| value.to_s.empty? }
+
+    puts params
 
     Docker::Container.create(params).id
   end

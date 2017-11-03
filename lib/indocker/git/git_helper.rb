@@ -20,7 +20,7 @@ module Indocker::Git
       )
       git_cache.push(git_config.repository)
 
-      git_cache_dir
+      Pathname.new(git_cache_dir)
     end
 
     def git_cache

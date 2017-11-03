@@ -9,7 +9,7 @@ class Indocker::Envs::Manager
 
   def load_init_application_env_variables
     config.load_env_file.each do |path|
-      env_file = File.join(config.root, path)
+      env_file = File.expand_path File.join(config.root, '..', path)
 
       begin
         metadata = envs_loader.parse(env_file) 

@@ -79,6 +79,7 @@ require 'indocker/directives/docker_directives/copy'
 require 'indocker/directives/docker_directives/from'
 require 'indocker/directives/docker_directives/run'
 require 'indocker/directives/docker_directives/workdir'
+require 'indocker/directives/docker_directives/expose'
 
 require 'indocker/directives/prepare_directives/base'
 require 'indocker/directives/prepare_directives/docker_cp'
@@ -91,6 +92,7 @@ require 'indocker/directives/container_directives/ports'
 require 'indocker/directives/container_directives/expose'
 require 'indocker/directives/container_directives/depends_on'
 require 'indocker/directives/container_directives/ready'
+require 'indocker/directives/container_directives/cmd'
 
 require 'indocker/git/git_helper'
 

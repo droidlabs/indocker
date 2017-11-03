@@ -19,8 +19,15 @@ class Indocker::ImageDSL
   def partial(name, opts = {})
     @directives << Indocker::Directives::Partial.new(name, @context, opts)
   end
+
+  def expose(port)
+    @directives << Indocker::DockerDirectives::Expose.new(port)
+  end
   
   def from(*args)
+    first_from_directive = @directives.detect {|c| c.instance_of?(Indocker::DockerDirectives::From)}
+    raise Indocker::Errors::DirectiveAlreadyInUse, first_from_directive if first_from_directive
+
     @directives << Indocker::DockerDirectives::From.new(*args)
   end
   
@@ -36,15 +43,27 @@ class Indocker::ImageDSL
     @directives << Indocker::DockerDirectives::Cmd.new(*args)
   end
 
-  def copy(root: nil, compile: false, &block)
-    root         ||= @context.build_dir
-    copy_actions ||= block.call || {}
-
+  def copy(copy_actions = {}, compile = false)
     @directives << Indocker::DockerDirectives::Copy.new(
-      root:         root,
       compile:      compile,
       context:      @context,
       copy_actions: copy_actions
+    )
+  end
+
+  def copy_glob(copy_actions = {}, compile = false)
+    union_copy_actions = {}
+
+    copy_actions.each do |from, to|
+      Dir.glob(from).each do |glob_from|
+        union_copy_actions[glob_from] = to
+      end
+    end
+
+    @directives << Indocker::DockerDirectives::Copy.new(
+      compile:      compile,
+      context:      @context,
+      copy_actions: union_copy_actions
     )
   end
 

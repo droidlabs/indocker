@@ -25,7 +25,19 @@ class Indocker::ImageBuilder
       f.puts       image_metadata.build_directives.map(&:to_s)
       image_metadata.build_directives.map(&:to_s).each {|d| logger.debug d}
     end
-    
+
+    File.open(File.join(image_metadata.build_dir, '.dockerignore'), 'w') do |f| 
+      f.puts '.git'
+      f.puts '.gitignore'
+      f.puts 'LICENSE'
+      f.puts 'VERSION'
+      f.puts 'README.md'
+      f.puts 'Changelog.md'
+      f.puts 'Makefile'
+      f.puts 'docker-compose.yml'
+      f.puts 'docs'
+    end
+
     docker_api.build_from_dir(
       repo:      image_metadata.repo,
       tag:       image_metadata.tag,

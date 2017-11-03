@@ -26,11 +26,21 @@ class Indocker::ContainerDSL
         container_name: @context.container_name,
         network_name:   item.name
       )
-    when Indocker::Volumes::VolumeMetadata
-      @directives << Indocker::ContainerDirectives::Volume.new(
-        volume_name: item.name
-      ) 
     end
+  end
+
+  def mount(volume, to:)
+    @directives << Indocker::ContainerDirectives::Volume.new(
+      volume_name: volume,
+      to:          to
+    ) 
+  end
+
+  def cmd(*command)
+    first_cmd_directive = @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
+    raise Indocker::Errors::DirectiveAlreadyInUse, first_cmd_directive if first_cmd_directive
+
+    @directives << Indocker::ContainerDirectives::Cmd.new(command)
   end
 
   def env_file(path)

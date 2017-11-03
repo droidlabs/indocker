@@ -67,6 +67,10 @@ class Indocker::ContainerMetadata
     result
   end
 
+  def command
+    @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
+  end
+
   def container_dependencies
     depends_on_directives.map(&:container_name)
   end

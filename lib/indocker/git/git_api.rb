@@ -14,7 +14,7 @@ class Indocker::Git::GitAPI
   end
 
   def fetch(dir)
-    Git.open(dir).fetch
+    Git.open(dir).pull
   end
 
   def clone(repository:, dir:)

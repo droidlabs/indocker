@@ -27,7 +27,8 @@ class Indocker::ContainerManager
       tag:           container_metadata.tag,
       exposed_ports: container_metadata.exposed_ports,
       port_bindings: container_metadata.port_bindings,
-      env:           env_metadata.to_array
+      env:           env_metadata.to_array,
+      command:       container_metadata.command
     )
 
     logger.info "Successfully created container :#{name}"
