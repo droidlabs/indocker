@@ -67,10 +67,6 @@ require 'indocker/networks/network_metadata'
 require 'indocker/networks/network_metadata_factory'
 require 'indocker/networks/network_metadata_repository'
 
-require 'indocker/volumes/volume_metadata'
-require 'indocker/volumes/volume_metadata_factory'
-require 'indocker/volumes/volume_metadata_repository'
-
 require 'indocker/directives/docker_directives/base'
 require 'indocker/directives/docker_directives/cmd'
 require 'indocker/directives/docker_directives/entrypoint'
