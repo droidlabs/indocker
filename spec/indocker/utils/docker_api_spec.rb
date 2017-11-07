@@ -70,11 +70,10 @@ describe Indocker::DockerApi do
       after { docker_api.remove_volume(id) }
       
       it 'creates volume' do
-          expect(
-              docker_api.get_volume_id('volume')
-            ).to eq(id)
-        end
-
+        expect(
+          docker_api.get_volume_id('volume')
+        ).to eq(id)
+      end
     end
   end
 

@@ -1,9 +1,9 @@
 class Indocker::ContainerDirectives::Volume < Indocker::ContainerDirectives::Base
-  attr_accessor :volume_name, :to
+  attr_accessor :name, :to
 
-  def initialize(volume_name:, to:)
-    @volume_name = volume_name
-    @to          = to
+  def initialize(name:, to:)
+    @name = name
+    @to   = to
   end
 
   def before_start?

@@ -28,7 +28,9 @@ class Indocker::ContainerManager
       exposed_ports: container_metadata.exposed_ports,
       port_bindings: container_metadata.port_bindings,
       env:           env_metadata.to_array,
-      command:       container_metadata.command
+      command:       container_metadata.command,
+      volumes:       container_metadata.volumes,
+      binds:         container_metadata.binds
     )
 
     logger.info "Successfully created container :#{name}"
@@ -55,10 +57,10 @@ class Indocker::ContainerManager
     end
 
     stop(name)
-    start(name)
+    start(name, attach: container_metadata.attach)
   end
 
-  def start(name)
+  def start(name, attach:)
     container_metadata = container_metadata_repository.get_by_name(name)
     
     container_directives_runner.run_all(
@@ -66,14 +68,17 @@ class Indocker::ContainerManager
     )
 
     container_metadata.container_dependencies.each do |dependency|
+      dependency_metadata = container_metadata_repository.get_by_name(dependency)
       create(dependency) unless docker_api.container_exists?(dependency)
       
-      unless docker_api.get_container_state(dependency) == Indocker::ContainerMetadata::States::RUNNING
-        start(dependency)  
+      if docker_api.get_container_state(dependency) == Indocker::ContainerMetadata::States::RUNNING
+        logger.info "Dependency container :#{dependency} already running"
+      else
+        start(dependency, attach: dependency_metadata.attach)  
       end
     end
 
-    container_id = docker_api.start_container(name)
+    container_id = docker_api.start_container(name, attach: attach)
 
     logger.info "Successfully started container :#{name}"
     

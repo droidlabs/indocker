@@ -9,7 +9,7 @@ class Indocker::ContainerMetadataFactory
   inject :network_metadata_repository
   inject :container_metadata_repository
 
-  def create(name, &definition)
+  def create(name, attach: false, &definition)
     context = Indocker::DSLContext.new(
       images:         image_metadata_repository,
       networks:       network_metadata_repository,
@@ -21,7 +21,8 @@ class Indocker::ContainerMetadataFactory
 
     Indocker::ContainerMetadata.new(
       name:         name.to_s,
-      directives:   directives     
+      directives:   directives,
+      attach:       attach  
     )
   end
 end

@@ -3,7 +3,11 @@ class Indocker::Volumes::VolumeMetadataFactory
 
   bean :volume_metadata_factory
 
-  def create(name)
-    Indocker::Volumes::VolumeMetadata.new(name.to_s)
+  def create(name:, source:, target:)
+    Indocker::Volumes::VolumeMetadata.new(
+      name:   name.to_s,
+      source: source,
+      target: target
+    )
   end
 end

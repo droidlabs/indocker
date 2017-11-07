@@ -93,6 +93,7 @@ require 'indocker/directives/container_directives/expose'
 require 'indocker/directives/container_directives/depends_on'
 require 'indocker/directives/container_directives/ready'
 require 'indocker/directives/container_directives/cmd'
+require 'indocker/directives/container_directives/volume'
 
 require 'indocker/git/git_helper'
 
@@ -121,12 +122,6 @@ module Indocker
     def define_network(name)
       ioc.network_metadata_repository.put(
         ioc.network_metadata_factory.create(name)
-      )
-    end
-
-    def define_volume(name)
-      ioc.volume_metadata_repository.put(
-        ioc.volume_metadata_factory.create(name)
       )
     end
 

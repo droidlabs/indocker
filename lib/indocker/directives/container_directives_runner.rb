@@ -47,9 +47,8 @@ class Indocker::ContainerDirectivesRunner
   end
 
   def run_volume(directive)
-    if !docker_api.volume_exist?(directive.volume_name)
-      docker_api.create_volume(directive.volume_name)
+    if !docker_api.volume_exists?(directive.name)
+      docker_api.create_volume(directive.name)
     end
-    
   end
 end

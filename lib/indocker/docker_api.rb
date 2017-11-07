@@ -1,4 +1,5 @@
 require 'docker-api'
+require 'io/console'
 
 class Indocker::DockerApi
   include SmartIoC::Iocify
@@ -145,8 +146,18 @@ class Indocker::DockerApi
     !Docker::Container.get(name.to_s).nil? rescue false
   end
 
-  def start_container(name)
-    Docker::Container.get(name.to_s).start!.id
+  def start_container(name, attach: false)
+    container = Docker::Container.get(name.to_s).start!
+
+    if attach
+      STDIN.raw do |stdin| 
+        container.attach(stdin: stdin, tty: true) do |chunk|
+          logger << chunk
+        end
+      end
+    end
+
+    container.id
   end
 
   def stop_container(name)
@@ -158,7 +169,7 @@ class Indocker::DockerApi
   end
 
   def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
-                        volumes: nil, exposed_ports: nil, port_bindings: nil)
+                        volumes: {}, binds: [], exposed_ports: nil, port_bindings: nil)
     params = {
       'Image'          => full_name(repo, tag),
       'name'           => name.to_s,
@@ -171,12 +182,11 @@ class Indocker::DockerApi
       'AttachStdin'    => true,
       'AttachStdout'   => true,
       'HostConfig' => {
-        'PortBindings' => port_bindings
+        'PortBindings' => port_bindings,
+        'Binds'        => binds
       },
       'Volumes' => {'/bundle_path' => {}}
     }.delete_if { |_, value| value.to_s.empty? }
-
-    puts params
 
     Docker::Container.create(params).id
   end

@@ -1,5 +1,5 @@
 class Indocker::ContainerMetadata
-  attr_reader :name
+  attr_reader :name, :attach
 
   HOSTPORT = 'HostPort'
 
@@ -14,9 +14,10 @@ class Indocker::ContainerMetadata
     ALL = [CREATED, RESTARTING, RUNNING, PAUSED, EXITED, DEAD]
   end
 
-  def initialize(name:, directives:)
+  def initialize(name:, directives:, attach: false)
     @name         = name
     @directives   = directives
+    @attache      = attach
   end
 
   def repo
@@ -33,6 +34,20 @@ class Indocker::ContainerMetadata
 
   def networks
     network_directives.map(&:name)
+  end
+
+  def volumes
+    volume_directives.inject({}) do |result, vm|
+      result[vm.name] = {}
+      result
+    end
+  end
+
+  def binds
+    volume_directives.inject([]) do |result, vm|
+      result.push "#{vm.name}:#{vm.to}"
+      result
+    end
   end
 
   def env_files
@@ -107,5 +122,9 @@ class Indocker::ContainerMetadata
 
   def depends_on_directives
     @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::DependsOn)}
+  end
+
+  def volume_directives
+    @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::Volume)}
   end
 end

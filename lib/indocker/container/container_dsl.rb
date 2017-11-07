@@ -29,10 +29,10 @@ class Indocker::ContainerDSL
     end
   end
 
-  def mount(volume, to:)
+  def mount(name, to:)
     @directives << Indocker::ContainerDirectives::Volume.new(
-      volume_name: volume,
-      to:          to
+      name: name,
+      to:   to
     ) 
   end
 
