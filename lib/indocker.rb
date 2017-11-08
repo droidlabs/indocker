@@ -47,6 +47,7 @@ require 'indocker/image/image_metadata_repository'
 require 'indocker/image/image_builder'
 require 'indocker/image/image_dependencies_manager'
 require 'indocker/image/image_evaluator'
+require 'indocker/image/image_dockerfile_builder'
 
 require 'indocker/container/container_metadata'
 require 'indocker/container/container_metadata_repository'
@@ -76,6 +77,7 @@ require 'indocker/directives/docker_directives/from'
 require 'indocker/directives/docker_directives/run'
 require 'indocker/directives/docker_directives/workdir'
 require 'indocker/directives/docker_directives/expose'
+require 'indocker/directives/docker_directives/env_file'
 
 require 'indocker/directives/prepare_directives/base'
 require 'indocker/directives/prepare_directives/docker_cp'
@@ -83,7 +85,6 @@ require 'indocker/directives/prepare_directives/docker_cp'
 require 'indocker/directives/container_directives/base'
 require 'indocker/directives/container_directives/from'
 require 'indocker/directives/container_directives/network'
-require 'indocker/directives/container_directives/env_file'
 require 'indocker/directives/container_directives/ports'
 require 'indocker/directives/container_directives/expose'
 require 'indocker/directives/container_directives/depends_on'
@@ -125,16 +126,12 @@ module Indocker
       ioc.config.set(&block)
     end
 
-    def root(dir = nil)
-      ioc.config.root(dir)
-    end
-
     def cache_dir(dir = nil)
-      ioc.config.cache_dir(dir)
+      ioc.config.git.cache_dir(Pathname.new(dir))
     end
 
     def build_dir(dir = nil)
-      ioc.config.build_dir(dir)
+      ioc.config.build_dir(Pathname.new(dir))
     end
   end
 end

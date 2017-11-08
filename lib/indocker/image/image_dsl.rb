@@ -51,28 +51,16 @@ class Indocker::ImageDSL
     )
   end
 
-  def copy_glob(copy_actions = {}, compile = false)
-    union_copy_actions = {}
-
-    copy_actions.each do |from, to|
-      Dir.glob(from).each do |glob_from|
-        union_copy_actions[glob_from] = to
-      end
-    end
-
-    @directives << Indocker::DockerDirectives::Copy.new(
-      compile:      compile,
-      context:      @context,
-      copy_actions: union_copy_actions
-    )
-  end
-
   def entrypoint(*args)
     @directives << Indocker::DockerDirectives::Entrypoint.new(*args)
   end
 
   def env(*args)
     @directives << Indocker::DockerDirectives::Env.new(args)
+  end
+
+  def env_file(*paths)
+    @directives.push paths.map {|p| Indocker::DockerDirectives::EnvFile.new(p)}
   end
 
   def before_build(&block)

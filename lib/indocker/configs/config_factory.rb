@@ -5,14 +5,14 @@ class Indocker::Configs::ConfigFactory
 
   CONFIG_STRUCTURE = Proc.new do
     option :namespace, group: :common, type: :symbol
-    option :root,      group: :common, type: :pathname
-    option :cache_dir, group: :common, type: :pathname
     option :build_dir, group: :common, type: :pathname
 
     option :load_env_file,      group: :load, type: :array
     option :load_docker_items,  group: :load, type: :array
 
     config :git, group: :git do
+      option :cache_dir, group: :common, type: :pathname
+    
       hash_config :repo do
         option :repository
         option :tag

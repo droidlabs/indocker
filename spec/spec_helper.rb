@@ -10,9 +10,8 @@ SmartIoC.set_load_proc do |location|
   require(location)
 end
 
-Indocker.root(Pathname.new File.expand_path(File.join(__dir__, 'example')))
-Indocker.build_dir(Pathname.new File.expand_path(File.join(__dir__, '../tmp/build')))
-Indocker.cache_dir(Pathname.new File.expand_path(File.join(__dir__, '../tmp/cache')))
+Indocker.build_dir(File.expand_path(File.join(__dir__, '../tmp/build')))
+Indocker.cache_dir(File.expand_path(File.join(__dir__, '../tmp/cache')))
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

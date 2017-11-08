@@ -9,6 +9,7 @@ class Indocker::ImageBuilder
   inject :image_evaluator
   inject :docker_api
   inject :logger
+  inject :image_dockerfile_builder
 
   def build(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
     image_metadata = image_metadata_repository.find_by_repo(repo, tag: tag)
@@ -22,7 +23,8 @@ class Indocker::ImageBuilder
     image_directives_runner.run_all(image_metadata.prepare_directives)
 
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
-      f.puts       image_metadata.build_directives.map(&:to_s)
+      f.puts image_dockerfile_builder.build(image_metadata.build_directives)
+
       image_metadata.build_directives.map(&:to_s).each {|d| logger.debug d}
     end
 

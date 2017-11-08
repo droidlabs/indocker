@@ -13,14 +13,6 @@ class Indocker::ApplicationInitializer
   def init_app(current_path, env: :development)
     docker_api.check_docker_installed!
 
-    config.root(
-      Pathname.new(
-        File.expand_path(
-          File.join(config_locator.locate(current_path), '../..')
-        )
-      )
-    )
-
     require(config_locator.locate(current_path))
 
     registry_authenticator.authenticate!

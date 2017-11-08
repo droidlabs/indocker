@@ -18,6 +18,10 @@ module Indocker::Envs
       end
     end
 
+    def to_s
+      to_array.join(' ')
+    end
+
     def set(key:, value:)
       overwritten = @variables.has_key?(key) and @variables[key] != value
 

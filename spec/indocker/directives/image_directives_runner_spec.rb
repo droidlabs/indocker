@@ -13,7 +13,6 @@ describe Indocker::ImageDirectivesRunner do
 
   let(:directive) { 
     Indocker::DockerDirectives::Copy.new(
-      root:    ioc.config.root,
       context: context, 
       compile: false,
       copy_actions: { 
@@ -52,7 +51,6 @@ describe Indocker::ImageDirectivesRunner do
       context 'with compile: true option' do
         let(:directive) { 
           Indocker::DockerDirectives::Copy.new(
-            root:    ioc.config.root,
             context: context, 
             compile: true,
             copy_actions: { 
@@ -85,7 +83,6 @@ describe Indocker::ImageDirectivesRunner do
       context 'with compilaton' do
         let(:directive) { 
           Indocker::DockerDirectives::Copy.new(
-            root:    build_dir,
             context: context, 
             compile: true,
             copy_actions: { 

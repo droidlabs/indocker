@@ -1,7 +1,5 @@
 Idocker.setup do
   namespace     'indocker_example'
-  root          Pathname.new File.dirname(__dir__)
-  cache_dir     Pathname.new '/tmp/indocker'
 
   load_env_file '.indocker/env_files'
   load_docker_items [
@@ -9,10 +7,12 @@ Idocker.setup do
   ]
 
   git do
-    repository 'https://github.com/droidlabs/indocker'
-    tag        'latest'
-    branch     'master'
-    workdir    'some/path'
+    cache_dir '/tmp/indocker'
+
+    repo :indocker do
+      repository 'https://github.com/droidlabs/indocker'
+      branch     'master'
+    end
   end
   
   docker do
