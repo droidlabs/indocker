@@ -207,10 +207,4 @@ class Indocker::DockerApi
       container.delete(force: true)
     end
   end
-
-  private
-
-  def full_name(repo, tag)
-    "#{repo.to_s}:#{tag.to_s}"
-  end
 end

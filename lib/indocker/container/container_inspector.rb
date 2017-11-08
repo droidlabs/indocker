@@ -3,31 +3,24 @@ class Indocker::ContainerInspector
 
   bean :container_inspector
 
-  inject :docker_api
+  inject :container_builder
 
-  def inspect(name)
-    info = docker_api.inspect_container(name)
+  def changed?(name)
+    container_config = docker_api.inspect_container(name)[Config]
+    host_config      = docker_api.inspect_container(name)[HostConfig]
 
-    params = {
-      'Image'          => info['Image'],
-      'name'           => info['Name'],
-      'Cmd'            => info['Args'],
-      'Env'            => info['Config']['Env'],
-      'Network'        => 
-      'ExposedPorts'   => exposed_ports,
-      'Tty'            => true,
-      'OpenStdin'      => true,
-      'StdinOnce'      => true,
-      'AttachStdin'    => true,
-      'AttachStdout'   => true,
-      'HostConfig' => {
-        'PortBindings' => port_bindings
-      },
-      'Volumes' => {'/bundle_path' => {}}
-    }.delete_if { |_, value| value.to_s.empty? }
-  end
+    inspected_config = Indocker::ContainerConfig.new(
+      image:         container_config['Image'], 
+      cmd:           container_config['Cmd'], 
+      env:           container_config['Env'], 
+      volumes:       container_config['Volumes'], 
+      binds:         host_config['Binds'], 
+      exposed_ports: container_config['ExposedPorts'], 
+      port_bindings: host_config['PortBindings']
+    )
 
-  def check_params
-    
+    metadata_config = container_builder.build(name)
+
+    inspected_config == metadata_config
   end
 end
