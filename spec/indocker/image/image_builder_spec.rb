@@ -1,19 +1,17 @@
 require 'spec_helper'
 
 describe 'Indocker::ImageBuilder' do
-  subject { ioc.image_builder }
-
   context 'for image without dependencies' do
-    before do
+    before(:all) do
       Indocker.define_image('indocker_image') do
-        before_build { 'test' }
-        
         from 'hello-world'
         workdir '/'
       end
 
-      subject.build('indocker_image')
+      ioc.image_builder.build('indocker_image')
     end
+
+    after(:all) { truncate_docker_items }
 
     it 'builds image without dependencies' do
       expect(
@@ -31,62 +29,63 @@ describe 'Indocker::ImageBuilder' do
   end
 
   context 'for image with dependencies' do
-    context 'circular dependencies' do
+    context 'circular docker_cp dependency' do
       before do
-        Indocker.define_image('indocker_circular_image') do
+        Indocker.define_image('indocker_image') do
           before_build do
-            docker_cp 'circular_container'
+            docker_cp 'indocker_container'
           end
           
           from 'hello-world'
           workdir '/'
         end
 
-        Indocker.define_container 'circular_container' do
-          use images.indocker_circular_image
+        Indocker.define_container 'indocker_container' do
+          use images.find_by_repo(:indocker_image)
         end
       end
 
+      after(:all) { truncate_docker_items }
+
       it 'raises Indocker::Errors::CircularImageDependency' do
         expect{
-          subject.build('indocker_circular_image')
+          ioc.image_builder.build('indocker_image')
         }.to raise_error(Indocker::Errors::CircularImageDependency)
       end
     end
 
-    context 'for non circular dependencies' do
+    context 'for non circular docker_cp dependency' do
       before do
-        Indocker.define_image('indocker_image') do          
+        Indocker.define_image('indocker_dependency_image') do          
           from 'alpine:latest'
           workdir '/'
           run 'echo "Hello World" > test.txt'
-          cmd '/bin/bash'
         end
 
-        Indocker.define_image('indocker_image_with_dependency') do
+        Indocker.define_image('indocker_image') do
           before_build do
             docker_cp 'indocker_container' do
-              copy 'test.txt' => build_dir
+              copy 'test.txt' => '/copy' 
             end
           end
           
-          from 'alpine:latest'
+          from :indocker_dependency_image, tag: :latest
           workdir '/'
-          copy do
-            { 'test.txt' => '/' }
-          end
+          copy '/copy/test.txt' => '/'
         end
 
         Indocker.define_container 'indocker_container' do
-          use images.indocker_image
+          use images.find_by_repo(:indocker_dependency_image)
         end
+
+        ioc.image_builder.build('indocker_image')
       end
 
+      after(:all) { truncate_docker_items }
+
       it 'builds image with dependency' do
-        subject.build('indocker_image_with_dependency')
-        
         expect(
-          ioc.docker_api.image_exists?('indocker_image_with_dependency')
+          ioc.docker_api.image_exists?('indocker_image')
         ).to be true
       end
     end
@@ -95,25 +94,25 @@ describe 'Indocker::ImageBuilder' do
   context 'for not existing image' do
     it 'raises Indocker::Errors::ImageIsNotDefined' do
       expect{
-        subject.build('indocker_image_without_dependencies')
+        ioc.image_builder.build('indocker_not_existing_image')
       }.to raise_error(Indocker::Errors::ImageIsNotDefined)
     end
   end
 
   context 'with coping files from project_root' do
     before do
-      Indocker.define_image('indocker_copy_image') do          
+      Indocker.define_image('indocker_image') do          
         from 'alpine:latest'
 
-        copy root: ioc.config.root do
-          { 'assets/.' => 'assets' }
-        end
+        copy File.join(__dir__, '../../example/assets/.') => 'assets'
       end
     end
 
+    after(:all) { truncate_docker_items }
+
     it 'does not raise error' do
       expect{
-        subject.build('indocker_copy_image')
+        ioc.image_builder.build('indocker_image')
       }.to_not raise_error
     end
   end

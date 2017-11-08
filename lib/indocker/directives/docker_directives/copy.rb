@@ -1,10 +1,11 @@
 class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
-  attr_reader :copy_actions, :context, :compile
+  attr_reader :copy_actions, :compile, :locals, :build_dir
 
-  def initialize(context:, copy_actions:, compile:)
-    @context      = context
+  def initialize(copy_actions:, compile:, locals:, build_dir:)
     @copy_actions = copy_actions
     @compile      = compile
+    @locals       = locals
+    @build_dir    = build_dir
   end
 
   def type

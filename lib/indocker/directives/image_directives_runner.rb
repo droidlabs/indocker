@@ -17,8 +17,6 @@ class Indocker::ImageDirectivesRunner
       run_docker_cp(directive)
     when Indocker::DockerDirectives::Copy
       run_copy(directive)
-    else
-      # do nothing
     end
   end
 
@@ -27,19 +25,20 @@ class Indocker::ImageDirectivesRunner
       container_manager.copy(
         name:      directive.container_name,
         copy_from: from,
-        copy_to:   to
+        copy_to:   File.join(directive.build_dir, to)
       )
     end
   end
 
   def run_copy(directive)
     directive.copy_actions.each do |from, _|
-      build_dir_dest = File.join(directive.context.build_dir.to_s, from.to_s)
-      
+      source      = File.exists?(from) ? from : File.join(directive.build_dir, from)
+      destination = File.join(directive.build_dir.to_s, from.to_s)
+
       copy_compile_file(
-        from:    from, 
-        to:      build_dir_dest, 
-        locals:  directive.context.storage, 
+        from:    source, 
+        to:      destination, 
+        locals:  directive.locals, 
         compile: directive.compile
       )
     end

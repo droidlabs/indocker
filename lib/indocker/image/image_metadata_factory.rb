@@ -8,7 +8,7 @@ class Indocker::ImageMetadataFactory
   inject :config
   inject :git_helper
 
-  def create(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG, &definition)
+  def create(repo, tag: Indocker::ImageHelper::DEFAULT_TAG, &definition)
     context = Indocker::DSLContext.new(
       build_dir: config.build_dir.join(repo.to_s),
       git:       git_helper

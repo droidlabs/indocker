@@ -3,6 +3,7 @@ require 'io/console'
 
 class Indocker::DockerApi
   include SmartIoC::Iocify
+  include Indocker::ImageHelper
 
   bean :docker_api
 
@@ -62,15 +63,15 @@ class Indocker::DockerApi
 
   # Images
 
-  def get_image_id(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+  def get_image_id(repo, tag: nil)
     Docker::Image.get(full_name(repo, tag)).id rescue nil
   end
 
-  def image_exists?(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+  def image_exists?(repo, tag: nil)
     Docker::Image.exist?(full_name(repo, tag))
   end
 
-  def delete_image(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
+  def delete_image(repo, tag: nil)
     Docker::Image.get(full_name(repo, tag)).remove(force: true)
   end
 

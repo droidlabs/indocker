@@ -1,11 +1,13 @@
 class Indocker::ContainerConfig
+  include Indocker::ImageHelper
+
   attr_reader :state
 
-  def initialize(repo:, tag: Indocker::ImageMetadata::DEFAULT_CONFIG, image:, 
+  def initialize(repo:, tag: nil, image:, 
                  name: nil, cmd: nil, env: nil, volumes: {}, binds: [], 
                  exposed_ports: nil, port_bindings: nil)
     @state = {
-      'Image'          => full_name(repo, tag),
+      'Image'          => @image || full_name(@repo, @tag),
       'name'           => name.to_s,
       'Cmd'            => cmd,
       'Env'            => env,
@@ -25,9 +27,5 @@ class Indocker::ContainerConfig
 
   def ==(other)
     self.state == other.state
-  end
-
-  def full_name
-    @image || "#{@repo.to_s}:#{@tag.to_s}"
   end
 end

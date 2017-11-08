@@ -3,7 +3,7 @@ class Indocker::ImageDependenciesManager
 
   bean   :image_dependencies_manager
 
-  inject :image_metadata_repository
+  inject :repository, ref: :image_metadata_repository
   inject :container_metadata_repository
   inject :image_evaluator
 
@@ -27,17 +27,21 @@ class Indocker::ImageDependenciesManager
     nil
   end
 
-  def get_dependencies(image_metadata)
-    container_dependencies = image_metadata.docker_cp_directives.map do |c|
+  def get_dependencies(meta)
+    dependencies = []
+
+    docker_cp_dependencies = meta.docker_cp_directives.map do |c|
       container = container_metadata_repository.get_by_name(c.container_name)
       
-      image_metadata_repository.find_by_repo(container.repo, tag: container.tag)
+      repository.find_by_repo(container.repo, tag: container.tag)
     end
-    
-    return container_dependencies if image_metadata.dockerhub_image?
-    
-    from_image_dependency = image_metadata_repository.find_by_repo(image_metadata.from_repo, tag: image_metadata.from_tag)
 
-    container_dependencies.push from_image_dependency
+    dependencies.concat(docker_cp_dependencies)
+
+    if !meta.dockerhub_image?
+      dependencies << repository.find_by_repo(meta.from_repo, tag: meta.from_tag)
+    end
+
+    dependencies.uniq
   end
 end

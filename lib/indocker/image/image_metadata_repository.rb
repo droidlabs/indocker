@@ -1,5 +1,6 @@
 class Indocker::ImageMetadataRepository
   include SmartIoC::Iocify
+  include Indocker::ImageHelper
   
   bean :image_metadata_repository
 
@@ -7,11 +8,15 @@ class Indocker::ImageMetadataRepository
     all.push(image_metadata)
   end
 
-  def find_by_repo(repo, tag: Indocker::ImageMetadata::DEFAULT_TAG)
-    image_metadata = all.detect { |im| im.repo == repo.intern and im.tag == tag.intern }
-    raise Indocker::Errors::ImageIsNotDefined, "#{repo}:#{tag}" if image_metadata.nil?
+  def find_by_full_name(image_metadata_full_name)
+    image_metadata = all.detect { |image_metadata| image_metadata.full_name == image_metadata_full_name }
+    raise Indocker::Errors::ImageIsNotDefined, image_metadata_full_name if image_metadata.nil?
 
     image_metadata
+  end
+
+  def find_by_repo(repo, tag: nil)
+    find_by_full_name(full_name(repo, tag))
   end
 
   def clear
@@ -20,11 +25,5 @@ class Indocker::ImageMetadataRepository
 
   def all
     @all ||= []
-  end
-
-  def method_missing(method, **args)
-    tag = args[:tag] || Indocker::ImageMetadata::DEFAULT_TAG
-
-    find_by_repo(method, tag: tag)
   end
 end

@@ -12,6 +12,8 @@ Docker.options = { read_timeout: 600, write_timeout: 600, chunk_size: 1 }
 
 require 'indocker/version'
 
+require 'indocker/image/image_helper'
+
 require 'indocker/errors'
 require 'indocker/cli'
 require 'indocker/docker_api'

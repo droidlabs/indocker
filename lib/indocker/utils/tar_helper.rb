@@ -19,18 +19,18 @@ class Indocker::TarHelper
           tarfile_full_name = tarfile.full_name
         end
 
-        destination_file = File.join destination, tarfile_full_name
+        destination_file = File.join(destination, tarfile_full_name)
         
         if tarfile.directory?
           FileUtils.mkdir_p destination_file
         else
           files_list.push(tarfile_full_name)
 
-          destination_directory = File.dirname(destination_file)
-          FileUtils.mkdir_p destination_directory unless File.directory?(destination_directory)
-          File.open destination_file, "wb" do |f|
-            f.print tarfile.read
+          if !File.directory?(destination)
+            FileUtils.mkdir_p destination 
           end
+
+          File.open(destination_file, "wb") {|f| f.print tarfile.read}
         end
       end
     end

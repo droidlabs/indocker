@@ -46,8 +46,9 @@ class Indocker::ImageDSL
   def copy(copy_actions = {}, compile = false)
     @directives << Indocker::DockerDirectives::Copy.new(
       compile:      compile,
-      context:      @context,
-      copy_actions: copy_actions
+      copy_actions: copy_actions,
+      locals:       @context.storage,
+      build_dir:    @context.build_dir
     )
   end
 

@@ -1,7 +1,7 @@
 class Indocker::ImageMetadata
-  DEFAULT_TAG = 'latest'
+  include Indocker::ImageHelper
 
-  attr_reader   :repo, :tag, :directives, :build_dir
+  attr_reader :repo, :tag, :directives, :build_dir
 
   def initialize(repo:, tag:, directives:, build_dir:)
     @repo       = repo
@@ -11,11 +11,7 @@ class Indocker::ImageMetadata
   end
 
   def full_name
-    "#{repo}:#{tag}"
-  end
-
-  def full_name_with_registry
-    "#{Indocker.config.registry}/#{local_full_name}"
+    super(@repo, @tag)
   end
 
   def prepare_directives
