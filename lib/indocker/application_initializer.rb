@@ -6,7 +6,6 @@ class Indocker::ApplicationInitializer
   inject :config_locator
   inject :docker_api
   inject :registry_authenticator
-  inject :envs_manager
   inject :config
 
 
@@ -16,7 +15,5 @@ class Indocker::ApplicationInitializer
     require(config_locator.locate(current_path))
 
     registry_authenticator.authenticate!
-
-    # envs_manager.load_init_application_env_variables
   end
 end

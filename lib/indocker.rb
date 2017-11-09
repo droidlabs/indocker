@@ -41,7 +41,6 @@ require 'indocker/handlers/container_stop'
 require 'indocker/utils/ioc_container'
 
 require 'indocker/envs/env_metadata'
-require 'indocker/envs/manager'
 require 'indocker/envs/loader'
 
 require 'indocker/image/image_metadata'
