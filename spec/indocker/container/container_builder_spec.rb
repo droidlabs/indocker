@@ -8,7 +8,6 @@ describe Indocker::ContainerBuilder do
     before(:all) do
       Indocker.define_image :indocker_image do
         from 'ruby:2.3.1'
-        env_file File.join(__dir__, '../../fixtures/spec.env')
         workdir '/app'
         cmd 'ls'
       end
@@ -19,6 +18,7 @@ describe Indocker::ContainerBuilder do
         use images.find_by_repo(:indocker_image, tag: :latest)
         use networks.find_by_name(:indocker_network)
 
+        env_file File.join(__dir__, '../../fixtures/spec.env')
         mount 'tmp', to: '/tmp'
         ports '2000:3000'
         cmd  '/bin/bash'
@@ -39,6 +39,7 @@ describe Indocker::ContainerBuilder do
       expect(result.image).to         eq('indocker_image:latest')
       expect(result.name).to          eq(:indocker_container)
       expect(result.cmd).to           eq(['/bin/bash'])
+      expect(result.env).to           eq('RUBY_ENV=development RAILS_ENV=development')
 
       expect(result.exposed_ports).to be_a(Indocker::DockerAPI::ContainerConfig::ExposedPortsConfig)
       expect(result.exposed_ports.ports).to eq(['2000'])

@@ -96,6 +96,7 @@ require 'indocker/directives/container_directives/depends_on'
 require 'indocker/directives/container_directives/ready'
 require 'indocker/directives/container_directives/cmd'
 require 'indocker/directives/container_directives/volume'
+require 'indocker/directives/container_directives/env_file'
 
 require 'indocker/git/git_helper'
 

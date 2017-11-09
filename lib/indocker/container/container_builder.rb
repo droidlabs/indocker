@@ -9,6 +9,10 @@ class Indocker::ContainerBuilder
 
   def build(name)
     container_metadata = container_metadata_repository.get_by_name(name)
+        
+    env_metadata = container_metadata.env_files.inject(Indocker::Envs::EnvMetadata.new) do |all, path|
+      all += envs_loader.parse(path)
+    end
 
     Indocker::DockerAPI::ContainerConfig.new(
       name:          name, 
@@ -18,7 +22,8 @@ class Indocker::ContainerBuilder
       port_bindings: container_metadata.port_bindings,
       cmd:           container_metadata.command,
       volumes:       container_metadata.volumes,
-      binds:         container_metadata.binds
+      binds:         container_metadata.binds,
+      env:           env_metadata.to_s
     )
   end
 end
