@@ -57,7 +57,7 @@ class Indocker::ContainerMetadata
   def command
     directive = @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
     
-    directive.cmd
+    directive ? directive.cmd : nil
   end
 
   def container_dependencies

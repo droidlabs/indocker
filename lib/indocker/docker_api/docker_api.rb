@@ -39,7 +39,7 @@ class Indocker::DockerAPI
     Docker::Network.get(network_name.to_s).connect(container_id.to_s)
   end
 
-  def remove_network(name)
+  def delete_network(name)
     Docker::Network.get(name.to_s).remove
   end
 
@@ -113,7 +113,7 @@ class Indocker::DockerAPI
     Docker::Volume.all
   end
 
-  def remove_volume(name)
+  def delete_volume(name)
     Docker::Volume.get(name.to_s).remove
   end
 

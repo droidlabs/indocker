@@ -20,6 +20,8 @@ RSpec.configure do |config|
 
   config.mock_with :rspec
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  config.after(:all) { truncate_docker_items }
 end
 
 def ensure_exists(file)

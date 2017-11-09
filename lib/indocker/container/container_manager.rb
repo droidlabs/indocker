@@ -16,7 +16,7 @@ class Indocker::ContainerManager
 
   def create(name)
     container_config = container_builder.build(name)
-
+    
     container_id = docker_api.create_container(container_config)
 
     logger.info "Successfully created container :#{name}"
@@ -95,12 +95,9 @@ class Indocker::ContainerManager
 
   def copy(name:, copy_from:, copy_to:)
     container_metadata = container_metadata_repository.get_by_name(name)
-    
-    container_id = docker_api.create_container(
-      repo:    container_metadata.repo, 
-      tag:     container_metadata.tag,
-      command: KEEP_CONTAINER_RUNNING_COMMAND
-    ) if !docker_api.container_exists?(name)
+
+    container_id =  docker_api.get_container_id(name) ||
+                    docker_api.create_container(container_builder.build(name))
       
     tar_snapshot = config.build_dir.join('snapshots', "#{name.to_s}.tar")
     
