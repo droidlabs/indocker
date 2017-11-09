@@ -12,11 +12,12 @@ class Indocker::ContainerManager
   inject :logger
   inject :tar_helper
   inject :config
+  inject :container_builder
 
   def create(name)
     container_config = container_builder.build(name)
 
-    container_id = docker_api.create_container(container_config.state)
+    container_id = docker_api.create_container(container_config)
 
     logger.info "Successfully created container :#{name}"
 
@@ -45,7 +46,7 @@ class Indocker::ContainerManager
     start(name, attach: container_metadata.attach)
   end
 
-  def start(name, attach:)
+  def start(name, attach: false)
     container_metadata = container_metadata_repository.get_by_name(name)
     
     container_directives_runner.run_all(

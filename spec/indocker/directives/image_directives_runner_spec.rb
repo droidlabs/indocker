@@ -29,7 +29,7 @@ describe Indocker::ImageDirectivesRunner do
     
     context 'for :from as directory path' do
       context "when directory exists" do
-        it 'copy files from root to build directory' do
+        it 'copy files from passed to build directory' do
           image_directives_runner.run(directive)
 
           ensure_content(build_dir.join('assets', 'index.css'), "* { display: <%= display %>; }")

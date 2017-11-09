@@ -4,88 +4,115 @@ describe Indocker::ContainerManager do
   let(:container_manager) { ioc.container_manager }
   let(:docker_api)        { ioc.docker_api }
 
-  describe '#create' do
-    before do
-      Indocker.define_image 'indocker_image' do
-        from 'alpine:latest'
-        workdir '.'
-        cmd %w(tail -F -n0 /etc/hosts)
-      end
-
-      ioc.image_builder.build('indocker_image')
+  before(:all) do
+    Indocker.define_image 'indocker_image' do
+      from 'alpine:latest'
+      workdir '.'
+      cmd %w(ls)
     end
 
-    context 'for existing image' do
-      before do
-        Indocker.define_container 'indocker_simple_container' do
-          use images.indocker_image
-        end
-      end
+    ioc.image_builder.build('indocker_image')
 
-      it 'runs container' do
-        container_manager.create('indocker_simple_container')
+    Indocker.define_container 'indocker_simple_container' do
+      use images.find_by_repo(:indocker_image)
+    end
+  end
 
-        expect(
-          ioc.docker_api.container_exists?('indocker_simple_container')
-        ).to be true
-      end
+  after(:all) { truncate_docker_items }
+
+  describe '#run' do
+    before(:all) { ioc.container_manager.run('indocker_simple_container') }
+    after(:all)  { ioc.docker_api.delete_container('indocker_simple_container') }
+
+    it 'creates container' do
+      expect(
+        ioc.docker_api.container_exists?('indocker_simple_container')
+      ).to be true
+    end
+
+    it 'starts container' do
+      expect(
+        ioc.docker_api.get_container_state('indocker_simple_container')
+      ).to eq(Indocker::ContainerMetadata::States::EXITED)
+    end
+  end
+
+  describe '#create' do
+    before(:all) { ioc.container_manager.create('indocker_simple_container') }
+    after(:all)  { ioc.docker_api.delete_container('indocker_simple_container') }
+
+    it 'creates container' do
+      expect(
+        ioc.docker_api.container_exists?('indocker_simple_container')
+      ).to be true
     end
   end
 
   describe '#start' do
-    before do
-      Indocker.define_image 'indocker_image' do
-        from 'alpine:latest'
-        workdir '.'
-        cmd %w(tail -F -n0 /etc/hosts)
-      end
-
-      ioc.image_builder.build('indocker_image')
-    end
-    
     context 'with ready timeout' do
-      before do
-        Indocker.define_container 'indocker_timeout_container' do
-          use images.indocker_image
+      context 'if ready returns true' do
+        before(:all) do
+          Indocker.define_container 'indocker_timeout_container' do
+            use images.find_by_repo(:indocker_image)
 
-          ready sleep: 0.1, timeout: 1 do
-            sleep 0.5
-            true
+            ready sleep: 0.1, timeout: 1 do
+              sleep 0.5
+              true
+            end
           end
+
+          ioc.container_manager.create('indocker_timeout_container')
         end
 
-        Indocker.define_container 'indocker_timeout_error_container' do
-          use images.indocker_image
+        it 'starts container if ready_block returns true' do
+          container_manager.start('indocker_timeout_container')
+  
+          expect(
+            docker_api.get_container_state('indocker_timeout_container')
+          ).to eq(Indocker::ContainerMetadata::States::RUNNING)
+        end
+      end
 
-          ready sleep: 0.1, timeout: 1 do
-            false
+      context 'if ready returns false' do
+        before(:all) do
+          Indocker.define_container 'indocker_timeout_error_container' do
+            use images.find_by_repo(:indocker_image)
+
+            ready sleep: 0.1, timeout: 1 do
+              false
+            end
           end
+
+          ioc.container_manager.create('indocker_timeout_error_container')
         end
 
-
-        ioc.container_manager.create('indocker_timeout_container')
-        ioc.container_manager.create('indocker_timeout_error_container')
+        it 'raises Indocker::Errors::ContainerTimeoutError error if ready_block returns false' do
+          expect{
+            container_manager.start('indocker_timeout_error_container')
+          }.to raise_error(Indocker::Errors::ContainerTimeoutError)
+        end
       end
 
-      after do
-        container_manager.stop('indocker_timeout_container')
-        container_manager.delete('indocker_timeout_container')
-        container_manager.stop('indocker_timeout_error_container')
-        container_manager.delete('indocker_timeout_error_container')
-      end
+      context 'if ready reaches timeout' do
+        before(:all) do
+          Indocker.define_container 'indocker_timeout_reached_container' do
+            use images.find_by_repo(:indocker_image)
 
-      it 'starts container if ready_block returns true' do
-        container_manager.start('indocker_timeout_container')
+            ready sleep: 0.1, timeout: 1 do
+              sleep 2
 
-        expect(
-          docker_api.get_container_state('indocker_timeout_container')
-        ).to eq(Indocker::ContainerMetadata::States::RUNNING)
-      end
+              true
+            end
+          end
 
-      it 'raises Indocker::Errors::ContainerTimeoutError error if ready_block returns false' do
-        expect{
-          container_manager.start('indocker_timeout_error_container')
-        }.to raise_error(Indocker::Errors::ContainerTimeoutError)
+          ioc.container_manager.create('indocker_timeout_reached_container')
+        end
+
+        it 'raises Indocker::Errors::ContainerTimeoutError error if ready_block returns false' do
+          expect{
+            container_manager.start('indocker_timeout_reached_container')
+          }.to raise_error(Indocker::Errors::ContainerTimeoutError)
+        end
       end
     end
 
@@ -95,11 +122,11 @@ describe Indocker::ContainerManager do
 
       before do
         Indocker.define_container 'indocker_dependency_container' do
-          use images.indocker_image
+          use images.find_by_repo(:indocker_image)
         end
 
         Indocker.define_container 'indocker_main_container' do
-          use images.indocker_image
+          use images.find_by_repo(:indocker_image)
 
           depends_on containers.get_by_name('indocker_dependency_container')
         end
@@ -132,7 +159,7 @@ describe Indocker::ContainerManager do
         Indocker.define_network 'indocker_network'
 
         Indocker.define_container 'indocker_simple_container' do
-          use images.indocker_image
+          use images.find_by_repo(:indocker_image)
           use networks.indocker_network
         end
 

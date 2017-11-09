@@ -52,11 +52,11 @@ class Indocker::ContainerDSL
   end
 
   def ports(ports)
-    docker_port, host_port = ports.split(':').map(&:strip)
+    container_port, host_port = ports.split(':').map(&:strip)
 
     @directives << Indocker::ContainerDirectives::Ports.new(
-      docker_port: docker_port, 
-      host_port:   host_port
+      container_port: container_port, 
+      host_port:      host_port
     )
   end
 

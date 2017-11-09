@@ -61,7 +61,7 @@ class Indocker::ImageDSL
   end
 
   def env_file(*paths)
-    @directives.push paths.map {|p| Indocker::DockerDirectives::EnvFile.new(p)}
+    @directives.concat paths.map {|p| Indocker::DockerDirectives::EnvFile.new(p)}
   end
 
   def before_build(&block)

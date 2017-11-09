@@ -1,7 +1,7 @@
 class Indocker::ContainerDirectives::Cmd < Indocker::ContainerDirectives::Base
-  attr_accessor :container_name
+  attr_accessor :cmd
 
-  def initialize(command)
-    @command = command
+  def initialize(cmd)
+    @cmd = cmd
   end
 end

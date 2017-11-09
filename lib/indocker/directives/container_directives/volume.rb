@@ -9,4 +9,11 @@ class Indocker::ContainerDirectives::Volume < Indocker::ContainerDirectives::Bas
   def before_start?
     true
   end
+
+  def to_hash
+    {
+      name: @name,
+      to:   @to
+    }
+  end
 end

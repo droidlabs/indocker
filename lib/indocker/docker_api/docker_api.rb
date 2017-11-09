@@ -1,7 +1,7 @@
 require 'docker-api'
 require 'io/console'
 
-class Indocker::DockerApi
+class Indocker::DockerAPI
   include SmartIoC::Iocify
   include Indocker::ImageHelper
 
@@ -169,33 +169,9 @@ class Indocker::DockerApi
     Docker::Container.get(name.to_s).copy(path, &block)
   end
 
-  def create_container(repo:, tag:, name: nil, command: nil, env: nil, 
-                        volumes: {}, binds: [], exposed_ports: nil, port_bindings: nil)
-    params = {
-      'Image'          => full_name(repo, tag),
-      'name'           => name.to_s,
-      'Cmd'            => command,
-      'Env'            => env,
-      'ExposedPorts'   => exposed_ports,
-      'Tty'            => true,
-      'OpenStdin'      => true,
-      'StdinOnce'      => true,
-      'AttachStdin'    => true,
-      'AttachStdout'   => true,
-      'HostConfig' => {
-        'PortBindings' => port_bindings,
-        'Binds'        => binds
-      },
-      'Volumes' => {'/bundle_path' => {}}
-    }.delete_if { |_, value| value.to_s.empty? }
-
-    Docker::Container.create(params).id
-  end
-
-  def exec_container(name:, command:)
-    Docker::Container.get(name.to_s).exec(command) do |stream, chunk|
-      yield stream, chunk
-    end
+  # TODO: Add contract
+  def create_container(container_config)
+    Docker::Container.create(container_config.to_hash).id
   end
 
   def delete_container(name)

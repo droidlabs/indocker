@@ -17,6 +17,6 @@ class Indocker::ApplicationInitializer
 
     registry_authenticator.authenticate!
 
-    envs_manager.load_init_application_env_variables
+    # envs_manager.load_init_application_env_variables
   end
 end

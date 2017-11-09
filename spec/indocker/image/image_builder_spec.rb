@@ -94,7 +94,7 @@ describe 'Indocker::ImageBuilder' do
   context 'for not existing image' do
     it 'raises Indocker::Errors::ImageIsNotDefined' do
       expect{
-        ioc.image_builder.build('indocker_not_existing_image')
+        ioc.image_builder.build('indocker_image')
       }.to raise_error(Indocker::Errors::ImageIsNotDefined)
     end
   end

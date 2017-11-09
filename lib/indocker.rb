@@ -16,8 +16,10 @@ require 'indocker/image/image_helper'
 
 require 'indocker/errors'
 require 'indocker/cli'
-require 'indocker/docker_api'
 require 'indocker/dsl_context'
+
+require 'indocker/docker_api/docker_api'
+require 'indocker/docker_api/container_config'
 
 require 'indocker/configs/config'
 require 'indocker/configs/config_factory'
@@ -57,6 +59,7 @@ require 'indocker/container/container_metadata_factory'
 require 'indocker/container/container_manager'
 require 'indocker/container/container_evaluator'
 require 'indocker/container/container_dsl'
+require 'indocker/container/container_builder'
 
 require 'indocker/partial/partial_metadata'
 require 'indocker/partial/partial_metadata_repository'

@@ -1,8 +1,6 @@
 class Indocker::ContainerMetadata
   attr_reader :name, :attach
 
-  HOSTPORT = 'HostPort'
-
   module States
     CREATED    = 'created'
     RESTARTING = 'restarting'
@@ -37,17 +35,11 @@ class Indocker::ContainerMetadata
   end
 
   def volumes
-    volume_directives.inject({}) do |result, vm|
-      result[vm.name] = {}
-      result
-    end
+    volume_directives.map(&:name)
   end
 
   def binds
-    volume_directives.inject([]) do |result, vm|
-      result.push "#{vm.name}:#{vm.to}"
-      result
-    end
+    volume_directives.map(&:to_hash)
   end
 
   def env_files
@@ -55,35 +47,17 @@ class Indocker::ContainerMetadata
   end
 
   def exposed_ports
-    return nil if ports_directives.empty? && expose_directives.empty?
-
-    result = Hash.new
-
-    expose_directives.each do |d|
-      result[d.port.to_s] = {}
-    end
-
-    ports_directives.each do |d|
-      result[d.docker_port] = {}
-    end
-
-    result
+    expose_directives.map(&:port) + ports_directives.map(&:container_port)
   end
 
   def port_bindings
-    return nil if ports_directives.empty?
-
-    result = Hash.new
-
-    ports_directives.each do |d|
-      result[d.docker_port] = [{ HOSTPORT => d.host_port }]
-    end
-
-    result
+    ports_directives.map(&:to_hash)
   end
 
   def command
-    @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
+    directive = @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
+    
+    directive.cmd
   end
 
   def container_dependencies

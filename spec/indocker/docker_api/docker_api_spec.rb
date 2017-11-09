@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Indocker::DockerApi do
+describe Indocker::DockerAPI do
   let(:docker_api) { ioc.docker_api }
 
   describe '#create_network' do
