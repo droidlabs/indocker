@@ -29,7 +29,7 @@ def ensure_exists(file)
 end
 
 def ensure_content(file, content)
-  expect(File.read(file)).to match(content)
+  expect(File.read(file)).to eq(content)
 end
 
 def truncate_docker_items
@@ -37,11 +37,13 @@ def truncate_docker_items
   ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Names'].grep(/^\/indocker/).any? }
   ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags'].grep(/^indocker/).any? }
   ioc.docker_api.delete_networks_where   { |network|   network.info['Name'] =~ /^indocker/ }
+  ioc.docker_api.delete_volumes_where    { |volume|    volume.info['Name'] =~ /^indocker/ }
 
   ioc.image_metadata_repository.clear
   ioc.container_metadata_repository.clear
   ioc.partial_metadata_repository.clear
   ioc.network_metadata_repository.clear
+  ioc.volume_metadata_repository.clear
 
   ioc.logger.clear
     

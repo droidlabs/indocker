@@ -16,4 +16,8 @@ class Indocker::ContainerDirectives::Volume < Indocker::ContainerDirectives::Bas
       to:   @to
     }
   end
+  
+  def docker_name
+    '/' + @name.to_s.gsub(/(\A\/)/, '')
+  end
 end

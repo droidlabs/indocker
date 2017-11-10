@@ -61,7 +61,7 @@ describe Indocker::ContainerBuilder do
       ])
 
       expect(result.volumes_config).to be_a(Indocker::DockerAPI::ContainerConfig::VolumesConfig)
-      expect(result.volumes_config.volumes).to eq(['indocker_volume'])
+      expect(result.volumes_config.volumes).to eq(['/indocker_volume'])
     end
   end
 end

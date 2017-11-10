@@ -9,10 +9,10 @@ module Indocker::Errors
   class ConfigFilesDoesNotFound           < StandardError; end
   class ConfigOptionTypeMismatch          < StandardError; end
   class DockerRegistryAuthenticationError < StandardError; end
-  class FileNotExists                     < StandardError; end
   class EnvFileDoesNotExist               < StandardError; end
   class ContainerTimeoutError             < StandardError; end
   class ReservedKeywordUsed               < StandardError; end
+  class VolumeIsNotDefined                < StandardError; end
 
   class ContainerImageAlreadyDefined      < StandardError; end
   class NetworkAlreadyDefined             < StandardError; end

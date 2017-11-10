@@ -7,7 +7,7 @@ describe Indocker::DockerAPI do
     context 'simple network' do
       let!(:id) { docker_api.create_network('indocker') }
 
-      after { docker_api.remove_network(id) }
+      after { docker_api.delete_network(id) }
 
       it 'creates network' do
         expect(
@@ -20,10 +20,10 @@ describe Indocker::DockerAPI do
   describe '#add_container_to_network' do
     let(:container_id) { 
       docker_api.create_container(
-        repo:    'alpine',
-        tag:     'latest',
-        name:    'indocker_alpine_container',
-        command: %w(tail -F -n0 /etc/hosts)
+        Indocker::DockerAPI::ContainerConfig.new(
+          image: 'alpine:latest',
+          name:  'sample_container'
+        )
       ) 
     }
 
@@ -32,7 +32,7 @@ describe Indocker::DockerAPI do
     after do
       docker_api.stop_container(container_id)
       docker_api.delete_container(container_id)
-      docker_api.remove_network(network_id)
+      docker_api.delete_network(network_id)
     end
 
     it 'do something' do
@@ -67,7 +67,7 @@ describe Indocker::DockerAPI do
     context 'simple volume' do
       let!(:id) { docker_api.create_volume('volume') }
       
-      after { docker_api.remove_volume(id) }
+      after { docker_api.delete_volume(id) }
       
       it 'creates volume' do
         expect(
@@ -81,7 +81,7 @@ describe Indocker::DockerAPI do
     context 'simple volume' do
       let!(:id) { docker_api.create_volume('volume') }
       
-      after { docker_api.remove_volume(id) }
+      after { docker_api.delete_volume(id) }
       
       it 'creates volume' do
           expect(

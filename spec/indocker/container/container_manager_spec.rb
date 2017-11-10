@@ -140,6 +140,31 @@ describe Indocker::ContainerManager do
       end
     end
 
+    context 'with specified volume' do
+      before(:all) do
+        Indocker.define_volume 'indocker_volume'
+
+        Indocker.define_container 'indocker_volume_container' do
+          use images.find_by_repo(:indocker_image)
+          mount volumes.find_by_name('indocker_volume'), to: '/app'
+        end
+
+        ioc.container_manager.create('indocker_volume_container')
+        ioc.container_manager.start('indocker_volume_container')
+      end
+
+      after(:all) do
+        ioc.docker_api.delete_container('indocker_volume_container')
+        ioc.docker_api.delete_volume('indocker_volume')
+      end
+
+      it 'creates volume before start' do
+        expect(
+          ioc.docker_api.volume_exists?('indocker_volume')
+        ).to be true
+      end
+    end
+
     context 'with specified network' do
       before(:all) do
         Indocker.define_network 'indocker_network'
@@ -154,7 +179,7 @@ describe Indocker::ContainerManager do
       end
 
       after(:all) do
-        ioc.docker_api.delete_container('indocker_network_container')
+        ioc.container_manager.delete('indocker_network_container')
         ioc.docker_api.delete_network('indocker_network')
       end
 

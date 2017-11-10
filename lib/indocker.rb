@@ -51,6 +51,7 @@ require 'indocker/image/image_builder'
 require 'indocker/image/image_dependencies_manager'
 require 'indocker/image/image_evaluator'
 require 'indocker/image/image_dockerfile_builder'
+require 'indocker/image/image_directives_runner'
 
 require 'indocker/container/container_metadata'
 require 'indocker/container/container_metadata_repository'
@@ -59,12 +60,11 @@ require 'indocker/container/container_manager'
 require 'indocker/container/container_evaluator'
 require 'indocker/container/container_dsl'
 require 'indocker/container/container_builder'
+require 'indocker/container/container_directives_runner'
 
 require 'indocker/partial/partial_metadata'
 require 'indocker/partial/partial_metadata_repository'
 
-require 'indocker/directives/image_directives_runner'
-require 'indocker/directives/container_directives_runner'
 require 'indocker/directives/base'
 require 'indocker/directives/partial'
 

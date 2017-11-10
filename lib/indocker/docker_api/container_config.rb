@@ -64,7 +64,7 @@ class Indocker::DockerAPI::ContainerConfig
     attr_reader :ports
 
     def initialize(ports)
-      @ports = ports
+      @ports = ports || []
     end
 
     def to_hash
@@ -81,12 +81,12 @@ class Indocker::DockerAPI::ContainerConfig
     VOLUME_VALUE = {}
 
     def initialize(volumes)
-      @volumes = volumes
+      @volumes = volumes || []
     end
 
     def to_hash
-      volumes.inject({}) do |config, v|
-        config[v] = {}
+      volumes.inject({}) do |config, volume|
+        config[volume] = {}
         config
       end
     end
@@ -96,8 +96,8 @@ class Indocker::DockerAPI::ContainerConfig
     attr_reader :port_bindings, :binds
 
     def initialize(port_bindings, binds)
-      @port_bindings = port_bindings
-      @binds         = binds
+      @port_bindings = port_bindings || {}
+      @binds         = binds         || {}
     end
 
     def to_hash

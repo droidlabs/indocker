@@ -125,6 +125,12 @@ class Indocker::DockerAPI
     Docker::Volume.get(name.to_s).info
   end
 
+  def delete_volumes_where(&condition)
+    Docker::Volume.all.select(&condition).map do |volume|
+      volume.remove
+    end
+  end
+
   # Containers
 
   def inspect_container(name)

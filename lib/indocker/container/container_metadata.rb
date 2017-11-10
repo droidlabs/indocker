@@ -35,7 +35,7 @@ class Indocker::ContainerMetadata
   end
 
   def volumes
-    volume_directives.map(&:name)
+    volume_directives.map(&:docker_name)
   end
 
   def binds
