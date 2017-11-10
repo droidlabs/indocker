@@ -29,7 +29,7 @@ def ensure_exists(file)
 end
 
 def ensure_content(file, content)
-  expect(File.read(file)).to eq(content)
+  expect(File.read(file)).to match(content)
 end
 
 def truncate_docker_items

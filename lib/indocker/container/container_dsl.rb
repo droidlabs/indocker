@@ -41,7 +41,7 @@ class Indocker::ContainerDSL
     ) 
   end
 
-  def cmd(*command)
+  def cmd(command)
     first_cmd_directive = @directives.detect {|c| c.instance_of?(Indocker::ContainerDirectives::Cmd)}
     raise Indocker::Errors::DirectiveAlreadyInUse, first_cmd_directive if first_cmd_directive
 

@@ -21,11 +21,13 @@ class Indocker::Configs::ConfigFactory
     end
 
     config :docker, group: :docker do
-      option :registry
-      option :email
-      option :password
-      option :username
-      option :skip_push, type: :boolean
+      hash_config :registry do
+        option :serveraddress
+        option :email
+        option :password
+        option :username
+        option :skip_push, type: :boolean
+      end
     end
   end
 

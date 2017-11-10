@@ -6,12 +6,12 @@ class Indocker::RegistryAvaliabilityChecker
   inject :config
   inject :docker_api
 
-  def authenticate!
+  def authenticate!(serveraddress:, username:, email:, password:)
     docker_api.authenticate!(
-      serveraddress: config.docker.registry,
-      username:      config.docker.username,
-      email:         config.docker.email,
-      password:      config.docker.password
+      serveraddress: serveraddress,
+      username:      username,
+      email:         email,
+      password:      password
     )
   rescue Docker::Error::AuthenticationError
     raise Indocker::Errors::DockerRegistryAuthenticationError

@@ -24,6 +24,7 @@ require 'indocker/docker_api/container_config'
 require 'indocker/configs/config'
 require 'indocker/configs/config_factory'
 require 'indocker/configs/locator'
+require 'indocker/configs/config_initializer'
 
 require 'indocker/utils/logger'
 require 'indocker/utils/logger_factory'

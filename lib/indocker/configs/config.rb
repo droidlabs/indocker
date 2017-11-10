@@ -1,7 +1,17 @@
 module Indocker::Configs
   class Config
+    attr_reader :scope
+
     def scope
-      @scope ||= Hash.new({})
+      @scope ||= Hash.new()
+    end
+
+    def options
+      scope.reject {|_, opt| opt.is_a?(Indocker::Configs::Config)}.keys
+    end
+
+    def configs
+      scope.select {|_, opt| opt.is_a?(Indocker::Configs::Config)}.keys
     end
 
     def set(&block)
@@ -10,20 +20,22 @@ module Indocker::Configs
       self
     end
 
-    def option(name, group: :default, type: :string)
+    def option(name, group: nil, type: nil, required: nil)
       raise Indocker::Errors::ReservedKeywordUsed, name if respond_to?(name.to_sym)
 
       define_singleton_method(name) do |value = nil, &block|
-        if type == :config and read_setting(name) and block
+        if type == :config and options.include?(name) and block
           return read_setting(name).set(&block)
         end
 
-        write_value = block || value
-        
-        if write_value
-          validate!(name, write_value, type)
-
-          write_setting(name, write_value, group)
+        if block || value
+          write_setting(
+            name:        name, 
+            value:       block || value, 
+            group:       group, 
+            type:        type, 
+            required:    required
+          )
         else
           read_setting(name)
         end
@@ -55,25 +67,63 @@ module Indocker::Configs
 
     private
 
-    def read_setting(key)
-      read_value = scope[key.to_s][:value]
+    def read_setting(name)
+      read_value = scope[name.intern].value
       
       read_value.is_a?(Proc) ? read_value.call : read_value
     end
 
-    def write_setting(key, value, group)
-      scope[key.to_s] = {
-        value: value,
-        group: group
-      }
+    def write_setting(name:, value:, group:, type:, required:)
+      new_option = Option.new(
+        name:     name,
+        value:    value,
+        group:    group,
+        required: required,
+        type:     type
+      )
+
+      new_option.validate!
+
+      scope[name.intern] = new_option
     end
 
-    def validate!(name, value, type)
-      value_type = cast_class_to_type(value)
 
-      if type != value_type
+    def method_missing(method, *args, &block)
+      raise "Undefined keyword #{method.inspect} for Indocker configuration file"
+    end
+  end
+
+  class Option
+    attr_reader :value, :required, :type, :group
+
+    def initialize(name:, value:, required: nil, type: nil, group: nil)
+      @name     = name
+      @value    = value
+      @required = required || false
+      @type     = type     || :string
+      @group    = group    || :default
+    end
+
+    def validate!
+      check_required
+      check_type
+    end
+
+    private
+
+    def check_required
+      if @required && @value.nil?
+        raise Indocker::Errors::ConfigInitializationError, 
+          "Configuration option :#{option} is required"
+      end
+    end
+
+    def check_type
+      value_type = cast_class_to_type(@value)
+      
+      if @type != value_type
         raise Indocker::Errors::ConfigOptionTypeMismatch, 
-          "Expected option #{name.inspect} => #{value.inspect} to be a #{type.inspect}, not a #{value_type.inspect}"
+          "Expected option #{@name.inspect} => #{@value.inspect} to be a #{@type.inspect}, not a #{value_type.inspect}"
       end
 
       nil
@@ -92,10 +142,6 @@ module Indocker::Configs
       else
         Indocker::StringUtils.underscore(value.class.name).to_sym
       end
-    end
-
-    def method_missing(method, *args, &block)
-      raise "Undefined keyword #{method.inspect} for Indocker configuration file"
     end
   end
 end

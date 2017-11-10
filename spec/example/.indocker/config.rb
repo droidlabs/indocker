@@ -1,10 +1,16 @@
 Idocker.setup do
-  namespace     'indocker_example'
+  namespace 'indocker_example'
 
   load_env_file '.indocker/env_files'
   load_docker_items [
     '.indocker/images_and_containers.rb'
   ]
+
+  docker do
+    registry :indocker do
+      serveraddress: 'localhost:5000'
+    end
+  end
 
   git do
     cache_dir '/tmp/indocker'
