@@ -41,7 +41,7 @@ describe Indocker::ContainerBuilder do
       expect(result.image).to eq('indocker_image:latest')
       expect(result.name).to  eq(:indocker_container)
       expect(result.cmd).to   eq('/bin/bash')
-      expect(result.env).to   eq('RUBY_ENV=development RAILS_ENV=development')
+      expect(result.env).to   match(['RUBY_ENV=development', 'RAILS_ENV=development'])
 
       expect(result.exposed_ports).to be_a(Indocker::DockerAPI::ContainerConfig::ExposedPortsConfig)
       expect(result.exposed_ports.ports).to eq(['2000'])

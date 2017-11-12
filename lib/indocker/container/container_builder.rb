@@ -23,7 +23,7 @@ class Indocker::ContainerBuilder
       cmd:           container_metadata.command,
       volumes:       container_metadata.volumes,
       binds:         container_metadata.binds,
-      env:           env_metadata.to_s
+      env:           env_metadata.to_array + container_metadata.envs
     )
   end
 end

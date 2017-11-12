@@ -42,8 +42,12 @@ class Indocker::ContainerMetadata
     volume_directives.map(&:to_hash)
   end
 
+  def envs
+    envs_directives.inject([]) { |all, dir| all.concat dir.env_string }
+  end
+  
   def env_files
-    env_directives.map(&:path)
+    env_files_directives.map(&:path)
   end
 
   def exposed_ports
@@ -82,8 +86,12 @@ class Indocker::ContainerMetadata
     @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::Network)}
   end
 
-  def env_directives
+  def env_files_directives
     @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::EnvFile)}
+  end
+
+  def envs_directives
+    @directives.select {|d| d.instance_of?(Indocker::ContainerDirectives::Env)}
   end
 
   def expose_directives

@@ -68,7 +68,7 @@ module Indocker::Configs
     private
 
     def read_setting(name)
-      read_value = scope[name.intern].value
+      read_value = scope.has_key?(name.intern) ? scope[name.intern].value : nil
       
       read_value.is_a?(Proc) ? read_value.call : read_value
     end

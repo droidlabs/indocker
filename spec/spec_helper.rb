@@ -13,7 +13,7 @@ end
 ioc.config.build_dir      Pathname.new File.expand_path(File.join(__dir__, '../tmp/build'))
 ioc.config.git.cache_dir  Pathname.new File.expand_path(File.join(__dir__, '../tmp/cache'))
 
-ioc.config.docker.registry(:localhost) { serveraddress 'http://localhost:5000' }
+ioc.config.docker.registry(:localhost) { serveraddress 'http://localhost:1000' }
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -50,4 +50,19 @@ def truncate_docker_items
   ioc.logger.clear
     
   FileUtils.rm_rf(Dir.glob(File.join(__dir__, '../tmp/*')))
+end
+
+def set_local_registry
+  Indocker.define_image :registry do
+    from 'registry:latest'
+  end
+  
+  Indocker.define_container :indocker_registry do
+    use images.find_by_repo(:registry)
+    env 'REGISTRY_STORAGE_DELETE_ENABLED=true'
+    ports '5000:1000'
+  end
+  
+  ioc.image_builder.build('registry')
+  ioc.container_manager.run('indocker_registry')
 end

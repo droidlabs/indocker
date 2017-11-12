@@ -52,6 +52,10 @@ class Indocker::ContainerDSL
     @directives << Indocker::ContainerDirectives::EnvFile.new(path)
   end
 
+  def env(env_string)
+    @directives << Indocker::ContainerDirectives::Env.new(env_string)
+  end
+
   def expose(port)
     @directives << Indocker::ContainerDirectives::Expose.new(path)
   end

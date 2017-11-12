@@ -1,5 +1,4 @@
 require 'smart_ioc'
-require 'docker-api'
 
 require 'byebug' # TODO: remove after release
 
@@ -7,8 +6,6 @@ SmartIoC.find_package_beans(:indocker, __dir__)
 SmartIoC.set_load_proc do |location|
   require(location)
 end
-
-Docker.options = { read_timeout: 600, write_timeout: 600, chunk_size: 1 }
 
 require 'indocker/version'
 
@@ -46,6 +43,7 @@ require 'indocker/envs/loader'
 
 require 'indocker/registry/registry_helper'
 require 'indocker/registry/registry_service'
+require 'indocker/registry/registry_api'
 
 require 'indocker/image/image_metadata'
 require 'indocker/image/image_metadata_factory'
@@ -103,6 +101,8 @@ require 'indocker/directives/container_directives/ready'
 require 'indocker/directives/container_directives/cmd'
 require 'indocker/directives/container_directives/volume'
 require 'indocker/directives/container_directives/env_file'
+require 'indocker/directives/container_directives/env'
+
 
 require 'indocker/git/git_helper'
 

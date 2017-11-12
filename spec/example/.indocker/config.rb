@@ -8,7 +8,7 @@ Idocker.setup do
 
   docker do
     registry :indocker do
-      serveraddress: 'localhost:5000'
+      serveraddress: 'localhost:1000'
     end
   end
 
@@ -22,7 +22,7 @@ Idocker.setup do
   end
   
   docker do
-    registry   'localhost:5000'
+    registry   'localhost:1000'
     skip_push  true
   end
 

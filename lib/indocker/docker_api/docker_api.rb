@@ -1,6 +1,8 @@
 require 'docker-api'
 require 'io/console'
 
+Docker.options = { read_timeout: 600, write_timeout: 600, chunk_size: 1 }
+
 class Indocker::DockerAPI
   include SmartIoC::Iocify
   include Indocker::ImageHelper
