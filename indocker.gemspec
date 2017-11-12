@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   
   s.add_dependency "smart_ioc"
   s.add_dependency "docker-api"
+  s.add_dependency "docker_registry2"
   s.add_dependency "thor"
   s.add_dependency "colorize"
   s.add_dependency "git"
