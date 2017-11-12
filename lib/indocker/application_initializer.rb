@@ -14,6 +14,6 @@ class Indocker::ApplicationInitializer
 
     require(config_locator.locate(current_path))
 
-    registry_authenticator.authenticate!
+    # registry_authenticator.authenticate!()
   end
 end

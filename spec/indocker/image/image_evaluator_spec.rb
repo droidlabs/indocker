@@ -53,13 +53,13 @@ describe 'Indocker::ImageEvaluator' do
     end
 
     it 'rerurns proper directives classes' do
-      expect(directives[0]).to be_a(Indocker::PrepareDirectives::DockerCp)
-      expect(directives[1]).to be_a(Indocker::DockerDirectives::From)
-      expect(directives[2]).to be_a(Indocker::PrepareDirectives::DockerCp)
-      expect(directives[3]).to be_a(Indocker::DockerDirectives::Run)
-      expect(directives[4]).to be_a(Indocker::DockerDirectives::Run)
-      expect(directives[5]).to be_a(Indocker::DockerDirectives::Workdir)
-      expect(directives[6]).to be_a(Indocker::DockerDirectives::Run)
+      expect(directives[0]).to be_a(Indocker::ImageDirectives::DockerCp)
+      expect(directives[1]).to be_a(Indocker::ImageDirectives::From)
+      expect(directives[2]).to be_a(Indocker::ImageDirectives::DockerCp)
+      expect(directives[3]).to be_a(Indocker::ImageDirectives::Run)
+      expect(directives[4]).to be_a(Indocker::ImageDirectives::Run)
+      expect(directives[5]).to be_a(Indocker::ImageDirectives::Workdir)
+      expect(directives[6]).to be_a(Indocker::ImageDirectives::Run)
     end
   end
 end

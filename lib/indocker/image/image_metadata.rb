@@ -18,12 +18,16 @@ class Indocker::ImageMetadata
     directives.select {|d| d.prepare_directive?}
   end
 
+  def after_build_directives
+    directives.select {|d| d.after_build_directive?}
+  end
+
   def build_directives
     directives.select {|d| d.build_directive?}
   end
 
   def docker_cp_directives
-    directives.select {|d| d.is_a?(Indocker::PrepareDirectives::DockerCp)}
+    directives.select {|d| d.is_a?(Indocker::ImageDirectives::DockerCp)}
   end
 
   def from_repo
@@ -41,6 +45,6 @@ class Indocker::ImageMetadata
   private
 
   def from_directive
-    @directives.detect {|c| c.instance_of?(Indocker::DockerDirectives::From)}
+    @directives.detect {|c| c.instance_of?(Indocker::ImageDirectives::From)}
   end
 end

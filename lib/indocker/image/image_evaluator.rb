@@ -11,7 +11,7 @@ class Indocker::ImageEvaluator
     
     image_dsl.directives
       .map do |directive|
-        next directive if !directive.partial?
+        next directive if !directive.partial_directive?
 
         partial = partial_metadata_repository.find_by_name(directive.name)
         evaluate(directive.context, &partial.definition)

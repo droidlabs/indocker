@@ -99,6 +99,38 @@ describe 'Indocker::ImageBuilder' do
     end
   end
 
+  context 'when push image to registry' do
+    before do
+      Indocker.define_image('indocker_image') do
+        from 'alpine:latest'
+        
+        use registry.localhost(push: true)
+      end
+
+      ioc.image_builder.build('indocker_image')
+    end
+
+    it 'tags image with specified registry_repo_tag' do
+      expect(
+        ioc.docker_api.image_exists?('localhost:5000/indocker_image')
+      ).to be true
+    end
+
+    it 'pushes image to registry' do
+      ioc.docker_api.delete_image('indocker_image')
+
+      ioc.docker_api.pull('fromImage' => 'localhost:5000/indocker_image:latest')
+
+      expect(
+        ioc.docker_api.image_exists?('localhost:5000/indocker_image')
+      ).to be true
+    end
+
+    after(:all) do 
+      truncate_docker_items
+    end
+  end
+
   context 'with coping files from project_root' do
     before do
       Indocker.define_image('indocker_image') do          

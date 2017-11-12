@@ -1,4 +1,4 @@
-class Indocker::DockerDirectives::EnvFile < Indocker::DockerDirectives::Base
+class Indocker::ImageDirectives::EnvFile < Indocker::ImageDirectives::Base
   attr_reader :path
   
   def initialize(path)
@@ -11,5 +11,9 @@ class Indocker::DockerDirectives::EnvFile < Indocker::DockerDirectives::Base
   
   def to_s(env_string)
     "#{type} #{env_string}"
+  end
+
+  def build_directive?
+    true
   end
 end

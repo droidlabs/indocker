@@ -6,6 +6,7 @@ class Indocker::ImageDirectivesRunner
   inject :container_manager
   inject :config
   inject :render_util
+  inject :docker_api
 
   def run_all(directives)
     directives.each {|c| run(c)}
@@ -13,10 +14,12 @@ class Indocker::ImageDirectivesRunner
 
   def run(directive)
     case directive
-    when Indocker::PrepareDirectives::DockerCp
+    when Indocker::ImageDirectives::DockerCp
       run_docker_cp(directive)
-    when Indocker::DockerDirectives::Copy
+    when Indocker::ImageDirectives::Copy
       run_copy(directive)
+    when Indocker::ImageDirectives::Registry
+      run_registry(directive)
     end
   end
 
@@ -42,6 +45,22 @@ class Indocker::ImageDirectivesRunner
         compile: directive.compile
       )
     end
+  end
+
+  def run_registry(directive)
+    docker_api.tag(
+      repo:     directive.repo, 
+      tag:      directive.tag,
+      new_repo: directive.new_repo,
+      new_tag:  directive.new_tag
+    )
+    
+    docker_api.push(
+      repo:         directive.repo, 
+      tag:          directive.tag,
+      push_to_repo: directive.new_repo,
+      push_to_tag:  directive.new_tag
+    ) if directive.push
   end
 
   private

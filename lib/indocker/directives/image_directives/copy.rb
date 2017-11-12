@@ -1,4 +1,4 @@
-class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
+class Indocker::ImageDirectives::Copy < Indocker::ImageDirectives::Base
   attr_reader :copy_actions, :compile, :locals, :build_dir
 
   def initialize(copy_actions:, compile:, locals:, build_dir:)
@@ -23,6 +23,10 @@ class Indocker::DockerDirectives::Copy < Indocker::DockerDirectives::Base
   end
 
   def prepare_directive?
+    true
+  end
+
+  def build_directive?
     true
   end
 end

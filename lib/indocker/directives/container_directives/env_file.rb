@@ -1,4 +1,4 @@
-class Indocker::ContainerDirectives::EnvFile < Indocker::DockerDirectives::Base
+class Indocker::ContainerDirectives::EnvFile < Indocker::ImageDirectives::Base
   attr_reader :path
   
   def initialize(path)

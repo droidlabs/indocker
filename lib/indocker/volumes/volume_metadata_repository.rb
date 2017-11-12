@@ -2,7 +2,7 @@ class Indocker::Volumes::VolumeMetadataRepository
   include SmartIoC::Iocify
 
   bean :volume_metadata_repository
-  
+
   def put(volume_metadata)
     if all.any? {|n| n.name == volume_metadata.name}
       raise Indocker::Errors::VolumeAlreadyDefined, volume_metadata.name 
@@ -12,7 +12,7 @@ class Indocker::Volumes::VolumeMetadataRepository
   end
 
   def find_by_name(name)
-    volume_metadata = @all.detect {|volume| volume.name == name.to_s}
+    volume_metadata = all.detect {|volume| volume.name == name.to_s}
     raise Indocker::Errors::VolumeIsNotDefined unless volume_metadata
 
     volume_metadata

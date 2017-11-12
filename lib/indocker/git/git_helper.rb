@@ -9,7 +9,7 @@ module Indocker::Git
 
     def method_missing(method, *args)
       git_config    = config.git.send(method)
-      git_cache_dir = config.cache_dir.join(method.to_s)
+      git_cache_dir = config.git.cache_dir.join(method.to_s)
 
       return git_cache_dir if updated?(git_config.repository)
 

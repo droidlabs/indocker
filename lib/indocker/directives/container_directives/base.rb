@@ -1,5 +1,9 @@
 module Indocker::ContainerDirectives
   class Base < Indocker::Directives::Base
+    def container_directive?
+      true
+    end
+
     def before_start?
       false
     end

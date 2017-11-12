@@ -1,4 +1,4 @@
-class Indocker::DockerDirectives::Cmd < Indocker::DockerDirectives::Base
+class Indocker::ImageDirectives::Entrypoint < Indocker::ImageDirectives::Base
   attr_reader :command
 
   def initialize(command)
@@ -8,8 +8,12 @@ class Indocker::DockerDirectives::Cmd < Indocker::DockerDirectives::Base
   def to_s
     "#{type} #{command.inspect}"
   end
-
+  
   def type
-    'CMD'
+    'ENTRYPOINT'
+  end
+
+  def build_directive?
+    true
   end
 end

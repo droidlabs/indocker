@@ -1,5 +1,5 @@
 module Indocker
-  module DockerDirectives
+  module ImageDirectives
     class Base < Indocker::Directives::Base
       attr_reader :args
       
@@ -9,6 +9,18 @@ module Indocker
 
       def to_s
         "#{type} #{@args.join(' ')}"
+      end
+
+      def prepare_directive?
+        false
+      end
+
+      def build_directive?
+        false
+      end
+
+      def after_build_directive?
+        false
       end
     end
   end

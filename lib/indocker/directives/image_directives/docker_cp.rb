@@ -1,4 +1,4 @@
-class Indocker::PrepareDirectives::DockerCp < Indocker::PrepareDirectives::Base
+class Indocker::ImageDirectives::DockerCp < Indocker::ImageDirectives::Base
   attr_reader :container_name, :copy_actions, :build_dir
 
   def initialize(container_name, build_dir, &block)
@@ -6,6 +6,10 @@ class Indocker::PrepareDirectives::DockerCp < Indocker::PrepareDirectives::Base
     @build_dir      = build_dir
 
     instance_exec &block if block_given?
+  end
+
+  def prepare_directive?
+    true
   end
 
   private

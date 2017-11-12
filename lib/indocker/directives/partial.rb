@@ -10,4 +10,8 @@ class Indocker::Directives::Partial < Indocker::Directives::Base
   def to_s
     inspect
   end
+
+  def partial_directive?
+    true
+  end
 end

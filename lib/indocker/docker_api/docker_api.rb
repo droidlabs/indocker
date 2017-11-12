@@ -87,6 +87,18 @@ class Indocker::DockerAPI
     image.id
   end
 
+  def tag(repo:, tag: nil, new_repo:, new_tag:)
+    Docker::Image.get(full_name(repo, tag)).tag('repo' => new_repo, 'tag' => new_tag)
+
+    nil
+  end
+
+  def push(repo:, tag:, push_to_repo:, push_to_tag:)
+    Docker::Image.get(full_name(repo, tag)).push(nil, repo_tag: full_name(push_to_repo, push_to_tag))
+
+    nil
+  end
+
   def pull(opts)
     image = Docker::Image.create(opts)
 

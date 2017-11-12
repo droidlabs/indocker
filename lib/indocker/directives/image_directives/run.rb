@@ -1,4 +1,4 @@
-class Indocker::DockerDirectives::Run < Indocker::DockerDirectives::Base
+class Indocker::ImageDirectives::Run < Indocker::ImageDirectives::Base
   def type
     'RUN'
   end
@@ -9,5 +9,9 @@ class Indocker::DockerDirectives::Run < Indocker::DockerDirectives::Base
 
   def to_s
     "#{type} #{@command}"
+  end
+
+  def build_directive?
+    true
   end
 end

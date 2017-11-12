@@ -10,8 +10,10 @@ SmartIoC.set_load_proc do |location|
   require(location)
 end
 
-Indocker.build_dir(File.expand_path(File.join(__dir__, '../tmp/build')))
-Indocker.cache_dir(File.expand_path(File.join(__dir__, '../tmp/cache')))
+ioc.config.build_dir      Pathname.new File.expand_path(File.join(__dir__, '../tmp/build'))
+ioc.config.git.cache_dir  Pathname.new File.expand_path(File.join(__dir__, '../tmp/cache'))
+
+ioc.config.docker.registry(:localhost) { serveraddress 'http://localhost:5000' }
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

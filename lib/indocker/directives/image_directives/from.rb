@@ -1,4 +1,4 @@
-class Indocker::DockerDirectives::From < Indocker::DockerDirectives::Base
+class Indocker::ImageDirectives::From < Indocker::ImageDirectives::Base
   include Indocker::ImageHelper
 
   attr_reader :repo, :tag
@@ -28,5 +28,9 @@ class Indocker::DockerDirectives::From < Indocker::DockerDirectives::Base
 
   def type
     'FROM'
+  end
+
+  def build_directive?
+    true
   end
 end

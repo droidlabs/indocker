@@ -22,7 +22,7 @@ class Indocker::Configs::ConfigFactory
 
     config :docker, group: :docker do
       hash_config :registry do
-        option :serveraddress
+        option :serveraddress, required: true
         option :email
         option :password
         option :username

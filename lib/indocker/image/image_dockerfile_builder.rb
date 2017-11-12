@@ -10,7 +10,7 @@ class Indocker::ImageDockerfileBuilder
 
     dockerfile_content = directives.map do |directive|
       case directive
-      when Indocker::DockerDirectives::EnvFile
+      when Indocker::ImageDirectives::EnvFile
         env_metadata = envs_loader.parse(directive.path)
 
         directive.to_s(env_metadata.to_s)

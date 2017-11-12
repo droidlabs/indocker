@@ -24,7 +24,7 @@ class Indocker::ImageBuilder
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 
       f.puts image_dockerfile_builder.build(*image_metadata.build_directives)
 
-      logger.debug image_dockerfile_builder.build(image_metadata.build_directives)
+      logger.debug image_dockerfile_builder.build(*image_metadata.build_directives)
     end
 
     File.open(File.join(image_metadata.build_dir, '.dockerignore'), 'w') do |f| 
@@ -44,6 +44,8 @@ class Indocker::ImageBuilder
       tag:       image_metadata.tag,
       build_dir: image_metadata.build_dir.to_s
     ) { |log| logger.info(log) }
+
+    image_directives_runner.run_all(image_metadata.after_build_directives)
   ensure
     image_metadata = image_metadata_repository.find_by_repo(repo, tag: tag)
 
