@@ -1,5 +1,5 @@
 class Indocker::Directives::Partial < Indocker::Directives::Base
-  attr_reader :name, :context
+  attr_reader :name
 
   def initialize(name, context, opts = {})
     @name    = name
@@ -9,6 +9,10 @@ class Indocker::Directives::Partial < Indocker::Directives::Base
 
   def to_s
     inspect
+  end
+
+  def context
+    @context + Indocker::DSLContext.new(@opts)
   end
 
   def partial_directive?

@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe 'Indocker::ImageEvaluator' do
-  subject { ioc.image_evaluator }
+  subject       { ioc.image_evaluator }
+  let(:context) { Indocker::DSLContext.new(build_dir: 'some/path') }
 
   before do    
     Indocker.define_partial 'example_partial' do
@@ -41,7 +42,6 @@ describe 'Indocker::ImageEvaluator' do
       end
     end
     
-    let(:context)    { Indocker::DSLContext.new(build_dir: 'some/path') }
     let(:directives) { subject.evaluate(context, &example_image_definition) }
 
     it 'returns array of directives' do
@@ -60,6 +60,26 @@ describe 'Indocker::ImageEvaluator' do
       expect(directives[4]).to be_a(Indocker::ImageDirectives::Run)
       expect(directives[5]).to be_a(Indocker::ImageDirectives::Workdir)
       expect(directives[6]).to be_a(Indocker::ImageDirectives::Run)
+    end
+  end
+
+  context 'with partial with options' do
+    let(:image_with_partial_definition) {
+      Proc.new do
+        partial :partial_directive, some_arg: 'some_arg_value'
+      end
+    }
+
+    before(:all) do
+      Indocker.define_partial :partial_directive do
+        run "echo #{some_arg}"
+      end
+    end
+
+    it 'generates valid dockerfile' do
+      partial_directive = subject.evaluate(context, &image_with_partial_definition).first
+
+      expect(partial_directive.to_s).to eq(%q(RUN "echo some_arg_value"))
     end
   end
 end

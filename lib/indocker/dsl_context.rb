@@ -14,4 +14,8 @@ class Indocker::DSLContext
   def set_value(key, value)
     @storage[key] = value
   end
+
+  def +(other)
+    Indocker::DSLContext.new(@storage.merge(other.storage))
+  end
 end

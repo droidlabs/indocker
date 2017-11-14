@@ -8,7 +8,7 @@ class Indocker::ImageDirectives::Run < Indocker::ImageDirectives::Base
   end
 
   def to_s
-    "#{type} #{@command}"
+    "#{type} \"#{@command}\""
   end
 
   def build_directive?
