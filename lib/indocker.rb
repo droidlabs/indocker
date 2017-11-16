@@ -116,9 +116,9 @@ module Indocker
       )
     end
 
-    def define_container(name, &definition)
+    def define_container(name, attach: false, &definition)
       ioc.container_metadata_repository.put(
-        ioc.container_metadata_factory.create(name, &definition)
+        ioc.container_metadata_factory.create(name, attach: attach, &definition)
       )
     end
 

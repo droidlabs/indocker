@@ -15,7 +15,7 @@ class Indocker::ContainerMetadata
   def initialize(name:, directives:, attach: false)
     @name         = name
     @directives   = directives
-    @attache      = attach
+    @attach       = attach
   end
 
   def repo
