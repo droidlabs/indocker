@@ -3,7 +3,7 @@
 
 require 'rubygems'
 require 'bundler/setup'
-require_relative '../lib/indocker'
+require 'indocker'
 
 # $thor_runner = true
 Indocker::CLI::Application.start( ARGV )
