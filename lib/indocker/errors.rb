@@ -13,6 +13,7 @@ module Indocker::Errors
   class ContainerTimeoutError             < StandardError; end
   class ReservedKeywordUsed               < StandardError; end
   class VolumeIsNotDefined                < StandardError; end
+  class NetworkIsNotDefined               < StandardError; end
 
   class ContainerImageAlreadyDefined      < StandardError; end
   class NetworkAlreadyDefined             < StandardError; end
