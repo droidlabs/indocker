@@ -12,7 +12,7 @@ class Indocker::Networks::NetworkMetadataRepository
   end
 
   def find_by_name(name)
-    network_metadata = @all.detect {|network| network.name == name.to_s}
+    network_metadata = all.detect {|network| network.name == name.to_s}
     raise Indocker::Errors::NetworkIsNotDefined unless network_metadata
 
     network_metadata
