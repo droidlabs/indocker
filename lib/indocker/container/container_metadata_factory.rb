@@ -9,6 +9,7 @@ class Indocker::ContainerMetadataFactory
   inject :network_metadata_repository
   inject :container_metadata_repository
   inject :volume_metadata_repository
+  inject :git_helper
 
   def create(name, attach: false, &definition)
     context = Indocker::DSLContext.new(
@@ -16,7 +17,8 @@ class Indocker::ContainerMetadataFactory
       networks:       network_metadata_repository,
       containers:     container_metadata_repository,
       volumes:        volume_metadata_repository,
-      container_name: name
+      container_name: name,
+      git:            git_helper
     )
 
     directives = container_evaluator.evaluate(context, &definition)
