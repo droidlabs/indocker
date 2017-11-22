@@ -25,7 +25,7 @@ class Indocker::ContainerManager
   end
 
   def run(name)
-    container_metadata = container_metadata_repository.get_by_name(name)
+    container_metadata = container_metadata_repository.find_by_name(name)
 
     container_image_id = docker_api.get_container_image_id(name)
     image_id           = docker_api.get_image_id(container_metadata.repo, tag: container_metadata.tag)
@@ -47,14 +47,14 @@ class Indocker::ContainerManager
   end
 
   def start(name, attach: false)
-    container_metadata = container_metadata_repository.get_by_name(name)
+    container_metadata = container_metadata_repository.find_by_name(name)
     
     container_directives_runner.run_all(
       container_metadata.before_start_directives
     )
 
     container_metadata.container_dependencies.each do |dependency|
-      dependency_metadata = container_metadata_repository.get_by_name(dependency)
+      dependency_metadata = container_metadata_repository.find_by_name(dependency)
       create(dependency) unless docker_api.container_exists?(dependency)
       
       if docker_api.get_container_state(dependency) == Indocker::ContainerMetadata::States::RUNNING
@@ -94,7 +94,7 @@ class Indocker::ContainerManager
   end
 
   def copy(name:, copy_from:, copy_to:)
-    container_metadata = container_metadata_repository.get_by_name(name)
+    container_metadata = container_metadata_repository.find_by_name(name)
 
     container_id =  docker_api.get_container_id(name) ||
                     docker_api.create_container(container_builder.build(name))

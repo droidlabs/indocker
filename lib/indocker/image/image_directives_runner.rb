@@ -35,12 +35,13 @@ class Indocker::ImageDirectivesRunner
 
   def run_copy(directive)
     directive.copy_actions.each do |from, _|
-      source      = File.exists?(from) ? from : File.join(directive.build_dir, from)
-      destination = File.join(directive.build_dir.to_s, from.to_s)
-
+      from1      = File.exists?(from) ? from : File.join(directive.build_dir, from)
+      to1 = File.join(directive.build_dir.to_s, from.to_s)
+      require 'byebug'
+      debugger
       copy_compile_file(
-        from:    source,
-        to:      destination,
+        from:    from1,
+        to:      to1,
         locals:  directive.locals,
         compile: directive.compile
       )

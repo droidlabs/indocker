@@ -31,7 +31,7 @@ class Indocker::ImageDependenciesManager
     dependencies = []
 
     docker_cp_dependencies = meta.docker_cp_directives.map do |c|
-      container = container_metadata_repository.get_by_name(c.container_name)
+      container = container_metadata_repository.find_by_name(c.container_name)
       
       repository.find_by_repo(container.repo, tag: container.tag)
     end

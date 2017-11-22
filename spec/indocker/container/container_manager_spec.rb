@@ -121,7 +121,7 @@ describe Indocker::ContainerManager do
         Indocker.define_container 'indocker_container_depends_on' do
           use images.find_by_repo(:indocker_image)
 
-          depends_on containers.get_by_name('indocker_container')
+          depends_on containers.find_by_name('indocker_container')
         end
 
         ioc.container_manager.create('indocker_container_depends_on')

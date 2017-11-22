@@ -8,7 +8,7 @@ class Indocker::ContainerBuilder
   inject :config
 
   def build(name)
-    container_metadata = container_metadata_repository.get_by_name(name)
+    container_metadata = container_metadata_repository.find_by_name(name)
         
     env_metadata = container_metadata.env_files.inject(Indocker::Envs::EnvMetadata.new) do |all, path|
       all += envs_loader.parse(path)
