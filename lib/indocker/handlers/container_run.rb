@@ -11,7 +11,7 @@ class Indocker::Handlers::ContainerRun
 
   def handle(name:, current_path:)
     name = name.to_s
-    debugger
+
     container_metadata = container_metadata_repository.find_by_name(name)
     image_builder.build(container_metadata.repo, tag: container_metadata.tag)
     
