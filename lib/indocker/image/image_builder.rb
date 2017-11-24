@@ -18,7 +18,7 @@ class Indocker::ImageBuilder
     image_dependencies_manager.get_dependencies!(image_metadata).each do |dependency_metadata| 
       build(dependency_metadata.repo, tag: dependency_metadata.tag)
     end
-
+    
     image_directives_runner.run_all(image_metadata.prepare_directives)
 
     File.open(File.join(image_metadata.build_dir, Indocker::DOCKERFILE_NAME), 'w') do |f| 

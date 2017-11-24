@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    indocker (0.0.5)
+    indocker (0.0.12)
       byebug
       colorize
       docker-api
@@ -64,4 +64,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   1.16.0.pre.3
+   1.16.0

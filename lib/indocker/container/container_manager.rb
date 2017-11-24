@@ -106,11 +106,10 @@ class Indocker::ContainerManager
       File.open(tar_snapshot, 'a+') {|f| f.write(tar_archive)}
     end
 
-    files_list = tar_helper.untar(
-      io:                    File.open(tar_snapshot, 'r'),
-      destination:           copy_to,
-      ignore_wrap_directory: File.basename(copy_from) == '.'
-    )
+    files_list = []
+    tar_helper.untar(tar_snapshot, to: copy_to) do |filename|
+      files_list.push(filename)
+    end
 
     FileUtils.rm_rf(tar_snapshot)
     
