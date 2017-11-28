@@ -109,7 +109,7 @@ class Indocker::ContainerManager
     files_list = []
     tar_helper.untar(tar_snapshot, to: copy_to, strip_component: strip_component(copy_from)) do |filename|
       logger.info(filename)
-      files_list.push(filename)
+      files_list.push(*filename)
     end
 
     FileUtils.rm_rf(tar_snapshot)

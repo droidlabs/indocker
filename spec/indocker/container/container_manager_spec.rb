@@ -251,7 +251,7 @@ describe Indocker::ContainerManager do
           copy_from: '/sample/deeper',
           copy_to:   copy_to_path
         )
-      ).to match(['deeper/example2.txt'])
+      ).to match(["deeper/", "deeper/example2.txt"])
     end
 
     it 'copies files to output path' do

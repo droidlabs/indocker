@@ -13,6 +13,8 @@ class Indocker::TarHelper
     
     command = "tar -xvf #{tarfile} #{to_option}"
 
-    shell_util.run_command_with_result(command, &block)
+    shell_util.run_command_with_result(command) do |result|
+      yield result.split("\n").map { |string| string.gsub(/\Ax\s/, '') }
+    end
   end
 end
