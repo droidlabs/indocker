@@ -16,7 +16,7 @@ class Indocker::ImageDirectives::Copy < Indocker::ImageDirectives::Base
     result = []
     
     copy_actions.each do |from, to|
-      result.push "#{type} #{from} #{to}"
+      result.push "#{type} #{File.basename(from)} #{to}"
     end
 
     result.join("\n")

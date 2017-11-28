@@ -37,7 +37,7 @@ class Indocker::ImageDirectivesRunner
     directive.copy_actions.each do |from, _|
       copy_compile_file(
         from:    from,
-        to:      File.join(directive.build_dir, from),
+        to:      File.join(directive.build_dir, File.basename(from)),
         locals:  directive.locals,
         compile: directive.compile
       )
