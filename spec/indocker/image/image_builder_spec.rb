@@ -35,7 +35,7 @@ describe 'Indocker::ImageBuilder' do
           before_build do
             docker_cp 'indocker_container'
           end
-          
+
           from 'hello-world'
           workdir '/'
         end
@@ -56,7 +56,7 @@ describe 'Indocker::ImageBuilder' do
 
     context 'for non circular docker_cp dependency' do
       before do
-        Indocker.define_image('indocker_dependency_image') do          
+        Indocker.define_image('indocker_dependency_image') do
           from 'alpine:latest'
           workdir '/'
           run 'echo "Hello World" > test.txt'
@@ -65,19 +65,19 @@ describe 'Indocker::ImageBuilder' do
         Indocker.define_image('indocker_image') do
           before_build do
             docker_cp 'indocker_container' do
-              copy 'test.txt' => '/copy' 
+              copy 'test.txt' => '/copy'
             end
           end
-          
+
           from :indocker_dependency_image, tag: :latest
           workdir '/'
-          copy '/copy/test.txt' => '/'
+          copy build_dir.join('copy/test.txt') => '/'
         end
 
         Indocker.define_container 'indocker_container' do
           use images.find_by_repo(:indocker_dependency_image)
         end
-
+        
         ioc.image_builder.build('indocker_image')
       end
 
@@ -103,7 +103,7 @@ describe 'Indocker::ImageBuilder' do
     before(:all) do
       Indocker.define_image('indocker_image') do
         from 'alpine:latest'
-        
+
         use registry.localhost(push: true)
       end
 
@@ -127,7 +127,7 @@ describe 'Indocker::ImageBuilder' do
       ).to be true
     end
 
-    after(:all) do 
+    after(:all) do
       ioc.registry_api.get(:localhost).rmtag('indocker_image')
       truncate_docker_items
     end
@@ -135,7 +135,7 @@ describe 'Indocker::ImageBuilder' do
 
   context 'with coping files from project_root' do
     before do
-      Indocker.define_image('indocker_image') do          
+      Indocker.define_image('indocker_image') do
         from 'alpine:latest'
 
         copy File.join(__dir__, '../../example/assets/.') => 'assets'

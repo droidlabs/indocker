@@ -106,13 +106,15 @@ class Indocker::ContainerManager
       File.open(tar_snapshot, 'a+') {|f| f.write(tar_archive)}
     end
 
+    files_list = []
     tar_helper.untar(tar_snapshot, to: copy_to, strip_component: strip_component(copy_from)) do |filename|
       logger.info(filename)
+      files_list.push(filename)
     end
 
     FileUtils.rm_rf(tar_snapshot)
-    
-    docker_api.delete_container(container_id)
+
+    files_list
   end
 
   private

@@ -3,6 +3,8 @@ class Indocker::ShellCommandsUtil
 
   bean :shell_util
 
+  inject :logger
+
   def run_command(command, with_sudo: false, &block)
     if $use_sudo && with_sudo
       command = "sudo #{command}"
@@ -23,11 +25,11 @@ class Indocker::ShellCommandsUtil
       command = "sudo #{command}"
     end
 
-    puts command
+    logger.debug command
 
     IO.popen(command, err: [:child, :out]) do |io|
       result = io.read
-      puts result
+      logger.debug result
 
       if block_given?
         yield result
