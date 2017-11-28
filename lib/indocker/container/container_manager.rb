@@ -98,7 +98,7 @@ class Indocker::ContainerManager
 
     container_id =  docker_api.get_container_id(name) ||
                     docker_api.create_container(container_builder.build(name))
-      
+
     tar_snapshot = config.build_dir.join('snapshots', "#{name.to_s}.tar")
     
     FileUtils.mkdir_p(File.dirname(tar_snapshot))
@@ -106,16 +106,18 @@ class Indocker::ContainerManager
       File.open(tar_snapshot, 'a+') {|f| f.write(tar_archive)}
     end
 
-    files_list = []
-    tar_helper.untar(tar_snapshot, to: copy_to) do |filename|
-      files_list.push(filename)
+    tar_helper.untar(tar_snapshot, to: copy_to, strip_component: strip_component(copy_from)) do |filename|
+      logger.info(filename)
     end
 
     FileUtils.rm_rf(tar_snapshot)
     
-    docker_api.stop_container(container_id)
     docker_api.delete_container(container_id)
+  end
 
-    files_list
+  private
+
+  def strip_component(path)
+    File.basename(path) == '.' ? 1 : 0
   end
 end

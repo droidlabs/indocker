@@ -7,9 +7,9 @@ class Indocker::TarHelper
 
   inject :shell_util
 
-  def untar(tarfile, to: nil, &block)
+  def untar(tarfile, to: nil, strip_component: 0, &block)
     FileUtils.mkdir_p(to) if !to.nil?
-    to_option = to.nil? ? '' : "-C #{to} --strip-components=1"
+    to_option = to.nil? ? '' : "-C #{to} --strip-components=#{strip_component}"
     
     command = "tar -xvf #{tarfile} #{to_option}"
 
