@@ -28,7 +28,7 @@ class Indocker::ImageDirectivesRunner
       container_manager.copy(
         name:      directive.container_name,
         copy_from: from,
-        copy_to:   File.join(directive.build_dir, to)
+        copy_to:   directive.build_dir
       )
     end
   end
