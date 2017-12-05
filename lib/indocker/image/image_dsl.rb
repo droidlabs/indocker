@@ -84,6 +84,6 @@ class Indocker::ImageDSL
   end
 
   def docker_cp(container_name, &block)
-    @directives << Indocker::ImageDirectives::DockerCp.new(container_name, @context.build_dir, &block)
+    @directives << Indocker::ImageDirectives::DockerCp.new(container_name, @context.build_dir, @context.storage, &block)
   end
 end
