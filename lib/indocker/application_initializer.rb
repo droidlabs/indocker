@@ -16,7 +16,7 @@ class Indocker::ApplicationInitializer
     require(config_locator.locate(current_path))
 
     ENV.update( envs_loader.parse(File.join(current_path, config.env_file)).to_hash )
-    debugger
+
     # registry_authenticator.authenticate!()
   end
 end
