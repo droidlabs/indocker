@@ -7,7 +7,7 @@ class Indocker::Configs::ConfigFactory
     option :namespace, group: :common, type: :symbol
     option :build_dir, group: :common, type: :pathname
 
-    option :load_env_file,      group: :load, type: :array
+    option :env_file,           group: :load, type: :string
     option :load_docker_items,  group: :load, type: :array
 
     config :git, group: :git do
