@@ -69,8 +69,8 @@ describe Indocker::ImageDirectivesRunner do
         it 'copy files from passed to build directory' do
           image_directives_runner.run(copy_directive)
 
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.css'), "* { display: <%= display %>; }")
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.js'), "<% if use_strict %>'use strict';<% end %>")
+          ensure_content(File.join(build_dir, 'index.css'), "* { display: <%= display %>; }")
+          ensure_content(File.join(build_dir, 'index.js'), "<% if use_strict %>'use strict';<% end %>")
         end
       end
 
@@ -100,8 +100,8 @@ describe Indocker::ImageDirectivesRunner do
         it 'copy compiles files from root to build directory' do
           image_directives_runner.run(copy_directive)
 
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.css'), "* { display: none; }")
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.js'), "'use strict';")
+          ensure_content(File.join(build_dir, 'index.css'), "* { display: none; }")
+          ensure_content(File.join(build_dir, 'index.js'), "'use strict';")
         end
       end
     end
@@ -114,7 +114,7 @@ describe Indocker::ImageDirectivesRunner do
         it 'copy files from root to build directory if no file in build directory' do
           image_directives_runner.run(copy_directive)
           
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.css'), "* { display: <%= display %>; }")
+          ensure_content(File.join(build_dir, 'index.css'), "* { display: <%= display %>; }")
         end
       end
 
@@ -133,7 +133,7 @@ describe Indocker::ImageDirectivesRunner do
         it 'compiles and overwrites file is present in build directory' do
           image_directives_runner.run(copy_directive)
 
-          ensure_content(File.join(build_dir, project_dir, 'assets', 'index.css'), "* { display: none; }")
+          ensure_content(File.join(build_dir, 'index.css'), "* { display: none; }")
         end
       end
     end

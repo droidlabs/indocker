@@ -37,7 +37,7 @@ end
 def truncate_docker_items
   ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Config']['Image'] =~ /^indocker/ }
   ioc.docker_api.delete_containers_where { |container| container.refresh!.info['Names'].grep(/^\/indocker/).any? }
-  ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags'].grep(/^indocker/).any? }
+  ioc.docker_api.delete_images_where     { |image|     image.info['RepoTags'] && image.info['RepoTags'].grep(/^indocker/).any? }
   ioc.docker_api.delete_networks_where   { |network|   network.info['Name'] =~ /^indocker/ }
   ioc.docker_api.delete_volumes_where    { |volume|    volume.info['Name'] =~ /^indocker/ }
 
