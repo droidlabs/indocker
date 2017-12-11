@@ -14,6 +14,7 @@ module Indocker::Errors
   class ReservedKeywordUsed               < StandardError; end
   class VolumeIsNotDefined                < StandardError; end
   class NetworkIsNotDefined               < StandardError; end
+  class VolumeAlreadyDefined              < StandardError; end
 
   class ContainerImageAlreadyDefined      < StandardError; end
   class NetworkAlreadyDefined             < StandardError; end
