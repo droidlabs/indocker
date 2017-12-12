@@ -38,7 +38,6 @@ class Indocker::ImageBuilder
       f.puts 'docker-compose.yml'
       f.puts 'docs'
     end
-debugger
     docker_api.build_from_dir(
       repo:      image_metadata.repo,
       tag:       image_metadata.tag,
