@@ -28,7 +28,7 @@ class Indocker::ImageDirectivesRunner
       container_manager.copy(
         name:      directive.container_name,
         copy_from: from,
-        copy_to:   File.join(directive.build_dir, to)
+        copy_to:   to
       )
     end
   end
@@ -91,6 +91,6 @@ class Indocker::ImageDirectivesRunner
                               File.read(from)
     File.write(to, write_content)
 
-    File.chmod(File.stat(from).mode, to)
+    File.chmod(File.stat(from).mode, to)    
   end
 end
