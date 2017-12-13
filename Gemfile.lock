@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    indocker (0.0.21)
+    indocker (0.0.22)
       byebug
       colorize
       docker-api
