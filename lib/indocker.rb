@@ -19,6 +19,7 @@ require 'indocker/docker_api/docker_api'
 require 'indocker/docker_api/container_config'
 
 require 'indocker/configs/config'
+require 'indocker/configs/option'
 require 'indocker/configs/config_factory'
 require 'indocker/configs/locator'
 require 'indocker/configs/config_initializer'

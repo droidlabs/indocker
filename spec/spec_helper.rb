@@ -10,8 +10,9 @@ SmartIoC.set_load_proc do |location|
   require(location)
 end
 
-ioc.config.build_dir      Pathname.new File.expand_path(File.join(__dir__, '../tmp/build'))
-ioc.config.git.cache_dir  Pathname.new File.expand_path(File.join(__dir__, '../tmp/cache'))
+ioc.config.build_dir      File.expand_path(File.join(__dir__, '../tmp/build'))
+ioc.config.template_dir   File.expand_path(File.join(__dir__, 'fixtures'))
+ioc.config.git.cache_dir  File.expand_path(File.join(__dir__, '../tmp/cache'))
 
 ioc.config.docker.registry(:localhost) { serveraddress 'http://localhost:1000' }
 

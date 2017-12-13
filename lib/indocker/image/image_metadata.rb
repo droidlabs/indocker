@@ -2,6 +2,7 @@ class Indocker::ImageMetadata
   include Indocker::ImageHelper
 
   attr_reader :repo, :tag, :directives, :build_dir
+  attr_accessor :id
 
   def initialize(repo:, tag:, directives:, build_dir:)
     @repo       = repo
@@ -12,6 +13,10 @@ class Indocker::ImageMetadata
 
   def full_name
     super(@repo, @tag)
+  end
+
+  def already_built?
+    !@id.nil?
   end
 
   def prepare_directives

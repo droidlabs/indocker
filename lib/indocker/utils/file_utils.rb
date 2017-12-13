@@ -18,7 +18,6 @@ class Indocker::FileUtils
   end
 
   def copy_entry_with_modify(from, to)
-    
     to_file = is_file_name?(to) ? to : File.join(to, File.basename(from))
     FileUtils.mkdir_p File.dirname(to_file)
 
@@ -29,6 +28,16 @@ class Indocker::FileUtils
     yield tempfile if block_given?
 
     FileUtils.copy_file(tempfile.path, to_file, preserve: true)
+  end
+
+  def within_temporary_directory(directory_path, &block)
+    FileUtils.mkdir_p(directory_path)
+
+    FileUtils.cd(directory_path) do
+      block.call
+    end
+  ensure
+    FileUtils.rm_rf(directory_path)
   end
 
   private

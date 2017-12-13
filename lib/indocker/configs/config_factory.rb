@@ -4,10 +4,13 @@ class Indocker::Configs::ConfigFactory
   bean :config, factory_method: :build
 
   CONFIG_STRUCTURE = Proc.new do
-    option :namespace, group: :common, type: :symbol
-    option :build_dir, group: :common, type: :pathname
+    option :namespace,    group: :common, type: :symbol
+    option :build_dir,    group: :common, type: :pathname
+    option :root_dir,     group: :common, type: :pathname
+    option :template_dir, group: :common, type: :pathname
+    
+    option :env_file,     group: :common, type: :string
 
-    option :env_file,           group: :load, type: :string
     option :load_docker_items,  group: :load, type: :array
 
     config :git, group: :git do
