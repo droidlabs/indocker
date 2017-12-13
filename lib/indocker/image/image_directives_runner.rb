@@ -6,6 +6,7 @@ class Indocker::ImageDirectivesRunner
   inject :container_manager
   inject :config
   inject :render_util
+  inject :file_utils
   inject :docker_api
 
   def run_all(directives)
@@ -28,7 +29,7 @@ class Indocker::ImageDirectivesRunner
       container_manager.copy(
         name:      directive.container_name,
         copy_from: from,
-        copy_to:   File.join(directive.build_dir, to)
+        copy_to:   to
       )
     end
   end
@@ -37,10 +38,20 @@ class Indocker::ImageDirectivesRunner
     directive.copy_actions.each do |from, _|
       copy_compile_file(
         from:    from,
-        to:      File.join(directive.build_dir, File.basename(from)),
+        to:      directive.build_dir,
         locals:  directive.locals,
         compile: directive.compile
       )
+    end
+
+    directive.copy_actions.each do |from, _|
+      return file_utils.copy_with_modify(from, build_dir) if !directive.compile
+
+      file_utils.copy_with_modify(from, build_dir) do |file_dto|
+        modified_file_dto         = file_dto.dup
+        modified_file_dto.content = render_util.render(modified_file_dto.content, directive.locals)
+        modified_file_dto
+      end
     end
   end
 

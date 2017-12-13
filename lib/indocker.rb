@@ -31,6 +31,7 @@ require 'indocker/utils/string_utils'
 require 'indocker/utils/registry_authenticator'
 require 'indocker/utils/render_util'
 require 'indocker/utils/shell_util'
+require 'indocker/utils/file_utils'
 
 require 'indocker/handlers/performable'
 require 'indocker/handlers/container_run'
