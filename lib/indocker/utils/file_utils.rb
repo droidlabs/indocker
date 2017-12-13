@@ -5,7 +5,7 @@ class Indocker::FileUtils
 
   inject :logger
 
-  def cp_r_with_modify(from, to, &modify_block)
+  def cp_r_with_modify(from:, to:, &modify_block)
     return copy_entry_with_modify(from, to, &modify_block) if File.file?(from)
 
     logger.warn "No files were copied!" if files_list(from).empty?

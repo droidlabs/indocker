@@ -15,13 +15,13 @@ describe Indocker::FileUtils do
       let(:destination)   { File.join(tmp_directory, 'assets/index.scss') }
 
       it 'copies file to passed destination' do
-        file_uitls.cp_r_with_modify(source, destination)
+        file_uitls.cp_r_with_modify(from: source, to: destination)
 
         ensure_content(destination, '* { display: <%= display %>; }')
       end
 
       it 'copies file with modifying content and chmods' do
-        file_uitls.cp_r_with_modify(source, destination) do |file|
+        file_uitls.cp_r_with_modify(from: source, to: destination) do |file|
           File.write(file, File.read(file).upcase)
         end
 
@@ -34,7 +34,7 @@ describe Indocker::FileUtils do
       let(:destination) { File.join(tmp_directory, 'assets') }
 
       it 'copies file to passed destination' do
-        file_uitls.cp_r_with_modify(source, destination)
+        file_uitls.cp_r_with_modify(from: source, to: destination)
 
         ensure_content(File.join(destination, 'index.css'), '* { display: <%= display %>; }')
       end
@@ -45,7 +45,7 @@ describe Indocker::FileUtils do
       let(:destination) { File.join(tmp_directory) }
 
       it 'copies file to passed destination' do
-        file_uitls.cp_r_with_modify(source, destination)
+        file_uitls.cp_r_with_modify(from: source, to: destination)
 
         ensure_content(File.join(destination, 'index.css'), '* { display: <%= display %>; }')
         ensure_content(File.join(destination, 'index.js'), "<% if use_strict %>'use strict';<% end %>")
@@ -57,7 +57,7 @@ describe Indocker::FileUtils do
       let(:destination) { File.join(tmp_directory, 'assets') }
 
       it 'copies file to passed destination' do
-        file_uitls.cp_r_with_modify(source, destination)
+        file_uitls.cp_r_with_modify(from: source, to: destination)
 
         ensure_content(File.join(destination, 'index.css'), '* { display: <%= display %>; }')
         ensure_content(File.join(destination, 'index.js'), "<% if use_strict %>'use strict';<% end %>")
@@ -69,7 +69,7 @@ describe Indocker::FileUtils do
       let(:destination) { File.join(tmp_directory, 'assets') }
 
       it 'copies file to passed destination' do
-        file_uitls.cp_r_with_modify(source, destination)
+        file_uitls.cp_r_with_modify(from: source, to: destination)
 
         ensure_content(File.join(destination, 'index.css'), '* { display: <%= display %>; }')
         expect(

@@ -58,19 +58,17 @@ describe 'Indocker::ImageBuilder' do
       before do
         Indocker.define_image('indocker_dependency_image') do
           from 'alpine:latest'
-          workdir '/'
           run 'echo "Hello World" > test.txt'
         end
 
         Indocker.define_image('indocker_image') do
           before_build do
             docker_cp 'indocker_container' do
-              copy 'test.txt' => '/copy'
+              copy 'test.txt' => build_dir.join('copy')
             end
           end
 
           from :indocker_dependency_image, tag: :latest
-          workdir '/'
           copy build_dir.join('copy/test.txt') => '/'
         end
 

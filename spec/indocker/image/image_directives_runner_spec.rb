@@ -74,17 +74,6 @@ describe Indocker::ImageDirectivesRunner do
         end
       end
 
-      context "when directory does not exists" do
-        let(:from_path) { 'invalid/dir/.' }
-        let(:to_path)   { '/invalid/dir' }
-
-        it "raises error ArgumentError" do
-          expect{
-            image_directives_runner.run(copy_directive)
-          }.to raise_error(ArgumentError)
-        end
-      end
-
       context 'with compile: true option' do
         let(:copy_directive) { 
           Indocker::ImageDirectives::Copy.new(

@@ -36,22 +36,14 @@ class Indocker::ImageDirectivesRunner
 
   def run_copy(directive)
     directive.copy_actions.each do |from, _|
-      copy_compile_file(
-        from:    from,
-        to:      directive.build_dir,
-        locals:  directive.locals,
-        compile: directive.compile
-      )
-    end
+      modify_block = directive.compile ? Proc.new do |tempfile|
+        template_content = File.read(tempfile.path)
+        compiled_content = render_util.render(template_content, directive.locals)
 
-    directive.copy_actions.each do |from, _|
-      return file_utils.copy_with_modify(from, build_dir) if !directive.compile
+        File.write(tempfile.path, compiled_content)
+      end : nil
 
-      file_utils.copy_with_modify(from, build_dir) do |file_dto|
-        modified_file_dto         = file_dto.dup
-        modified_file_dto.content = render_util.render(modified_file_dto.content, directive.locals)
-        modified_file_dto
-      end
+      file_utils.cp_r_with_modify(from: from, to: directive.build_dir, &modify_block)
     end
   end
 
@@ -69,39 +61,5 @@ class Indocker::ImageDirectivesRunner
       push_to_repo: directive.new_repo,
       push_to_tag:  directive.new_tag
     ) if directive.push
-  end
-
-  private
-
-  def copy_compile_file(from:, to:, locals: {}, compile: false)
-    raise ArgumentError, "Copy destination #{from} not exists" if !File.exists?(from)
-
-    if File.directory?(from)
-      Dir.glob(File.join(from, '**', '*'), File::FNM_DOTMATCH).each do |file_source_path|
-        next if File.directory?(file_source_path)
-
-        file_relative_path = Pathname.new(file_source_path).relative_path_from( Pathname.new(from) ).to_s
-        file_destination_path = File.join(to, file_relative_path)
-
-        copy_compile_file(
-          from:    file_source_path,
-          to:      file_destination_path,
-          locals:  locals,
-          compile: compile
-        )
-      end
-
-      return
-    end
-
-    if !Dir.exist?(File.dirname(to))
-      FileUtils.mkdir_p(File.dirname(to))
-    end
-
-    write_content = compile ? render_util.render( File.read(from), locals ) :
-                              File.read(from)
-    File.write(to, write_content)
-
-    File.chmod(File.stat(from).mode, to)
   end
 end
