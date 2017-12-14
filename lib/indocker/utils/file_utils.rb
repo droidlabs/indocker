@@ -6,14 +6,22 @@ class Indocker::FileUtils
   inject :logger
 
   def cp_r_with_modify(from:, to:, &modify_block)
-    return copy_entry_with_modify(from, to, &modify_block) if File.file?(from)
+    selected_files = files_list(from)
 
-    logger.warn "No files were copied!" if files_list(from).empty?
+    case selected_files.size
+    when 0
+      logger.warn "No files were copied!" if selected_files.empty?
+    when 1
+      source_filename = selected_files.first
+      destination_filename = is_file_name?(to) || File.file?(to) ? to : File.join(to, File.basename(source_filename))
 
-    files_list(from).each do |filename|
-      absolute_destination_filename = File.join(to, relative_path(from: real_parent_dir(from), to: filename))
-      
-      copy_entry_with_modify(filename, absolute_destination_filename, &modify_block)
+      copy_entry_with_modify(source_filename, destination_filename, &modify_block)
+    else
+      selected_files.each do |filename|
+        destination_filename = File.join(to, relative_path(from: real_parent_dir(from), to: filename))
+        
+        copy_entry_with_modify(filename, destination_filename, &modify_block)
+      end
     end
   end
 
