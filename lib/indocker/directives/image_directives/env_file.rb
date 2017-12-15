@@ -9,7 +9,7 @@ class Indocker::ImageDirectives::EnvFile < Indocker::ImageDirectives::Base
     'ENV'
   end
   
-  def to_s(env_string)
+  def to_dockerfile(env_string)
     "#{type} #{env_string}"
   end
 

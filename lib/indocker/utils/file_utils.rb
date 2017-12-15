@@ -51,6 +51,10 @@ class Indocker::FileUtils
     FileUtils.rm_rf(directory_path)
   end
 
+  def real_parent_dir(path)
+    File.directory?(path) ? path : real_parent_dir(File.dirname(path))
+  end
+
   private
 
   def is_file_name?(filename)
@@ -76,9 +80,5 @@ class Indocker::FileUtils
     glob_path = File.directory?(path) ? File.join(path, '**/*') : path
 
     Dir.glob(glob_path, File::FNM_DOTMATCH).select {|f| File.file?(f)}
-  end
-
-  def real_parent_dir(path)
-    File.directory?(path) ? path : real_parent_dir(File.dirname(path))
   end
 end

@@ -36,7 +36,7 @@ class Indocker::ImageBuilder
       )
 
       logger.info("Start build #{repo}:#{tag}")
-      debugger if repo == :packages_builder
+
       image_metadata.id = docker_api.build_from_dir(
         repo:      image_metadata.repo,
         tag:       image_metadata.tag,

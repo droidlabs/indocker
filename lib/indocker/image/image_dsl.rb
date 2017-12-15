@@ -58,7 +58,11 @@ class Indocker::ImageDSL
     @directives << Indocker::ImageDirectives::Cmd.new(*args)
   end
 
-  def copy(copy_actions = {}, compile = false)
+  def copy(copy_hash = {}, compile = false)
+    copy_actions = copy_hash.inject([]) do |all, (from, to)|
+      all << Indocker::CopyActionDTO.new(from: from, to: to)
+    end
+
     @directives << Indocker::ImageDirectives::Copy.new(
       compile:      compile,
       copy_actions: copy_actions,

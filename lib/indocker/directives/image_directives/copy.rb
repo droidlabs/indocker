@@ -12,14 +12,10 @@ class Indocker::ImageDirectives::Copy < Indocker::ImageDirectives::Base
     'COPY'
   end
 
-  def to_s
-    result = []
-    
-    copy_actions.each do |from, to|
-      result.push "#{type} #{File.basename(from)} #{to}"
-    end
-
-    result.join("\n")
+  def to_dockerfile
+    copy_actions
+      .map { |ca| "#{type} #{ca.to} #{ca.to}" }
+      .join("\n")
   end
 
   def prepare_directive?

@@ -6,19 +6,15 @@ class Indocker::ImageDockerfileBuilder
   inject :envs_loader
 
   def build(*directives)
-    dockerfile_content = ""
-
-    dockerfile_content = directives.map do |directive|
+    directives.map do |directive|
       case directive
       when Indocker::ImageDirectives::EnvFile
         env_metadata = envs_loader.parse(directive.path)
 
-        directive.to_s(env_metadata.to_s)
+        directive.to_dockerfile(env_metadata.to_s)
       else
-        directive.to_s
+        directive.to_dockerfile
       end
-    end
-
-    dockerfile_content.join("\n")
+    end.join("\n")
   end
 end

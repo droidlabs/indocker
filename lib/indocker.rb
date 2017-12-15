@@ -34,6 +34,8 @@ require 'indocker/utils/render_util'
 require 'indocker/utils/shell_util'
 require 'indocker/utils/file_utils'
 
+require 'indocker/dto/copy_action_dto'
+
 require 'indocker/handlers/performable'
 require 'indocker/handlers/container_run'
 require 'indocker/handlers/container_stop'

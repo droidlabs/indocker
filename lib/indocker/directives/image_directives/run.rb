@@ -7,7 +7,7 @@ class Indocker::ImageDirectives::Run < Indocker::ImageDirectives::Base
     @command = command.split("\n").map(&:strip).join(' ')
   end
 
-  def to_s
+  def to_dockerfile
     "#{type} #{@command}"
   end
 

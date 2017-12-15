@@ -5,7 +5,7 @@ class Indocker::ImageDirectives::Entrypoint < Indocker::ImageDirectives::Base
     @command = command
   end
 
-  def to_s
+  def to_dockerfile
     "#{type} #{command.inspect}"
   end
   

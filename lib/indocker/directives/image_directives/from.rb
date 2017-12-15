@@ -22,7 +22,7 @@ class Indocker::ImageDirectives::From < Indocker::ImageDirectives::Base
     repo.is_a?(String)
   end
 
-  def to_s
+  def to_dockerfile
     "#{type} #{full_name}"
   end
 

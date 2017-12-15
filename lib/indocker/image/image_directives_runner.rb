@@ -35,7 +35,7 @@ class Indocker::ImageDirectivesRunner
   end
 
   def run_copy(directive)
-    directive.copy_actions.each do |from, _|
+    directive.copy_actions.each do |copy|
       modify_block = directive.compile ? Proc.new do |tempfile|
         template_content = File.read(tempfile.path)
         compiled_content = render_util.render(template_content, directive.locals)
@@ -43,7 +43,7 @@ class Indocker::ImageDirectivesRunner
         File.write(tempfile.path, compiled_content)
       end : nil
 
-      file_utils.cp_r_with_modify(from: from, to: directive.build_dir, &modify_block)
+      file_utils.cp_r_with_modify(from: copy.from, to: File.join(directive.build_dir.to_s, copy.to), &modify_block)
     end
   end
 

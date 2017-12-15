@@ -7,7 +7,7 @@ module Indocker
         @args = args
       end
 
-      def to_s
+      def to_dockerfile
         "#{type} #{@args.join(' ')}"
       end
 

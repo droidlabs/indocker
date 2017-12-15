@@ -79,7 +79,7 @@ describe 'Indocker::ImageEvaluator' do
     it 'generates valid dockerfile' do
       partial_directive = subject.evaluate(context, &image_with_partial_definition).first
 
-      expect(partial_directive.to_s).to eq(%q(RUN echo some_arg_value))
+      expect(partial_directive.to_dockerfile).to eq(%q(RUN echo some_arg_value))
     end
   end
 end
