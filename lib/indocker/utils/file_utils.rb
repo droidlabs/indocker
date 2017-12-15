@@ -6,28 +6,31 @@ class Indocker::FileUtils
   inject :logger
 
   def cp_r_with_modify(from:, to:, &modify_block)
-    selected_files = files_list(from)
+    created_files = []
 
-    case selected_files.size
-    when 0
-      logger.warn "No files were copied!" if selected_files.empty?
-    when 1
-      source_filename = selected_files.first
-      destination_filename = is_file_name?(to) || File.file?(to) ? to : File.join(to, File.basename(source_filename))
-
-      copy_entry_with_modify(source_filename, destination_filename, &modify_block)
-    else
-      selected_files.each do |filename|
-        destination_filename = File.join(to, relative_path(from: real_parent_dir(from), to: filename))
-        
-        copy_entry_with_modify(filename, destination_filename, &modify_block)
-      end
+    if File.file?(from) && !File.directory?(to) && is_file_name?(to)
+      created_files << copy_entry_with_modify(from, to, &modify_block) 
+      return created_files
     end
+    
+    files_list(from).each do |file|
+      base_dir = real_parent_dir(from)
+      base_dir = File.dirname(base_dir) if File.directory?(from) && !is_directory_content?(from)
+      
+      dest_path = File.join(to, relative_path(from: base_dir, to: file))
+      
+      copy_entry_with_modify(file, dest_path, &modify_block)
+
+      created_files.push(dest_path)
+    end
+
+    logger.warn "No files were copied!" if created_files.empty?
+
+    created_files
   end
 
   def copy_entry_with_modify(from, to)
-    to_file = is_file_name?(to) ? to : File.join(to, File.basename(from))
-    FileUtils.mkdir_p File.dirname(to_file)
+    FileUtils.mkdir_p File.dirname(to)
 
     tempfile = Tempfile.new
 
@@ -35,7 +38,7 @@ class Indocker::FileUtils
 
     yield tempfile if block_given?
 
-    FileUtils.copy_file(tempfile.path, to_file, preserve: true)
+    FileUtils.copy_file(tempfile.path, to, preserve: true)
   end
 
   def within_temporary_directory(directory_path, &block)

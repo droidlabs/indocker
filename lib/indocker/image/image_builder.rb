@@ -17,8 +17,6 @@ class Indocker::ImageBuilder
 
     return if image_metadata.already_built?
 
-    logger.info("Start build #{repo}:#{tag}")
-
     file_utils.within_temporary_directory(image_metadata.build_dir) do
       image_dependencies_manager.get_dependencies!(image_metadata).each do |dependency_metadata| 
         build(dependency_metadata.repo, tag: dependency_metadata.tag)
@@ -37,6 +35,8 @@ class Indocker::ImageBuilder
         to:   image_metadata.build_dir
       )
 
+      logger.info("Start build #{repo}:#{tag}")
+      debugger if repo == :packages_builder
       image_metadata.id = docker_api.build_from_dir(
         repo:      image_metadata.repo,
         tag:       image_metadata.tag,

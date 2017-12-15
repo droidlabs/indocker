@@ -10,9 +10,8 @@ describe Indocker::FileUtils do
 
   describe '#cp_r_with_modify' do
     context 'from file to file' do
-      let(:source)        { File.join(example_directory, 'assets/index.css') }
-      let(:invalid_file)  { File.join(example_directory, 'i/do/not/exists') }
-      let(:destination)   { File.join(tmp_directory, 'assets/index.scss') }
+      let(:source)        { File.join(example_directory,  'assets/index.css') }
+      let(:destination)   { File.join(tmp_directory,      'assets/index.scss') }
 
       it 'copies file to passed destination' do
         file_uitls.cp_r_with_modify(from: source, to: destination)
@@ -44,11 +43,11 @@ describe Indocker::FileUtils do
       let(:source)      { File.join(example_directory, 'assets/') }
       let(:destination) { File.join(tmp_directory) }
 
-      it 'copies file to passed destination' do
+      it 'copies file to nested destination' do
         file_uitls.cp_r_with_modify(from: source, to: destination)
 
-        ensure_content(File.join(destination, 'index.css'), '* { display: <%= display %>; }')
-        ensure_content(File.join(destination, 'index.js'), "<% if use_strict %>'use strict';<% end %>")
+        ensure_content(File.join(destination, 'assets/index.css'), '* { display: <%= display %>; }')
+        ensure_content(File.join(destination, 'assets/index.js'), "<% if use_strict %>'use strict';<% end %>")
       end
     end
 
