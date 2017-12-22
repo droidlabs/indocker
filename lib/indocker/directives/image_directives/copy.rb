@@ -14,7 +14,7 @@ class Indocker::ImageDirectives::Copy < Indocker::ImageDirectives::Base
 
   def to_dockerfile
     copy_actions
-      .map { |ca| "#{type} #{ca.to} #{ca.to}" }
+      .map { |ca| "#{type} #{format_build_directory(ca.to)} #{ca.to}" }
       .join("\n")
   end
 
@@ -24,5 +24,11 @@ class Indocker::ImageDirectives::Copy < Indocker::ImageDirectives::Base
 
   def build_directive?
     true
+  end
+
+  private
+
+  def format_build_directory(dir)
+    formated = dir.gsub(/\A\//, "./")
   end
 end

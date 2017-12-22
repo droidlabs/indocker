@@ -30,7 +30,7 @@ describe Indocker::FileUtils do
 
     context 'from file to directory' do
       let(:source)      { File.join(example_directory, 'assets/index.css') }
-      let(:destination) { File.join(tmp_directory, 'assets') }
+      let(:destination) { File.join(tmp_directory, 'assets/') }
 
       it 'copies file to passed destination' do
         file_uitls.cp_r_with_modify(from: source, to: destination)

@@ -5,6 +5,9 @@ class Indocker::FileUtils
 
   inject :logger
 
+  DIRECTORY_BASENAME         = '/'
+  DIRECTORY_CONTENT_BASENAME = '.'
+
   def cp_r_with_modify(from:, to:, &modify_block)
     created_files = []
 
@@ -58,15 +61,15 @@ class Indocker::FileUtils
   private
 
   def is_file_name?(filename)
-    !is_directory_content?(filename) && !File.extname(filename).empty?
+    !is_directory_name?(filename)
   end
 
   def is_directory_name?(filename)
-    !is_directory_content?(filename) && File.extname(filename).empty?
+    !is_directory_content?(filename) && filename[-1] == DIRECTORY_BASENAME
   end
 
   def is_directory_content?(filename)
-    File.basename(filename) == '.'
+    File.basename(filename) == DIRECTORY_CONTENT_BASENAME
   end
 
   def relative_path(from:, to:)
